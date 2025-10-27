@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semana 1: Gestión de Riesgos Viales</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100%;
+            color: #333;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin: 0 0 10px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .week-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .day-btn {
+            background: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            min-width: 120px;
+        }
+
+        .day-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        .day-btn.active {
+            background: #ff6b6b;
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .content-area {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .day-content {
+            display: none;
+        }
+
+        .day-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .day-title {
+            color: #667eea;
+            font-size: 2rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .day-icon {
+            font-size: 2.5rem;
+        }
+
+        .topic-section {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+        }
+
+        .topic-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .resources {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .resource-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .resource-card:hover {
+            transform: translateY(-5px);
+            border-color: #667eea;
+        }
+
+        .resource-type {
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .flashcard-container {
+            margin: 20px 0;
+        }
+
+        .flashcard {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            position: relative;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .flashcard:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(255,107,107,0.3);
+        }
+
+        .flashcard.flipped {
+            background: linear-gradient(135deg, #00b894, #00a085);
+        }
+
+        .flashcard-content {
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+
+        .flip-indicator {
+            position: absolute;
+            bottom: 10px;
+            right: 15px;
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .progress-bar {
+            background: rgba(255,255,255,0.2);
+            height: 8px;
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: #ff6b6b;
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .quiz-section {
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .quiz-question {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #2d3436;
+        }
+
+        .quiz-options {
+            display: grid;
+            gap: 10px;
+        }
+
+        .quiz-option {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .quiz-option:hover {
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .quiz-option.correct {
+            background: #00b894;
+            color: white;
+        }
+
+        .quiz-option.incorrect {
+            background: #e17055;
+            color: white;
+        }
+
+        .interactive-matrix {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9ff;
+            border-radius: 15px;
+        }
+
+        .matrix-cell {
+            background: white;
+            padding: 15px;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .matrix-cell:hover {
+            border-color: #667eea;
+            transform: scale(1.05);
+        }
+
+        .matrix-cell.high-risk {
+            background: #e17055;
+            color: white;
+        }
+
+        .matrix-cell.medium-risk {
+            background: #fdcb6e;
+            color: #2d3436;
+        }
+
+        .matrix-cell.low-risk {
+            background: #00b894;
+            color: white;
+        }
+
+        .case-study {
+            background: linear-gradient(135deg, #ffecd2, #fcb69f);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .case-study h3 {
+            color: #2d3436;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .day-btn {
+                min-width: 100px;
+                padding: 12px 20px;
+            }
+            
+            .resources {
+                grid-template-columns: 1fr;
+            }
+            
+            .interactive-matrix {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🚗 Gestión de Riesgos Viales</h1>
+            <p>Semana 1: Principios, Identificación y Control en Seguridad Vial</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 14.3%"></div>
+            </div>
+        </header>
+
+        <nav class="week-nav">
+            <button class="day-btn active" onclick="showDay('lunes')">🌟 Lunes</button>
+            <button class="day-btn" onclick="showDay('martes')">🔍 Martes</button>
+            <button class="day-btn" onclick="showDay('miercoles')">📊 Miércoles</button>
+            <button class="day-btn" onclick="showDay('jueves')">🛡️ Jueves</button>
+            <button class="day-btn" onclick="showDay('viernes')">📋 Viernes</button>
+            <button class="day-btn" onclick="showDay('sabado')">🌍 Sábado</button>
+            <button class="day-btn" onclick="showDay('domingo')">😴 Domingo</button>
+        </nav>
+
+        <main class="content-area">
+            <!-- LUNES -->
+            <div id="lunes" class="day-content active">
+                <h2 class="day-title">
+                    <span class="day-icon">🌟</span>
+                    Lunes: Fundamentos del Sistema Seguro
+                </h2>
+                
+                <div class="topic-section">
+                    <div class="topic-title">Enfoque de Sistema Seguro</div>
+                    <p>El Sistema Seguro es un enfoque holístico que reconoce que los humanos cometen errores y que el sistema de transporte debe estar diseñado para proteger a todos los usuarios.</p>
+                </div>
+
+                <div class="resources">
+                    <div class="resource-card">
+                        <div class="resource-type">📹 Video</div>
+                        <h3>Los 5 Pilares del Sistema Seguro</h3>
+                        <p>Video introductorio que explica los fundamentos del enfoque de Sistema Seguro y sus cinco pilares fundamentales.</p>
+                        <ul>
+                            <li>Gestión de la seguridad vial</li>
+                            <li>Vías de tránsito más seguras</li>
+                            <li>Vehículos más seguros</li>
+                            <li>Usuarios más seguros</li>
+                            <li>Respuesta posterior al siniestro</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="resource-card">
+                        <div class="resource-type">📖 Lectura</div>
+                        <h3>Marco Teórico del Sistema Seguro</h3>
+                        <p>Lectura obligatoria sobre los principios fundamentales y la filosofía detrás del enfoque de Sistema Seguro.</p>
+                        <p><strong>Conceptos clave:</strong></p>
+                        <ul>
+                            <li>Visión Cero</li>
+                            <li>Responsabilidad compartida</li>
+                            <li>Tolerancia humana al impacto</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="flashcard-container">
+                    <div class="flashcard" onclick="flipCard(this)">
+                        <div class="flashcard-content">
+                            <strong>Flash Card:</strong> ¿Qué es la Visión Cero?
+                        </div>
+                        <div class="flip-indicator">👆 Toca para voltear</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MARTES -->
+            <div id="martes" class="day-content">
+                <h2 class="day-title">
+                    <span class="day-icon">🔍</span>
+                    Martes: Identificación de Peligros y Riesgos
+                </h2>
+                
+                <div class="topic-section">
+                    <div class="topic-title">Metodología de Identificación</div>
+                    <p>Aprende a identificar sistemáticamente los peligros viales y evaluar los riesgos asociados utilizando herramientas especializadas.</p>
+                </div>
+
+                <div class="case-study">
+                    <h3>📋 Estudio de Caso 1: Vía de Alto Riesgo</h3>
+                    <p>Análisis detallado de una intersección urbana con alta siniestralidad. Identificaremos los factores de riesgo y desarrollaremos estrategias de mitigación.</p>
+                    <div style="margin-top: 15px;">
+                        <strong>Factores identificados:</strong>
+                        <ul>
+                            <li>Visibilidad limitada por vegetación</li>
+                            <li>Señalización deficiente</li>
+                            <li>Velocidades inadecuadas</li>
+                            <li>Conflictos peatón-vehículo</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="resources">
+                    <div class="resource-card">
+                        <div class="resource-type">🗺️ Herramienta</div>
+                        <h3>Plantilla de Mapeo de Peligros</h3>
+                        <p>Herramienta práctica para documentar y categorizar peligros viales de manera sistemática.</p>
+                        <p><strong>Incluye:</strong> Formularios, listas de verificación y criterios de evaluación.</p>
+                    </div>
+                    
+                    <div class="resource-card">
+                        <div class="resource-type">📊 Ejercicio</div>
+                        <h3>Práctica de Identificación</h3>
+                        <p>Ejercicio interactivo para practicar la identificación de peligros en diferentes contextos viales.</p>
+                    </div>
+                </div>
+
+                <div class="flashcard-container">
+                    <div class="flashcard" onclick="flipCard(this)">
+                        <div class="flashcard-content">
+                            <strong>Flash Card:</strong> Menciona 3 ejemplos de peligros en contexto urbano
+                        </div>
+                        <div class="flip-indicator">👆 Toca para voltear</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MIÉRCOLES -->
+            <div id="miercoles" class="day-content">
+                <h2 class="day-title">
+                    <span class="day-icon">📊</span>
+                    Miércoles: Evaluación y Priorización de Riesgos
+                </h2>
+                
+                <div class="topic-section">
+                    <div class="topic-title">Matriz de Riesgos Interactiva</div>
+                    <p>Sesión práctica para crear y aplicar matrices de riesgo. Define niveles de tolerancia y prioriza intervenciones.</p>
+                </div>
+
+                <div class="interactive-matrix">
+                    <div class="matrix-cell" style="background: #ddd; font-weight: bold;">Probabilidad / Impacto</div>
+                    <div class="matrix-cell" style="background: #ddd; font-weight: bold;">Bajo</div>
+                    <div class="matrix-cell" style="background: #ddd; font-weight: bold;">Medio</div>
+                    <div class="matrix-cell" style="background: #ddd; font-weight: bold;">Alto</div>
+                    
+                    <div class="matrix-cell" style="background: #ddd; font-weight: bold;">Alta</div>
+                    <div class="matrix-cell medium-risk" onclick="showRiskInfo('medium')">Medio</div>
+                    <div class="matrix-cell high-risk" onclick="showRiskInfo('high')">Alto</div>
+                    <div class="matrix-cell high-risk" onclick="showRiskInfo('critical')">Crítico</div>
+                    
+                    <div class="matrix-cell" style="background: #ddd; font-weight: bold;">Media</div>
+                    <div class="matrix-cell low-risk" onclick="showRiskInfo('low')">Bajo</div>
+                    <div class="matrix-cell medium-risk" onclick="showRiskInfo('medium')">Medio</div>
+                    <div class="matrix-cell high-risk" onclick="showRiskInfo('high')">Alto</div>
+                    
+                    <div class="matrix-cell" style="background: #ddd; font-weight: bold;">Baja</div>
+                    <div class="matrix-cell low-risk" onclick="showRiskInfo('low')">Bajo</div>
+                    <div class="matrix-cell low-risk" onclick="showRiskInfo('low')">Bajo</div>
+                    <div class="matrix-cell medium-risk" onclick="showRiskInfo('medium')">Medio</div>
+                </div>
+
+                <div class="resources">
+                    <div class="resource-card">
+                        <div class="resource-type">🎯 Práctica</div>
+                        <h3>Sesión en Vivo: Matriz de Riesgos</h3>
+                        <p>Taller práctico para construir matrices de riesgo personalizadas según el contexto local.</p>
+                    </div>
+                    
+                    <div class="resource-card">
+                        <div class="resource-type">📏 Criterios</div>
+                        <h3>Niveles de Tolerancia</h3>
+                        <p>Definición de umbrales de aceptabilidad de riesgo y criterios para la toma de decisiones.</p>
+                    </div>
+                </div>
+
+                <div class="flashcard-container">
+                    <div class="flashcard" onclick="flipCard(this)">
+                        <div class="flashcard-content">
+                            <strong>Flash Card:</strong> ¿Cuál es la fórmula básica del Nivel de Riesgo?
+                        </div>
+                        <div class="flip-indicator">👆 Toca para voltear</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- JUEVES -->
+            <div id="jueves" class="day-content">
+                <h2 class="day-title">
+                    <span class="day-icon">🛡️</span>
+                    Jueves: Medidas de Control y Mitigación
+                </h2>
+                
+                <div class="topic-section">
+                    <div class="topic-title">Jerarquía de Controles</div>
+                    <p>Diseño de estrategias de control basadas en la jerarquía de la ingeniería, educación y cumplimiento (3 E's).</p>
+                </div>
+
+                <div class="resources">
+                    <div class="resource-card">
+                        <div class="resource-type">🏗️ Ingeniería</div>
+                        <h3>Controles de Ingeniería</h3>
+                        <p>Modificaciones físicas del entorno vial para reducir riesgos.</p>
+                        <ul>
+                            <li>Diseño geométrico</li>
+                            <li>Señalización y demarcación</li>
+                            <li>Dispositivos de control de tráfico</li>
+                            <li>Infraestructura para peatones</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="resource-card">
+                        <div class="resource-type">📚 Educación</div>
+                        <h3>Programas Educativos</h3>
+                        <p>Iniciativas para mejorar el conocimiento y comportamiento de los usuarios.</p>
+                        <ul>
+                            <li>Campañas de concientización</li>
+                            <li>Educación vial escolar</li>
+                            <li>Capacitación de conductores</li>
+                            <li>Programas comunitarios</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="resource-card">
+                        <div class="resource-type">⚖️ Cumplimiento</div>
+                        <h3>Enforcement</h3>
+                        <p>Medidas regulatorias y de control para asegurar el cumplimiento.</p>
+                        <ul>
+                            <li>Control de velocidad</li>
+                            <li>Fiscalización de alcohol</li>
+                            <li>Control de documentos</li>
+                            <li>Sanciones efectivas</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="flashcard-container">
+                    <div class="flashcard" onclick="flipCard(this)">
+                        <div class="flashcard-content">
+                            <strong>Flash Card:</strong> Menciona tres medidas de control de alto impacto
+                        </div>
+                        <div class="flip-indicator">👆 Toca para voltear</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIERNES -->
+            <div id="viernes" class="day-content">
+                <h2 class="day-title">
+                    <span class="day-icon">📋</span>
+                    Viernes: Herramientas de Mejora Continua
+                </h2>
+                
+                <div class="topic-section">
+                    <div class="topic-title">Auditorías y Revisiones de Seguridad Vial</div>
+                    <p>Implementación de sistemas de mejora continua y herramientas de auditoría para mantener altos estándares de seguridad.</p>
+                </div>
+
+                <div class="quiz-section">
+                    <div class="quiz-question">Mini-Examen: ¿Cuál es el objetivo principal de una auditoría de seguridad vial?</div>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="selectQuizOption(this, false)">A) Sancionar a los responsables de accidentes</div>
+                        <div class="quiz-option" onclick="selectQuizOption(this, true)">B) Identificar deficiencias de seguridad antes de que ocurran accidentes</div>
+                        <div class="quiz-option" onclick="selectQuizOption(this, false)">C) Medir la velocidad de los vehículos</div>
+                        <div class="quiz-option" onclick="selectQuizOption(this, false)">D) Controlar el tráfico vehicular</div>
+                    </div>
+                </div>
+
+                <div class="resources">
+                    <div class="resource-card">
+                        <div class="resource-type">🔄 Metodología</div>
+                        <h3>Ciclo PHVA en Seguridad Vial</h3>
+                        <p>Aplicación del ciclo Planificar-Hacer-Verificar-Actuar en la gestión de la seguridad vial.</p>
+                        <ul>
+                            <li><strong>Planificar:</strong> Identificar problemas y planificar soluciones</li>
+                            <li><strong>Hacer:</strong> Implementar las medidas planificadas</li>
+                            <li><strong>Verificar:</strong> Monitorear y evaluar resultados</li>
+                            <li><strong>Actuar:</strong> Ajustar y mejorar continuamente</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="resource-card">
+                        <div class="resource-type">💬 Foro</div>
+                        <h3>Debate: Auditorías de SV</h3>
+                        <p>Espacio de discusión sobre experiencias y mejores prácticas en auditorías de seguridad vial.</p>
+                    </div>
+                </div>
+
+                <div class="flashcard-container">
+                    <div class="flashcard" onclick="flipCard(this)">
+                        <div class="flashcard-content">
+                            <strong>Flash Card:</strong> ¿Qué es el ciclo PHVA en Seguridad Vial?
+                        </div>
+                        <div class="flip-indicator">👆 Toca para voltear</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SÁBADO -->
+            <div id="sabado" class="day-content">
+                <h2 class="day-title">
+                    <span class="day-icon">🌍</span>
+                    Sábado: Buenas Prácticas Internacionales
+                </h2>
+                
+                <div class="topic-section">
+                    <div class="topic-title">Estándares Globales de Seguridad Vial</div>
+                    <p>Revisión de informes y recomendaciones de organizaciones internacionales como la ONU y la OCDE.</p>
+                </div>
+
+                <div class="resources">
+                    <div class="resource-card">
+                        <div class="resource-type">🌐 ONU</div>
+                        <h3>Plan Mundial para el Decenio de Acción</h3>
+                        <p>Estrategias y metas globales para la reducción de muertes y lesiones por accidentes de tránsito.</p>
+                        <ul>
+                            <li>Meta: Reducir 50% las muertes para 2030</li>
+                            <li>Enfoque en países de ingresos bajos y medios</li>
+                            <li>Cinco pilares de acción</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="resource-card">
+                        <div class="resource-type">📊 OCDE</div>
+                        <h3>Indicadores de Seguridad Vial</h3>
+                        <p>Métricas y benchmarks internacionales para evaluar el desempeño en seguridad vial.</p>
+                        <ul>
+                            <li>Tasas de mortalidad por país</li>
+                            <li>Factores de riesgo principales</li>
+                            <li>Mejores prácticas documentadas</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="resource-card">
+                        <div class="resource-type">🏆 Casos Exitosos</div>
+                        <h3>Experiencias Internacionales</h3>
+                        <p>Análisis de casos exitosos de países que han logrado reducciones significativas en siniestralidad.</p>
+                        <ul>
+                            <li>Suecia: Visión Cero</li>
+                            <li>Países Bajos: Infraestructura ciclista</li>
+                            <li>Australia: Campañas de concientización</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="flashcard-container">
+                    <div class="flashcard" onclick="flipCard(this)">
+                        <div class="flashcard-content">
+                            <strong>Flash Card:</strong> Menciona un estándar de SV globalmente reconocido
+                        </div>
+                        <div class="flip-indicator">👆 Toca para voltear</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DOMINGO -->
+            <div id="domingo" class="day-content">
+                <h2 class="day-title">
+                    <span class="day-icon">😴</span>
+                    Domingo: Descanso y Repaso
+                </h2>
+                
+                <div class="topic-section">
+                    <div class="topic-title">Tiempo de Consolidación</div>
+                    <p>Día dedicado al descanso y repaso opcional del material de la semana. Preparación mental para el Módulo 2: Analítica de Datos.</p>
+                </div>
+
+                <div class="resources">
+                    <div class="resource-card">
+                        <div class="resource-type">📝 Repaso</div>
+                        <h3>Resumen de la Semana</h3>
+                        <p>Consolidación de los conceptos clave aprendidos durante la semana.</p>
+                        <ul>
+                            <li>Sistema Seguro y Visión Cero</li>
+                            <li>Identificación de peligros y riesgos</li>
+                            <li>Matriz de evaluación de riesgos</li>
+                            <li>Medidas de control (3 E's)</li>
+                            <li>Mejora continua y auditorías</li>
+                            <li>Estándares internacionales</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="resource-card">
+                        <div class="resource-type">🔮 Preparación</div>
+                        <h3>Próxima Semana: Analítica de Datos</h3>
+                        <p>Preparación mental y conceptual para abordar el análisis de datos en seguridad vial.</p>
+                        <p><strong>Temas que veremos:</strong></p>
+                        <ul>
+                            <li>Recolección y análisis de datos</li>
+                            <li>Indicadores de seguridad vial</li>
+                            <li>Herramientas de visualización</li>
+                            <li>Toma de decisiones basada en datos</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div style="text-align: center; padding: 30px; background: linear-gradient(135deg, #a8edea, #fed6e3); border-radius: 15px; margin: 20px 0;">
+                    <h3>🎉 ¡Felicitaciones!</h3>
+                    <p>Has completado la primera semana del curso de Gestión de Riesgos Viales. Tómate un descanso bien merecido y prepárate para la próxima semana.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const flashcardAnswers = {
+            'lunes': 'La Visión Cero es un enfoque ético que establece que ninguna muerte o lesión grave en el tránsito es aceptable. Se basa en el principio de que el sistema de transporte debe estar diseñado para acomodar el error humano y proteger la vida humana por encima de todo.',
+            'martes': '1) Intersecciones sin semáforos o señalización adecuada, 2) Pasos peatonales mal ubicados o sin visibilidad, 3) Velocidades excesivas en zonas escolares o residenciales.',
+            'miercoles': 'Riesgo = Probabilidad × Impacto. Esta fórmula básica permite cuantificar el nivel de riesgo multiplicando la probabilidad de que ocurra un evento por la magnitud de sus consecuencias.',
+            'jueves': '1) Control de velocidad mediante radares y reductores, 2) Mejora de la visibilidad con iluminación y señalización, 3) Separación física de usuarios vulnerables (ciclovías, aceras).',
+            'viernes': 'El ciclo PHVA (Planificar-Hacer-Verificar-Actuar) es una metodología de mejora continua que permite gestionar sistemáticamente la seguridad vial mediante la planificación de intervenciones, su implementación, verificación de resultados y ajustes continuos.',
+            'sabado': 'ISO 39001 - Sistema de Gestión de la Seguridad Vial, que establece requisitos para implementar, mantener y mejorar un sistema de gestión de seguridad vial en organizaciones.'
+        };
+
+        function showDay(day) {
+            // Hide all day contents
+            const dayContents = document.querySelectorAll('.day-content');
+            dayContents.forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Remove active class from all buttons
+            const dayButtons = document.querySelectorAll('.day-btn');
+            dayButtons.forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected day content
+            document.getElementById(day).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+
+            // Update progress bar
+            const days = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
+            const dayIndex = days.indexOf(day);
+            const progress = ((dayIndex + 1) / days.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function flipCard(card) {
+            const content = card.querySelector('.flashcard-content');
+            const currentDay = document.querySelector('.day-content.active').id;
+            
+            if (card.classList.contains('flipped')) {
+                // Show question
+                content.innerHTML = '<strong>Flash Card:</strong> ' + getQuestionForDay(currentDay);
+                card.classList.remove('flipped');
+            } else {
+                // Show answer
+                content.innerHTML = '<strong>Respuesta:</strong> ' + flashcardAnswers[currentDay];
+                card.classList.add('flipped');
+            }
+        }
+
+        function getQuestionForDay(day) {
+            const questions = {
+                'lunes': '¿Qué es la Visión Cero?',
+                'martes': 'Menciona 3 ejemplos de peligros en contexto urbano',
+                'miercoles': '¿Cuál es la fórmula básica del Nivel de Riesgo?',
+                'jueves': 'Menciona tres medidas de control de alto impacto',
+                'viernes': '¿Qué es el ciclo PHVA en Seguridad Vial?',
+                'sabado': 'Menciona un estándar de SV globalmente reconocido'
+            };
+            return questions[day];
+        }
+
+        function showRiskInfo(riskLevel) {
+            const messages = {
+                'low': 'Riesgo Bajo: Monitoreo rutinario suficiente',
+                'medium': 'Riesgo Medio: Requiere atención y medidas preventivas',
+                'high': 'Riesgo Alto: Acción inmediata requerida',
+                'critical': 'Riesgo Crítico: Intervención urgente necesaria'
+            };
+            
+            // Create temporary message
+            const message = document.createElement('div');
+            message.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: #2d3436;
+                color: white;
+                padding: 20px;
+                border-radius: 10px;
+                z-index: 1000;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            `;
+            message.textContent = messages[riskLevel];
+            document.body.appendChild(message);
+            
+            setTimeout(() => {
+                document.body.removeChild(message);
+            }, 2000);
+        }
+
+        function selectQuizOption(option, isCorrect) {
+            // Remove previous selections
+            const options = option.parentNode.querySelectorAll('.quiz-option');
+            options.forEach(opt => {
+                opt.classList.remove('correct', 'incorrect');
+            });
+            
+            // Mark selected option
+            if (isCorrect) {
+                option.classList.add('correct');
+            } else {
+                option.classList.add('incorrect');
+                // Also show the correct answer
+                options.forEach(opt => {
+                    if (opt.textContent.includes('B)')) {
+                        opt.classList.add('correct');
+                    }
+                });
+            }
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99560051c5eeb6f2',t:'MTc2MTYwODAzNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
