@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semana 1: Gestión de Riesgos Viales</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100%;
+            color: #333;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin: 0 0 10px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .week-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .day-btn {
+            background: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            min-width: 120px;
+        }
+
+        .day-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        .day-btn.active {
+            background: #ff6b6b;
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .content-area {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .day-content {
+            display: none;
+        }
+
+        .day-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .day-title {
+            color: #667eea;
+            font-size: 2rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .day-icon {
+            font-size: 2.5rem;
+        }
+
+        .topic-section {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+        }
+
+        .topic-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .resources {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .resource-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .resource-card:hover {
+            transform: translateY(-5px);
+            border-color: #667eea;
+        }
+
+        .resource-type {
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .flashcard-container {
+            margin: 20px 0;
+        }
+
+        .flashcard {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            position: relative;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .flashcard:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(255,107,107,0.3);
+        }
+
+        .flashcard.flipped {
+            background: linear-gradient(135deg, #00b894, #00a085);
+        }
+
+        .flashcard-content {
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+
+        .flip-indicator {
+            position: absolute;
+            bottom: 10px;
+            right: 15px;
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .progress-bar {
+            background: rgba(255,255,255,0.2);
+            height: 8px;
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: #ff6b6b;
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .quiz-section {
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .quiz-question {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #2d3436;
+        }
+
+        .quiz-options {
+            display: grid;
+            gap: 10px;
+        }
+
+        .quiz-option {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .quiz-option:hover {
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .quiz-option.correct {
+            background: #00b894;
+            color: white;
+        }
+
+        .quiz-option.incorrect {
+            background: #e17055;
+            color: white;
+        }
+
+        .interactive-matrix {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9ff;
+            border-radius: 15px;
+        }
+
+        .matrix-cell {
+            background: white;
+            padding: 15px;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .matrix-cell:hover {
+            border-color: #667eea;
+            transform: scale(1.05);
+        }
+
+        .matrix-cell.high-risk {
+            background: #e17055;
+            color: white;
+        }
+
+        .matrix-cell.medium-risk {
+            background: #fdcb6e;
+            color: #2d3436;
+        }
+
+        .matrix-cell.low-risk {
+            background: #00b894;
+            color: white;
+        }
+
+        .case-study {
+            background: linear-gradient(135deg, #ffecd2, #fcb69f);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .case-study h3 {
+            color: #2d3436;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .day-btn {
+                min-width: 100px;
+                padding: 12px 20px;
+            }
+            
+            .resources {
+                grid-template-columns: 1fr;
+            }
+            
+            .interactive-matrix {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>📋 Normatividad ISO en Seguridad Vial</h1>
+            <p>Semana 3: Requisitos, Alcance y Aplicación de los Estándares ISO 39001 e ISO 39002</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 14.3%"></div>
+            </div>
+        </header>
+
+        <nav class="week-nav">
+            <button class="day-btn active" onclick="showDay('lunes')">📋 Lunes</button>
+            <button class="day-btn" onclick="showDay('martes')">👥 Martes</button>
+            <button class="day-btn" onclick="showDay('miercoles')">⚙️ Miércoles</button>
+            <button class="day-btn" onclick="showDay('jueves')">📊 Jueves</button>
+            <button class="day-btn" onclick="showDay('viernes')">📖 Viernes</button>
+            <button class="day-btn" onclick="showDay('sabado')">🎭 Sábado</button>
+            <button class="day-btn" onclick="showDay('domingo')">😴 Domingo</button>
+        </nav>
+
+        <main class="content-area">
+            <!-- LUNES -->
+            <div id="lunes" class="day-content active">
+                <h2 class="day-title">
+                    <span class="day-icon">📋</span>
+                    Lunes: ISO 39001: Estructura y Contexto
+                </h2>
+                
+                <div class="topic-section">
+                    <div class="topic-title">Estructura de Alto Nivel (Anexo SL)</div>
+                    <p>Comprensión profunda de la estructura común de las normas ISO de sistemas de gestión y los primeros capítulos fundamentales de la ISO 39001.</p>
+                </div>
+
+                <div class="resources">
+                    <div class="resource-card">
+                        <div class="resource-type">📚 Lectura Profunda</div>
+                        <h3>Estructura de Alto Nivel ISO</h3>
+                        <p>Análisis detallado del Anexo SL que define la estructura común para todas las normas ISO de sistemas de gestión.</p>
+                        <ul>
+                            <li><strong>Capítulo 1:</strong> Objeto y campo de aplicación</li>
+                            <li><strong>Capítulo 2:</strong> Referencias normativas</li>
+                            <li><strong>Capítulo 3:</strong> Términos y definiciones</li>
+                            <li><strong>Capítulo 4:</strong> Contexto de la organización</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="resource-card">
+                        <div class="resource-type">🏢 Contexto Organizacional</div>
+                        <h3>Capítulo 4: Contexto de la Organización</h3>
+                        <p>Requisitos fundamentales para establecer el contexto organizacional en seguridad vial.</p>
+                        <ul>
+                            <li><strong>4.1:</strong> Comprensión de la organización y su contexto</li>
+                            <li><strong>4.2:</strong> Comprensión de las necesidades y expectativas</li>
+                            <li><strong>4.3:</strong> Determinación del alcance del SGSV</li>
+                            <li><strong>4.4:</strong> Sistema de gestión de seguridad vial</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="resource-card">
+                        <div class="resource-type">🎯 Propósito y Alcance</div>
+                        <h3>Objeto de la ISO 39001</h3>
+                        <p>Definición clara del propósito y beneficios de implementar un sistema de gestión de seguridad vial.</p>
+                        <ul>
+                            <li>Reducir muertes y lesiones graves</li>
+                            <li>Enfoque sistemático y proactivo</li>
+                            <li>Mejora continua del desempeño</li>
+                            <li>Integración con otros sistemas de gestión</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="case-study">
+                    <h3>🏛️ Análisis de Contexto Organizacional</h3>
+                    <p>Ejemplo práctico de cómo una organización de transporte público analiza su contexto para implementar ISO 39001:</p>
+                    <div style="margin-top: 15px;">
+                        <strong>Factores internos y externos identificados:</strong>
+                        <ul>
+                            <li><strong>Internos:</strong> Cultura organizacional, recursos, competencias del personal</li>
+                            <li><strong>Externos:</strong> Regulaciones locales, condiciones de tráfico, expectativas ciudadanas</li>
+                            <li><strong>Partes interesadas:</strong> Usuarios, autoridades, comunidad, empleados</li>
+                            <li><strong>Alcance:</strong> Operaciones de transporte urbano en 3 ciudades principales</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #74b9ff, #0984e3); padding: 25px; border-radius: 15px; margin: 20px 0; color: white;">
+                    <h3>📖 Términos Clave ISO 39001</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 15px;">
+                        <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px;">
+                            <div style="font-weight: bold; margin-bottom: 5px;">SGSV</div>
+                            <div style="font-size: 0.9rem;">Sistema de Gestión de Seguridad Vial</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px;">
+                            <div style="font-weight: bold; margin-bottom: 5px;">Desempeño SV</div>
+                            <div style="font-size: 0.9rem;">Resultados medibles relacionados con la gestión de riesgos</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px;">
+                            <div style="font-weight: bold; margin-bottom: 5px;">Parte Interesada</div>
+                            <div style="font-size: 0.9rem;">Persona u organización que puede afectar o verse afectada</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flashcard-container">
+                    <div class="flashcard" onclick="flipCard(this)">
+                        <div class="flashcard-content">
+                            <strong>Flash Card:</strong> ¿Cuál es el propósito de la ISO 39001?
+                        </div>
+                        <div class="flip-indicator">👆 Toca para voltear</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MARTES -->
+            <div id="martes" class="day-content">
+                <h2 class="day-title">
+                    <span class="day-icon">👥</span>
+                    Martes: Liderazgo, Planificación y Soporte
+                </h2>
+                
+                <div class="topic-section">
+                    <div class="topic-title">Cláusulas 5 y 6: Liderazgo y Planificación</div>
+                    <p>Análisis detallado de los requisitos de liderazgo organizacional y planificación estratégica para la seguridad vial, incluyendo el diseño de mapas de procesos.</p>
+                </div>
+
+                <div class="resources">
+                    <div class="resource-card">
+                        <div class="resource-type">👑 Liderazgo</div>
+                        <h3>Cláusula 5: Liderazgo</h3>
+                        <p>Requisitos para el compromiso y liderazgo de la alta dirección en seguridad vial.</p>
+                        <ul>
+                            <li><strong>5.1:</strong> Liderazgo y compromiso</li>
+                            <li><strong>5.2:</strong> Política de seguridad vial</li>
+                            <li><strong>5.3:</strong> Roles, responsabilidades y autoridades</li>
+                            <li><strong>5.4:</strong> Consulta y participación</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="resource-card">
+                        <div class="resource-type">📋 Planificación</div>
+                        <h3>Cláusula 6: Planificación</h3>
+                        <p>Elementos esenciales para la planificación estratégica del sistema de gestión.</p>
+                        <ul>
+                            <li><strong>6.1:</strong> Acciones para abordar riesgos y oportunidades</li>
+                            <li><strong>6.2:</strong> Objetivos de seguridad vial y planificación</li>
+                            <li><strong>6.3:</strong> Factores de desempeño de seguridad vial</li>
+                            <li><strong>6.4:</strong> Requisitos legales y otros requisitos</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="resource-card">
+                        <div class="resource-type">🗺️ Mapeo de Procesos</div>
+                        <h3>Diseño de Mapa de Procesos</h3>
+                        <p>Herramientas para visualizar y documentar los procesos del SGSV.</p>
+                        <ul>
+                            <li>Procesos estratégicos de liderazgo</li>
+                            <li>Procesos operacionales clave</li>
+                            <li>Procesos de apoyo y soporte</li>
+                            <li>Interacciones entre procesos</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="case-study">
+                    <h3>🎯 Ejercicio Práctico: Política de Seguridad Vial</h3>
+                    <p>Desarrollo de una política de seguridad vial que cumpla con los requisitos de la ISO 39001:</p>
+                    <div style="margin-top: 15px;">
+                        <strong>Elementos que debe incluir la política:</strong>
+                        <ul>
+                            <li>Compromiso con la prevención de muertes y lesiones graves</li>
+                            <li>Compromiso con el cumplimiento de requisitos legales</li>
+                            <li>Compromiso con la mejora continua</li>
+                            <li>Marco para establecer objetivos de seguridad vial</li>
+                            <li>Comunicación a todas las partes interesadas</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #00b894, #00cec9); padding: 25px; border-radius: 15px; margin: 20px 0; color: white;">
+                    <h3>🗺️ Mapa de Procesos Interactivo</h3>
+                    <p>Visualización de los procesos clave en un SGSV:</p>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                        <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; text-align: center;">
+                            <div style="font-weight: bold; margin-bottom: 5px;">Estratégicos</div>
+                            <div style="font-size: 0.9rem;">Liderazgo, Planificación, Revisión</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; text-align: center;">
+                            <div style="font-weight: bold; margin-bottom: 5px;">Operacionales</div>
+                            <div style="font-size: 0.9rem;">Gestión de Riesgos, Operación</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; text-align: center;">
+                            <div style="font-weight: bold; margin-bottom: 5px;">Soporte</div>
+                            <div style="font-size: 0.9rem;">Recursos, Competencia, Comunicación</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #fd79a8, #fdcb6e); padding: 25px; border-radius: 15px; margin: 20px 0; color: white;">
+                    <h3>🎯 Objetos de Seguridad Vial</h3>
+                    <p>Ejemplos de objetos de seguridad vial según ISO 39001:</p>
+                    <div style="margin-top: 15px;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                            <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px;">
+                                <div style="font-weight: bold; margin-bottom: 5px;">Exposición</div>
+                                <div style="font-size: 0.9rem;">Velocidad, volumen de tráfico, distancia recorrida</div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px;">
+                                <div style="font-weight: bold; margin-bottom: 5px;">Resultado Final</div>
+                                <div style="font-size: 0.9rem;">Muertes y lesiones graves por accidentes</div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px;">
+                                <div style="font-weight: bold; margin-bottom: 5px;">Resultado Intermedio</div>
+                                <div style="font-size: 0.9rem;">Número y severidad de accidentes</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flashcard-container">
+                    <div class="flashcard" onclick="flipCard(this)">
+                        <div class="flashcard-content">
+                            <strong>Flash Card:</strong> ¿Qué es un 'Objeto de Seguridad Vial' en la 39001?
+                        </div>
+                        <div class="flip-indicator">👆 Toca para voltear</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MIÉRCOLES -->
+            <div id="miercoles" class="day-content">
+                <h2 class="day-title">
+                    <span class="day-icon">⚙️</span>
+                    Miércoles: Operación y Requisitos Específicos
+                </h2>
+                
+                <div class="topic-section">
+                    <div class="topic-title">Cláusula 8: Operación y Factores de Desempeño</div>
+                    <p>Enfoque detallado en los requisitos operacionales de la ISO 39001 y los factores clave de desempeño, incluyendo ejercicios de análisis de brechas.</p>
+                </div>
+
+                <div class="resources">
+                    <div class="resource-card">
+                        <div class="resource-type">⚙️ Operación</div>
+                        <h3>Cláusula 8: Operación</h3>
+                        <p>Requisitos operacionales para la implementación efectiva del SGSV.</p>
+                        <ul>
+                            <li><strong>8.1:</strong> Planificación y control operacional</li>
+                            <li><strong>8.2:</strong> Preparación y respuesta ante emergencias</li>
+                            <li><strong>8.3:</strong> Investigación de accidentes de tránsito</li>
+                            <li><strong>8.4:</strong> No conformidad y acción correctiva</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="resource-card">
+                        <div class="resource-type">📊 Factores de Desempeño</div>
+                        <h3>Factores Clave de Desempeño SV</h3>
+                        <p>Elementos críticos que influyen en el desempeño de seguridad vial.</p>
+                        <ul>
+                            <li><strong>Exposición:</strong> Velocidad, volumen, distancia</li>
+                            <li><strong>Accidentes:</strong> Frecuencia y severidad</li>
+                            <li><strong>Lesiones:</strong> Muertes y lesiones graves</li>
+                            <li><strong>Factores de riesgo:</strong> Comportamiento, vehículo, vía</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="resource-card">
+                        <div class="resource-type">🔍 Gap Analysis</div>
+                        <h3>Análisis de Brechas</h3>
+                        <p>Metodología para identificar diferencias entre el estado actual y los requisitos ISO.</p>
+                        <ul>
+                            <li>Evaluación del estado actual</li>
+                            <li>Identificación de requisitos faltantes</li>
+                            <li>Priorización de brechas críticas</li>
+                            <li>Plan de acción para cerrar brechas</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="case-study">
+                    <h3>🔍 Ejercicio: Análisis de Brechas (Gap Analysis)</h3>
+                    <p>Evaluación sistemática de una organización de transporte para identificar brechas con ISO 39001:</p>
+                    <div style="margin-top: 15px;">
+                        <strong>Áreas de evaluación:</strong>
+                        <ul>
+                            <li><strong>Documentación:</strong> Políticas, procedimientos, registros</li>
+                            <li><strong>Competencias:</strong> Formación y capacitación del personal</li>
+                            <li><strong>Procesos:</strong> Gestión de riesgos, investigación de accidentes</li>
+                            <li><strong>Medición:</strong> Indicadores, monitoreo, análisis de datos</li>
+                            <li><strong>Mejora:</strong> Acciones correctivas, revisión por la dirección</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #6c5ce7, #a29bfe); padding: 25px; border-radius: 15px; margin: 20px 0; color: white;">
+                    <h3>📊 Matriz de Evaluación de Brechas</h3>
+                    <p>Herramienta interactiva para evaluar el cumplimiento:</p>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                        <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; text-align: center;">
+                            <div style="font-weight: bold; margin-bottom: 5px;">Contexto (Cap. 4)</div>
+                            <div style="font-size: 1.5rem; color: #00b894;">85%</div>
+                            <div style="font-size: 0.8rem;">Cumplimiento</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; text-align: center;">
+                            <div style="font-weight: bold; margin-bottom: 5px;">Liderazgo (Cap. 5)</div>
+                            <div style="font-size: 1.5rem; color: #fdcb6e;">60%</div>
+                            <div style="font-size: 0.8rem;">Cumplimiento</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; text-align: center;">
+                            <div style="font-weight: bold; margin-bottom: 5px;">Operación (Cap. 8)</div>
+                            <div style="font-size: 1.5rem; color: #e17055;">45%</div>
+                            <div style="font-size: 0.8rem;">Cumplimiento</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #fd79a8, #fdcb6e); padding: 25px; border-radius: 15px; margin: 20px 0; color: white;">
+                    <h3>🎯 Factores Clave de Desempeño</h3>
+                    <p>Los tres pilares fundamentales del desempeño en seguridad vial:</p>
+                    <div style="margin-top: 15px;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                            <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px;">
+                                <div style="font-weight: bold; margin-bottom: 5px;">1. Exposición al Riesgo</div>
+                                <div style="font-size: 0.9rem;">Velocidad, volumen de tráfico, distancia recorrida, tiempo de exposición</div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px;">
+                                <div style="font-weight: bold; margin-bottom: 5px;">2. Probabilidad de Accidente</div>
+                                <div style="font-size: 0.9rem;">Factores de riesgo del conductor, vehículo y vía que aumentan la probabilidad</div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px;">
+                                <div style="font-weight: bold; margin-bottom: 5px;">3. Severidad del Impacto</div>
+                                <div style="font-size: 0.9rem;">Factores que determinan la gravedad de las lesiones en caso de accidente</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quiz-section">
+                    <div class="quiz-question">Pregunta de Evaluación: ¿Cuál es el objetivo principal del análisis de brechas en ISO 39001?</div>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="selectQuizOption(this, false)">A) Certificar inmediatamente la organización</div>
+                        <div class="quiz-option" onclick="selectQuizOption(this, true)">B) Identificar diferencias entre el estado actual y los requisitos</div>
+                        <div class="quiz-option" onclick="selectQuizOption(this, false)">C) Reducir costos de implementación</div>
+                        <div class="quiz-option" onclick="selectQuizOption(this, false)">D) Eliminar todos los riesgos viales</div>
+                    </div>
+                </div>
+
+                <div class="flashcard-container">
+                    <div class="flashcard" onclick="flipCard(this)">
+                        <div class="flashcard-content">
+                            <strong>Flash Card:</strong> Menciona 3 factores clave de desempeño en SV
+                        </div>
+                        <div class="flip-indicator">👆 Toca para voltear</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- JUEVES -->
+            <div id="jueves" class="day-content">
+                <h2 class="day-title">
+                    <span class="day-icon">📊</span>
+                    Jueves: Evaluación del Desempeño (ISO 39001)
+                </h2>
+                
+                <div class="topic-section">
+                    <div class="topic-title">Cláusula 9: Evaluación del Desempeño</div>
+                    <p>Estudio detallado de cómo monitorear, medir, analizar y evaluar el sistema de gestión de seguridad vial, incluyendo preparación para auditorías internas.</p>
+                </div>
+
+                <div class="resources">
+                    <div class="resource-card">
+                        <div class="resource-type">📊 Monitoreo</div>
+                        <h3>Seguimiento y Medición</h3>
+                        <p>Sistemas para monitorear continuamente el desempeño del SGSV.</p>
+                        <ul>
+                            <li><strong>9.1.1:</strong> Seguimiento, medición, análisis y evaluación</li>
+                            <li><strong>Indicadores:</strong> Métricas de desempeño clave</li>
+                            <li><strong>Frecuencia:</strong> Periodicidad de mediciones</li>
+                            <li><strong>Responsables:</strong> Asignación de roles de medición</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="resource-card">
+                        <div class="resource-type">🔍 Auditoría Interna</div>
+                        <h3>Auditorías del SGSV</h3>
+                        <p>Proceso sistemático para evaluar la conformidad con ISO 39001.</p>
+                        <ul>
+                            <li><strong>9.2:</strong> Auditoría interna</li>
+                            <li><strong>Planificación:</strong> Programa de auditorías</li>
+                            <li><strong>Competencia:</strong> Calificación de auditores</li>
+                            <li><strong>Resultados:</strong> Informes y seguimiento</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="resource-card">
+                        <div class="resource-type">👥 Revisión Dirección</div>
+                        <h3>Revisión por la Dirección</h3>
+                        <p>Evaluación estratégica del SGSV por parte de la alta dirección.</p>
+                        <ul>
+                            <li><strong>9.3:</strong> Revisión por la dirección</li>
+                            <li><strong>Entradas:</strong> Información para la revisión</li>
+                            <li><strong>Salidas:</strong> Decisiones y acciones</li>
+                            <li><strong>Periodicidad:</strong> Frecuencia de revisiones</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="case-study">
+                    <h3>🔍 Preparación para Auditoría Interna</h3>
+                    <p>Guía práctica para preparar y ejecutar una auditoría interna efectiva del SGSV:</p>
+                    <div style="margin-top: 15px;">
+                        <strong>Fases de la auditoría:</strong>
+                        <ul>
+                            <li><strong>Planificación:</strong> Alcance, criterios, programa de auditoría</li>
+                            <li><strong>Preparación:</strong> Revisión de documentos, listas de verificación</li>
+                            <li><strong>Ejecución:</strong> Entrevistas, observaciones, revisión de registros</li>
+                            <li><strong>Reporte:</strong> Hallazgos, no conformidades, oportunidades de mejora</li>
+                            <li><strong>Seguimiento:</strong> Verificación de acciones correctivas</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #74b9ff, #0984e3); padding: 25px; border-radius: 15px; margin: 20px 0; color: white;">
+                    <h3>📋 Tipos de Auditorías</h3>
+                    <p>Clasificación de auditorías según su origen y propósito:</p>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                        <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; text-align: center;">
+                            <div style="font-weight: bold; margin-bottom: 5px;">Primera Parte</div>
+                            <div style="font-size: 0.9rem;">Auditoría Interna (por la propia organización)</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; text-align: center;">
+                            <div style="font-weight: bold; margin-bottom: 5px;">Segunda Parte</div>
+                            <div style="font-size: 0.9rem;">Auditoría de Cliente (por partes interesadas)</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; text-align: center;">
+                            <div style="font-weight: bold; margin-bottom: 5px;">Tercera Parte</div>
+                            <div style="font-size: 0.9rem;">Auditoría Externa (por organismo certificador)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #00b894, #00cec9); padding: 25px; border-radius: 15px; margin: 20px 0; color: white;">
+                    <h3>📊 Dashboard de Indicadores SGSV</h3>
+                    <p>Ejemplo de métricas clave para monitorear el desempeño:</p>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-top: 15px;">
+                        <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; text-align: center;">
+                            <div style="font-size: 2rem; font-weight: bold;">0</div>
+                            <div style="font-size: 0.9rem;">Muertes este año</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; text-align: center;">
+                            <div style="font-size: 2rem; font-weight: bold;">-15%</div>
+                            <div style="font-size: 0.9rem;">Reducción accidentes</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; text-align: center;">
+                            <div style="font-size: 2rem; font-weight: bold;">95%</div>
+                            <div style="font-size: 0.9rem;">Cumplimiento legal</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; text-align: center;">
+                            <div style="font-size: 2rem; font-weight: bold;">12</div>
+                            <div style="font-size: 0.9rem;">Acciones correctivas</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quiz-section">
+                    <div class="quiz-question">Pregunta de Auditoría: ¿Con qué frecuencia mínima debe realizarse la revisión por la dirección?</div>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="selectQuizOption(this, false)">A) Mensualmente</div>
+                        <div class="quiz-option" onclick="selectQuizOption(this, false)">B) Trimestralmente</div>
+                        <div class="quiz-option" onclick="selectQuizOption(this, true)">C) A intervalos planificados (mínimo anual)</div>
+                        <div class="quiz-option" onclick="selectQuizOption(this, false)">D) Solo cuando hay incidentes</div>
+                    </div>
+                </div>
+
+                <div class="flashcard-container">
+                    <div class="flashcard" onclick="flipCard(this)">
+                        <div class="flashcard-content">
+                            <strong>Flash Card:</strong> ¿Qué tipos de auditorías existen?
+                        </div>
+                        <div class="flip-indicator">👆 Toca para voltear</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIERNES -->
+            <div id="viernes" class="day-content">
+                <h2 class="day-title">
+                    <span class="day-icon">📖</span>
+                    Viernes: ISO 39002: Directrices de Implementación
+                </h2>
+                
+                <div class="topic-section">
+                    <div class="topic-title">ISO 39002 como Guía Práctica</div>
+                    <p>Revisión detallada de la ISO 39002 como herramienta de apoyo para la implementación de ISO 39001, incluyendo integración con otros sistemas de gestión.</p>
+                </div>
+
+                <div class="resources">
+                    <div class="resource-card">
+                        <div class="resource-type">📖 ISO 39002</div>
+                        <h3>Directrices de Implementación</h3>
+                        <p>Guía práctica para facilitar la implementación efectiva de ISO 39001.</p>
+                        <ul>
+                            <li><strong>Propósito:</strong> Orientación práctica, no certificable</li>
+                            <li><strong>Estructura:</strong> Sigue la misma organización de ISO 39001</li>
+                            <li><strong>Contenido:</strong> Ejemplos, casos prácticos, herramientas</li>
+                            <li><strong>Beneficios:</strong> Reduce tiempo y costos de implementación</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="resource-card">
+                        <div class="resource-type">🔗 Integración</div>
+                        <h3>Integración con Otros Sistemas</h3>
+                        <p>Cómo integrar ISO 39001 con otros sistemas de gestión existentes.</p>
+                        <ul>
+                            <li><strong>ISO 9001:</strong> Gestión de la calidad</li>
+                            <li><strong>ISO 45001:</strong> Seguridad y salud ocupacional</li>
+                            <li><strong>ISO 14001:</strong> Gestión ambiental</li>
+                            <li><strong>ISO 27001:</strong> Seguridad de la información</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="resource-card">
+                        <div class="resource-type">🛠️ Herramientas Prácticas</div>
+                        <h3>Herramientas de la ISO 39002</h3>
+                        <p>Recursos prácticos incluidos en las directrices de implementación.</p>
+                        <ul>
+                            <li>Plantillas de documentos</li>
+                            <li>Listas de verificación</li>
+                            <li>Ejemplos de indicadores</li>
+                            <li>Casos de estudio reales</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="case-study">
+                    <h3>🔗 Caso Práctico: Sistema Integrado de Gestión</h3>
+                    <p>Ejemplo de una empresa de transporte que integra múltiples normas ISO:</p>
+                    <div style="margin-top: 15px;">
+                        <strong>Beneficios de la integración:</strong>
+                        <ul>
+                            <li><strong>Eficiencia:</strong> Procesos comunes, documentación unificada</li>
+                            <li><strong>Coherencia:</strong> Políticas alineadas, objetivos integrados</li>
+                            <li><strong>Recursos:</strong> Optimización de auditorías y revisiones</li>
+                            <li><strong>Cultura:</strong> Enfoque holístico de la gestión</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #fd79a8, #fdcb6e); padding: 25px; border-radius: 15px; margin: 20px 0; color: white;">
+                    <h3>📋 Diferencias Clave: ISO 39001 vs ISO 39002</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-top: 15px;">
+                        <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 10px;">
+                            <div style="font-weight: bold; margin-bottom: 10px; font-size: 1.1rem;">ISO 39001</div>
+                            <ul style="margin: 0; padding-left: 20px; font-size: 0.9rem;">
+                                <li>Norma certificable</li>
+                                <li>Requisitos obligatorios</li>
+                                <li>Lenguaje formal y técnico</li>
+                                <li>Estructura de alto nivel</li>
+                                <li>Auditable externamente</li>
+                            </ul>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 10px;">
+                            <div style="font-weight: bold; margin-bottom: 10px; font-size: 1.1rem;">ISO 39002</div>
+                            <ul style="margin: 0; padding-left: 20px; font-size: 0.9rem;">
+                                <li>Guía no certificable</li>
+                                <li>Orientación y recomendaciones</li>
+                                <li>Lenguaje práctico y accesible</li>
+                                <li>Ejemplos y casos reales</li>
+                                <li>Herramienta de apoyo</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #00b894, #00cec9); padding: 25px; border-radius: 15px; margin: 20px 0; color: white;">
+                    <h3>🎯 Beneficios de Usar ISO 39002</h3>
+                    <p>Ventajas de utilizar las directrices durante la implementación:</p>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                        <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; text-align: center;">
+                            <div style="font-weight: bold; margin-bottom: 5px;">Tiempo</div>
+                            <div style="font-size: 0.9rem;">Reduce 30-40% el tiempo de implementación</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; text-align: center;">
+                            <div style="font-weight: bold; margin-bottom: 5px;">Costos</div>
+                            <div style="font-size: 0.9rem;">Minimiza errores y retrabajos costosos</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; text-align: center;">
+                            <div style="font-weight: bold; margin-bottom: 5px;">Calidad</div>
+                            <div style="font-size: 0.9rem;">Mejora la efectividad del SGSV</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quiz-section">
+                    <div class="quiz-question">Pregunta Clave: ¿La ISO 39002 es certificable? ¿Por qué?</div>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="selectQuizOption(this, false)">A) Sí, porque es una norma ISO oficial</div>
+                        <div class="quiz-option" onclick="selectQuizOption(this, true)">B) No, porque es una guía de directrices, no de requisitos</div>
+                        <div class="quiz-option" onclick="selectQuizOption(this, false)">C) Sí, pero solo para organizaciones grandes</div>
+                        <div class="quiz-option" onclick="selectQuizOption(this, false)">D) No, porque aún está en desarrollo</div>
+                    </div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #6c5ce7, #a29bfe); padding: 25px; border-radius: 15px; margin: 20px 0; color: white;">
+                    <h3>🔄 Proceso de Implementación Recomendado</h3>
+                    <p>Pasos sugeridos por ISO 39002 para una implementación exitosa:</p>
+                    <div style="margin-top: 15px;">
+                        <ol style="font-size: 0.95rem; line-height: 1.6;">
+                            <li><strong>Compromiso de la dirección</strong> y asignación de recursos</li>
+                            <li><strong>Análisis del contexto</strong> organizacional y partes interesadas</li>
+                            <li><strong>Planificación del proyecto</strong> de implementación</li>
+                            <li><strong>Desarrollo de documentación</strong> y procedimientos</li>
+                            <li><strong>Capacitación del personal</strong> en todos los niveles</li>
+                            <li><strong>Implementación gradual</strong> por fases o áreas</li>
+                            <li><strong>Monitoreo y medición</strong> del desempeño</li>
+                            <li><strong>Auditoría interna</strong> y acciones correctivas</li>
+                            <li><strong>Revisión por la dirección</strong> y mejora continua</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="flashcard-container">
+                    <div class="flashcard" onclick="flipCard(this)">
+                        <div class="flashcard-content">
+                            <strong>Flash Card:</strong> La 39002 ¿es certificable? ¿Por qué?
+                        </div>
+                        <div class="flip-indicator">👆 Toca para voltear</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SÁBADO -->
+            <div id="sabado" class="day-content">
+                <h2 class="day-title">
+                    <span class="day-icon">🎭</span>
+                    Sábado: Role-Play de Auditoría y Cumplimiento
+                </h2>
+                
+                <div class="topic-section">
+                    <div class="topic-title">Simulación de Auditoría ISO 39001</div>
+                    <p>Simulación grupal de una reunión de auditoría para identificar no conformidades y desarrollar habilidades prácticas de auditoría y mejora continua.</p>
+                </div>
+
+                <div class="case-study">
+                    <h3>🎭 Escenario de Role-Play</h3>
+                    <p>Simulación de una auditoría interna en una empresa de transporte urbano:</p>
+                    <div style="margin-top: 15px;">
+                        <strong>Roles asignados:</strong>
+                        <ul>
+                            <li><strong>Auditor Líder:</strong> Dirige la auditoría, formula preguntas clave</li>
+                            <li><strong>Auditor Técnico:</strong> Especialista en procesos operacionales</li>
+                            <li><strong>Gerente de Operaciones:</strong> Responsable del área auditada</li>
+                            <li><strong>Coordinador SGSV:</strong> Responsable del sistema de gestión</li>
+                            <li><strong>Conductor/Operador:</strong> Personal operativo entrevistado</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="resources">
+                    <div class="resource-card">
+                        <div class="resource-type">🔍 Proceso de Auditoría</div>
+                        <h3>Fases de la Auditoría</h3>
+                        <p>Estructura sistemática para conducir una auditoría efectiva.</p>
+                        <ul>
+                            <li><strong>Reunión de apertura:</strong> Presentación del equipo y alcance</li>
+                            <li><strong>Revisión documental:</strong> Políticas, procedimientos, registros</li>
+                            <li><strong>Entrevistas:</strong> Personal de diferentes niveles</li>
+                            <li><strong>Observación directa:</strong> Procesos en operación</li>
+                            <li><strong>Reunión de cierre:</strong> Presentación de hallazgos</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="resource-card">
+                        <div class="resource-type">❌ No Conformidades</div>
+                        <h3>Tipos de Hallazgos</h3>
+                        <p>Clasificación de los hallazgos de auditoría según su severidad.</p>
+                        <ul>
+                            <li><strong>No Conformidad Mayor:</strong> Falla sistemática o crítica</li>
+                            <li><strong>No Conformidad Menor:</strong> Desviación aislada o menor</li>
+                            <li><strong>Observación:</strong> Oportunidad de mejora</li>
+                            <li><strong>Fortaleza:</strong> Buena práctica identificada</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="resource-card">
+                        <div class="resource-type">🔄 Mejora Continua</div>
+                        <h3>Taller de Mejora Continua</h3>
+                        <p>Metodologías para convertir hallazgos en oportunidades de mejora.</p>
+                        <ul>
+                            <li><strong>Análisis de causa raíz:</strong> 5 Por qués, Ishikawa</li>
+                            <li><strong>Plan de acción:</strong> Acciones correctivas y preventivas</li>
+                            <li><strong>Seguimiento:</strong> Verificación de eficacia</li>
+                            <li><strong>Lecciones aprendidas:</strong> Conocimiento organizacional</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #e17055, #fd79a8); padding: 25px; border-radius: 15px; margin: 20px 0; color: white;">
+                    <h3>🎯 Ejemplos de No Conformidades Comunes</h3>
+                    <p>Hallazgos típicos en auditorías de ISO 39001:</p>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-top: 15px;">
+                        <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px;">
+                            <div style="font-weight: bold; margin-bottom: 5px;">NC Mayor</div>
+                            <div style="font-size: 0.9rem;">Ausencia de investigación de accidentes según procedimiento establecido</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px;">
+                            <div style="font-weight: bold; margin-bottom: 5px;">NC Menor</div>
+                            <div style="font-size: 0.9rem;">Registros de capacitación incompletos para algunos conductores</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px;">
+                            <div style="font-weight: bold; margin-bottom: 5px;">Observación</div>
+                            <div style="font-size: 0.9rem;">Oportunidad de mejorar la comunicación de objetivos de SV</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #74b9ff, #0984e3); padding: 25px; border-radius: 15px; margin: 20px 0; color: white;">
+                    <h3>📋 Lista de Verificación de Auditoría</h3>
+                    <p>Puntos clave a verificar durante la auditoría:</p>
+                    <div style="margin-top: 15px;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                            <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px;">
+                                <div style="font-weight: bold; margin-bottom: 5px;">✅ Documentación</div>
+                                <div style="font-size: 0.9rem;">Política, objetivos, procedimientos actualizados</div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px;">
+                                <div style="font-weight: bold; margin-bottom: 5px;">✅ Competencias</div>
+                                <div style="font-size: 0.9rem;">Capacitación, evaluación, registros del personal</div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px;">
+                                <div style="font-weight: bold; margin-bottom: 5px;">✅ Indicadores</div>
+                                <div style="font-size: 0.9rem;">Medición, análisis, tendencias de desempeño</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #00b894, #00cec9); padding: 25px; border-radius: 15px; margin: 20px 0; color: white;">
+                    <h3>🎪 Ejercicio Interactivo: Identificar No Conformidades</h3>
+                    <p>Analiza la siguiente situación y determina el tipo de hallazgo:</p>
+                    <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 10px; margin-top: 15px;">
+                        <div style="font-style: italic; margin-bottom: 15px;">
+                            "Durante la entrevista, el conductor menciona que no ha recibido capacitación sobre el nuevo procedimiento de reporte de incidentes implementado hace 6 meses. Al revisar los registros, se confirma que 15 de 50 conductores no han sido capacitados."
+                        </div>
+                        <div style="font-weight: bold;">¿Qué tipo de hallazgo es este y por qué?</div>
+                    </div>
+                </div>
+
+                <div class="quiz-section">
+                    <div class="quiz-question">Pregunta de Role-Play: ¿Cuál es la diferencia principal entre una No Conformidad Mayor y Menor?</div>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="selectQuizOption(this, false)">A) El número de personas afectadas</div>
+                        <div class="quiz-option" onclick="selectQuizOption(this, true)">B) La sistematicidad y impacto en el SGSV</div>
+                        <div class="quiz-option" onclick="selectQuizOption(this, false)">C) El costo de la corrección</div>
+                        <div class="quiz-option" onclick="selectQuizOption(this, false)">D) El tiempo para implementar la corrección</div>
+                    </div>
+                </div>
+
+                <div class="flashcard-container">
+                    <div class="flashcard" onclick="flipCard(this)">
+                        <div class="flashcard-content">
+                            <strong>Flash Card:</strong> Define 'No Conformidad'
+                        </div>
+                        <div class="flip-indicator">👆 Toca para voltear</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DOMINGO -->
+            <div id="domingo" class="day-content">
+                <h2 class="day-title">
+                    <span class="day-icon">😴</span>
+                    Domingo: Descanso y Síntesis
+                </h2>
+                
+                <div class="topic-section">
+                    <div class="topic-title">Consolidación del Conocimiento Normativo</div>
+                    <p>Tiempo para consolidar el conocimiento de las normas ISO 39001 e ISO 39002, y preparación conceptual para integrar el cumplimiento normativo como base para la IA en el próximo módulo.</p>
+                </div>
+
+                <div class="resources">
+                    <div class="resource-card">
+                        <div class="resource-type">📝 Repaso Semana 3</div>
+                        <h3>Síntesis de Normatividad ISO</h3>
+                        <p>Consolidación de los conceptos clave de las normas ISO de seguridad vial.</p>
+                        <ul>
+                            <li>Estructura de alto nivel y contexto organizacional</li>
+                            <li>Liderazgo, planificación y objetos de seguridad vial</li>
+                            <li>Operación, factores de desempeño y análisis de brechas</li>
+                            <li>Evaluación del desempeño y tipos de auditorías</li>
+                            <li>ISO 39002 como guía de implementación</li>
+                            <li>Role-play de auditoría y no conformidades</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="resource-card">
+                        <div class="resource-type">🔗 Integración de Conceptos</div>
+                        <h3>Conexión Normatividad-IA</h3>
+                        <p>Preparación para integrar el marco normativo con tecnologías de IA.</p>
+                        <ul>
+                            <li>Cumplimiento normativo como base para IA</li>
+                            <li>Datos estructurados según ISO 39001</li>
+                            <li>Indicadores normalizados para algoritmos</li>
+                            <li>Auditorías asistidas por tecnología</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="resource-card">
+                        <div class="resource-type">🔮 Próxima Semana</div>
+                        <h3>Preparación: IA Aplicada con Base Normativa</h3>
+                        <p>Preparación para el módulo final que integra IA con el marco normativo establecido.</p>
+                        <p><strong>Temas que veremos:</strong></p>
+                        <ul>
+                            <li>IA para cumplimiento normativo automatizado</li>
+                            <li>Sistemas inteligentes de auditoría</li>
+                            <li>Predicción de no conformidades</li>
+                            <li>Optimización de SGSV con IA</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #6c5ce7, #a29bfe); padding: 25px; border-radius: 15px; margin: 20px 0; color: white;">
+                    <h3>📋 Mapa Conceptual: ISO 39001</h3>
+                    <p>Visualización integrada de todos los elementos de la norma:</p>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                        <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; text-align: center;">
+                            <div style="font-weight: bold; margin-bottom: 5px;">Contexto (4)</div>
+                            <div style="font-size: 0.9rem;">Organización, partes interesadas, alcance</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; text-align: center;">
+                            <div style="font-weight: bold; margin-bottom: 5px;">Liderazgo (5)</div>
+                            <div style="font-size: 0.9rem;">Compromiso, política, roles</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; text-align: center;">
+                            <div style="font-weight: bold; margin-bottom: 5px;">Planificación (6)</div>
+                            <div style="font-size: 0.9rem;">Riesgos, objetivos, factores SV</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; text-align: center;">
+                            <div style="font-weight: bold; margin-bottom: 5px;">Soporte (7)</div>
+                            <div style="font-size: 0.9rem;">Recursos, competencia, comunicación</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; text-align: center;">
+                            <div style="font-weight: bold; margin-bottom: 5px;">Operación (8)</div>
+                            <div style="font-size: 0.9rem;">Control, emergencias, investigación</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; text-align: center;">
+                            <div style="font-weight: bold; margin-bottom: 5px;">Evaluación (9)</div>
+                            <div style="font-size: 0.9rem;">Monitoreo, auditoría, revisión</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; text-align: center;">
+                            <div style="font-weight: bold; margin-bottom: 5px;">Mejora (10)</div>
+                            <div style="font-size: 0.9rem;">No conformidades, mejora continua</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #fd79a8, #fdcb6e); padding: 25px; border-radius: 15px; margin: 20px 0; color: white;">
+                    <h3>🎯 Checklist de Competencias Adquiridas</h3>
+                    <p>Verifica tu dominio de los conceptos normativos:</p>
+                    <div style="margin-top: 15px;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                            <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px;">
+                                <div style="font-weight: bold; margin-bottom: 5px;">✅ Estructura ISO</div>
+                                <div style="font-size: 0.9rem;">Comprendo el Anexo SL y la estructura común</div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px;">
+                                <div style="font-weight: bold; margin-bottom: 5px;">✅ Objetos SV</div>
+                                <div style="font-size: 0.9rem;">Identifico exposición, resultados intermedios y finales</div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px;">
+                                <div style="font-weight: bold; margin-bottom: 5px;">✅ Auditorías</div>
+                                <div style="font-size: 0.9rem;">Distingo tipos de auditorías y no conformidades</div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px;">
+                                <div style="font-weight: bold; margin-bottom: 5px;">✅ ISO 39002</div>
+                                <div style="font-size: 0.9rem;">Entiendo su rol como guía no certificable</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #00b894, #00cec9); padding: 25px; border-radius: 15px; margin: 20px 0; color: white;">
+                    <h3>🔄 Reflexión: Normatividad como Base para IA</h3>
+                    <p>Considera cómo el marco normativo facilita la implementación de IA:</p>
+                    <div style="margin-top: 15px;">
+                        <ul style="font-size: 0.95rem; line-height: 1.6;">
+                            <li><strong>Datos estructurados:</strong> ISO 39001 define qué medir y cómo</li>
+                            <li><strong>Procesos estandarizados:</strong> Base para automatización inteligente</li>
+                            <li><strong>Indicadores normalizados:</strong> Entrada consistente para algoritmos</li>
+                            <li><strong>Mejora continua:</strong> Ciclo PHVA compatible con ML</li>
+                            <li><strong>Auditorías sistemáticas:</strong> Oportunidad para IA de apoyo</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #74b9ff, #0984e3); padding: 25px; border-radius: 15px; margin: 20px 0; color: white;">
+                    <h3>💭 Reflexión Personal</h3>
+                    <p>Tómate un momento para reflexionar sobre tu aprendizaje normativo:</p>
+                    <div style="margin-top: 15px;">
+                        <ul>
+                            <li>¿Cómo cambió tu percepción de las normas ISO?</li>
+                            <li>¿Qué aspectos de ISO 39001 son más relevantes para tu organización?</li>
+                            <li>¿Cómo podrías aplicar los conceptos de auditoría en tu trabajo?</li>
+                            <li>¿Qué oportunidades ves para integrar normatividad con tecnología?</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div style="text-align: center; padding: 30px; background: linear-gradient(135deg, #a8edea, #fed6e3); border-radius: 15px; margin: 20px 0;">
+                    <h3>🎉 ¡Dominio Normativo Completado!</h3>
+                    <p>Has completado exitosamente la tercera semana, dominando las normas ISO 39001 e ISO 39002. Ahora tienes una base sólida para integrar el cumplimiento normativo con tecnologías de IA.</p>
+                    <div style="margin-top: 15px; font-size: 1.1rem;">
+                        <strong>Próximo módulo:</strong> IA Aplicada con Base Normativa 🤖📋
+                    </div>
+                    <div style="margin-top: 10px; font-size: 0.9rem; opacity: 0.9;">
+                        El cumplimiento normativo como fundamento para la innovación tecnológica
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const flashcardAnswers = {
+            'lunes': 'El propósito de la ISO 39001 es proporcionar un marco sistemático para que las organizaciones reduzcan las muertes y lesiones graves derivadas de accidentes de tránsito. Establece requisitos para un Sistema de Gestión de Seguridad Vial (SGSV) que permite identificar, evaluar y controlar los riesgos de seguridad vial de manera proactiva y continua.',
+            'martes': 'Un Objeto de Seguridad Vial es un resultado cuantificable relacionado con la seguridad vial que la organización busca lograr. Se clasifican en tres tipos: 1) Exposición (velocidad, volumen de tráfico, distancia), 2) Resultado Intermedio (número y severidad de accidentes), 3) Resultado Final (muertes y lesiones graves). Estos objetos guían la planificación y medición del desempeño.',
+            'miercoles': 'Los tres factores clave de desempeño en seguridad vial son: 1) Exposición al Riesgo (velocidad, volumen de tráfico, distancia recorrida, tiempo de exposición), 2) Probabilidad de Accidente (factores del conductor, vehículo y vía que aumentan la probabilidad de siniestros), 3) Severidad del Impacto (factores que determinan la gravedad de las lesiones en caso de accidente).',
+            'jueves': 'Existen tres tipos de auditorías: 1) Primera Parte (Auditoría Interna): Realizada por la propia organización para evaluar su SGSV, 2) Segunda Parte (Auditoría de Cliente): Realizada por partes interesadas externas como clientes o socios, 3) Tercera Parte (Auditoría Externa): Realizada por organismos certificadores independientes para otorgar certificación ISO 39001.',
+            'viernes': 'La ISO 39002 NO es certificable porque es una norma de directrices, no de requisitos. Su propósito es proporcionar orientación práctica, ejemplos y herramientas para facilitar la implementación de ISO 39001. Mientras que ISO 39001 establece requisitos obligatorios auditables, ISO 39002 ofrece recomendaciones y mejores prácticas de apoyo.',
+            'sabado': 'Una No Conformidad es el incumplimiento de un requisito especificado en la norma ISO 39001. Se define como la no satisfacción de un requisito del sistema de gestión, ya sea documentado en la norma, en los procedimientos de la organización, o en requisitos legales aplicables. Las no conformidades pueden ser Mayores (fallas sistemáticas) o Menores (desviaciones aisladas).'
+        };
+
+        function showDay(day) {
+            // Hide all day contents
+            const dayContents = document.querySelectorAll('.day-content');
+            dayContents.forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Remove active class from all buttons
+            const dayButtons = document.querySelectorAll('.day-btn');
+            dayButtons.forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected day content
+            document.getElementById(day).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+
+            // Update progress bar
+            const days = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
+            const dayIndex = days.indexOf(day);
+            const progress = ((dayIndex + 1) / days.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function flipCard(card) {
+            const content = card.querySelector('.flashcard-content');
+            const currentDay = document.querySelector('.day-content.active').id;
+            
+            if (card.classList.contains('flipped')) {
+                // Show question
+                content.innerHTML = '<strong>Flash Card:</strong> ' + getQuestionForDay(currentDay);
+                card.classList.remove('flipped');
+            } else {
+                // Show answer
+                content.innerHTML = '<strong>Respuesta:</strong> ' + flashcardAnswers[currentDay];
+                card.classList.add('flipped');
+            }
+        }
+
+        function getQuestionForDay(day) {
+            const questions = {
+                'lunes': '¿Cuál es el propósito de la ISO 39001?',
+                'martes': '¿Qué es un \'Objeto de Seguridad Vial\' en la 39001?',
+                'miercoles': 'Menciona 3 factores clave de desempeño en SV',
+                'jueves': '¿Qué tipos de auditorías existen?',
+                'viernes': 'La 39002 ¿es certificable? ¿Por qué?',
+                'sabado': 'Define \'No Conformidad\''
+            };
+            return questions[day];
+        }
+
+        function showRiskInfo(riskLevel) {
+            const messages = {
+                'low': 'Riesgo Bajo: Monitoreo rutinario suficiente',
+                'medium': 'Riesgo Medio: Requiere atención y medidas preventivas',
+                'high': 'Riesgo Alto: Acción inmediata requerida',
+                'critical': 'Riesgo Crítico: Intervención urgente necesaria'
+            };
+            
+            // Create temporary message
+            const message = document.createElement('div');
+            message.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: #2d3436;
+                color: white;
+                padding: 20px;
+                border-radius: 10px;
+                z-index: 1000;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            `;
+            message.textContent = messages[riskLevel];
+            document.body.appendChild(message);
+            
+            setTimeout(() => {
+                document.body.removeChild(message);
+            }, 2000);
+        }
+
+        function selectQuizOption(option, isCorrect) {
+            // Remove previous selections
+            const options = option.parentNode.querySelectorAll('.quiz-option');
+            options.forEach(opt => {
+                opt.classList.remove('correct', 'incorrect');
+            });
+            
+            // Mark selected option
+            if (isCorrect) {
+                option.classList.add('correct');
+            } else {
+                option.classList.add('incorrect');
+                // Also show the correct answer
+                options.forEach(opt => {
+                    if (opt.textContent.includes('B)')) {
+                        opt.classList.add('correct');
+                    }
+                });
+            }
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9956905b70acb6f2',t:'MTc2MTYxMzkzNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
