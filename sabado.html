@@ -1,0 +1,2526 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sábado: Buenas Prácticas y Auditorías en Seguridad Vial</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100%;
+            color: #2d3748;
+            line-height: 1.8;
+            font-size: 16px;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(25px);
+            border-radius: 28px;
+            padding: 50px 40px;
+            margin-bottom: 40px;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.08);
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0 0 25px 0;
+            letter-spacing: -0.01em;
+            line-height: 1.2;
+        }
+
+        .header .subtitle {
+            font-size: 1.4rem;
+            color: #5a6c7d;
+            margin: 0 0 30px 0;
+            font-weight: 400;
+            line-height: 1.6;
+        }
+
+        .progress-container {
+            background: #e2e8f0;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            height: 100%;
+            width: 100%;
+            border-radius: 4px;
+            animation: progressFill 2s ease-out;
+        }
+
+        @keyframes progressFill {
+            from { width: 0%; }
+            to { width: 100%; }
+        }
+
+        /* Barra superior horizontal */
+        .top-bar {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .timer-card {
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            color: white;
+            padding: 30px;
+            border-radius: 28px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(102,126,234,0.3);
+            border: 3px solid rgba(255,255,255,0.2);
+        }
+
+        .timer-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .timer-card p {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .timer-display {
+            font-size: 3rem;
+            font-weight: 800;
+            margin: 15px 0;
+            font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .start-btn {
+            background: rgba(255,255,255,0.25);
+            border: 2px solid rgba(255,255,255,0.4);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(15px);
+            font-size: 1.05rem;
+        }
+
+        .start-btn:hover {
+            background: rgba(255,255,255,0.35);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .module-nav {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(25px);
+            border-radius: 28px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .module-nav h4 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: #1a202c;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+
+        .module-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px 10px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            background: rgba(248,250,252,0.5);
+            text-align: center;
+        }
+
+        .module-item:hover {
+            background: rgba(102,126,234,0.1);
+            border-color: #667eea;
+            transform: translateY(-3px);
+        }
+
+        .module-item.active {
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            color: white;
+            box-shadow: 0 10px 25px rgba(102,126,234,0.3);
+        }
+
+        .module-icon {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .module-title {
+            font-weight: 600;
+            font-size: 0.85rem;
+            line-height: 1.2;
+        }
+
+        .lesson-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .main-content {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(25px);
+            border-radius: 28px;
+            padding: 50px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.08);
+            border: 2px solid rgba(255,255,255,0.3);
+            position: relative;
+            min-height: 700px;
+        }
+
+        .story-page {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .story-page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .page-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            color: white;
+            border: none;
+            padding: 18px 35px;
+            border-radius: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            box-shadow: 0 8px 20px rgba(102,126,234,0.3);
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(102,126,234,0.4);
+            filter: brightness(1.1);
+        }
+
+        .nav-btn:disabled {
+            background: linear-gradient(135deg, #cbd5e0, #a0aec0);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .page-indicators {
+            display: flex;
+            gap: 10px;
+        }
+
+        .page-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #cbd5e0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .page-dot.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            transform: scale(1.2);
+        }
+
+        .story-header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 40px;
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border-radius: 24px;
+            border: 3px solid transparent;
+            background-clip: padding-box;
+            position: relative;
+        }
+
+        .story-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            border-radius: 24px;
+            padding: 3px;
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: exclude;
+            z-index: -1;
+        }
+
+        .story-title {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 20px;
+            line-height: 1.3;
+        }
+
+        .story-subtitle {
+            font-size: 1.3rem;
+            color: #4a5568;
+            font-style: italic;
+            font-weight: 400;
+            line-height: 1.6;
+        }
+
+        .character-intro {
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            padding: 35px;
+            border-radius: 24px;
+            margin: 40px 0;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+            border: 2px solid rgba(102,126,234,0.1);
+        }
+
+        .character-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            margin-right: 30px;
+            flex-shrink: 0;
+            box-shadow: 0 10px 25px rgba(102,126,234,0.3);
+        }
+
+        .character-info h3 {
+            margin: 0 0 15px 0;
+            color: #1a202c;
+            font-size: 1.6rem;
+            font-weight: 600;
+        }
+
+        .character-info p {
+            margin: 0;
+            color: #4a5568;
+            line-height: 1.8;
+            font-size: 1.05rem;
+        }
+
+        .story-content {
+            font-size: 1.15rem;
+            line-height: 2;
+            color: #2d3748;
+            text-align: justify;
+        }
+
+        .story-content p {
+            margin-bottom: 30px;
+            text-indent: 2em;
+        }
+
+        .story-content p:first-of-type {
+            text-indent: 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .quote-box {
+            background: linear-gradient(135deg, #e6fffa, #f0fff4);
+            border: 3px solid transparent;
+            background-clip: padding-box;
+            padding: 35px;
+            margin: 40px 0;
+            border-radius: 20px;
+            font-style: italic;
+            font-size: 1.2rem;
+            color: #2d3748;
+            position: relative;
+            text-align: center;
+            line-height: 1.8;
+        }
+
+        .quote-box::before {
+            content: '"';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            font-size: 4rem;
+            color: #48bb78;
+            font-family: serif;
+        }
+
+        .quote-box::after {
+            content: '"';
+            position: absolute;
+            bottom: -30px;
+            right: 20px;
+            font-size: 4rem;
+            color: #48bb78;
+            font-family: serif;
+        }
+
+        .eureka-moment {
+            background: linear-gradient(135deg, #fff7ed, #fed7aa);
+            border: 3px solid #f6ad55;
+            padding: 35px;
+            border-radius: 24px;
+            margin: 40px 0;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(246,173,85,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .eureka-moment::before {
+            content: '✨';
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 2rem;
+            animation: sparkle 2s infinite;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.2) rotate(180deg); }
+        }
+
+        .eureka-moment h4 {
+            color: #c05621;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .eureka-moment p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin: 0;
+        }
+
+        .learning-objectives {
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            padding: 40px;
+            border-radius: 24px;
+            margin: 40px 0;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+            border: 2px solid rgba(102,126,234,0.1);
+        }
+
+        .learning-objectives h4 {
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .learning-objectives ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .learning-objectives li {
+            padding: 20px 0;
+            border-bottom: 2px solid #e2e8f0;
+            color: #4a5568;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            transition: all 0.3s ease;
+        }
+
+        .learning-objectives li:hover {
+            background: rgba(102,126,234,0.05);
+            padding-left: 20px;
+            border-radius: 12px;
+        }
+
+        .learning-objectives li:last-child {
+            border-bottom: none;
+        }
+
+        .learning-objectives li::before {
+            content: '🎯';
+            margin-right: 15px;
+            font-size: 1.2rem;
+        }
+
+        /* International Standards Grid */
+        .standards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
+        }
+
+        .standard-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .standard-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+
+        .standard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+        }
+
+        .un-card::before {
+            background: linear-gradient(90deg, #4299e1, #3182ce);
+        }
+
+        .oecd-card::before {
+            background: linear-gradient(90deg, #48bb78, #38a169);
+        }
+
+        .iso-card::before {
+            background: linear-gradient(90deg, #ed8936, #dd6b20);
+        }
+
+        .who-card::before {
+            background: linear-gradient(90deg, #e53e3e, #c53030);
+        }
+
+        .standard-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .standard-icon {
+            font-size: 2.5rem;
+            margin-right: 15px;
+        }
+
+        .standard-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .standard-description {
+            color: #4a5568;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .standard-examples {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 15px;
+        }
+
+        .standard-examples h5 {
+            color: #2d3748;
+            margin: 0 0 15px 0;
+            font-size: 1rem;
+        }
+
+        .standard-examples ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .standard-examples li {
+            padding: 6px 0;
+            color: #4a5568;
+            font-size: 0.9rem;
+        }
+
+        .standard-examples li::before {
+            content: '•';
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        /* PHVA Cycle */
+        .phva-cycle {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 40px 0;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .phva-step {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .phva-step:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+
+        .phva-step::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+        }
+
+        .plan-step::before {
+            background: linear-gradient(90deg, #4299e1, #3182ce);
+        }
+
+        .do-step::before {
+            background: linear-gradient(90deg, #48bb78, #38a169);
+        }
+
+        .check-step::before {
+            background: linear-gradient(90deg, #ed8936, #dd6b20);
+        }
+
+        .act-step::before {
+            background: linear-gradient(90deg, #e53e3e, #c53030);
+        }
+
+        .phva-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .phva-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+
+        .phva-description {
+            color: #4a5568;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Audit Process */
+        .audit-process {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border-radius: 24px;
+            padding: 40px;
+            margin: 40px 0;
+            border: 2px solid rgba(102,126,234,0.1);
+        }
+
+        .audit-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .audit-step {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+
+        .audit-step:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+        }
+
+        .audit-step-number {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin: 0 auto 15px auto;
+        }
+
+        .audit-step-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .audit-step-desc {
+            color: #4a5568;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* Interactive Tools */
+        .interactive-tool {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 40px 0;
+            box-shadow: 0 15px 35px rgba(102,126,234,0.3);
+        }
+
+        .tool-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            font-size: 0.9rem;
+            backdrop-filter: blur(10px);
+            margin-bottom: 15px;
+        }
+
+        .tool-input::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+
+        .tool-btn {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.4);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(15px);
+            margin: 10px 5px;
+        }
+
+        .tool-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .tool-result {
+            background: rgba(255,255,255,0.15);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .horizontal-nav-item {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: #4a5568;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            backdrop-filter: blur(15px);
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .horizontal-nav-item:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: rgba(102,126,234,0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102,126,234,0.2);
+        }
+
+        .horizontal-nav-item.active {
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 8px 25px rgba(102,126,234,0.3);
+        }
+
+        /* Flash Cards */
+        .flashcard-container {
+            perspective: 1000px;
+            margin: 30px 0;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 200px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            cursor: pointer;
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-front, .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .flashcard-front {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .flashcard-back {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+            transform: rotateY(180deg);
+        }
+
+        @media (max-width: 1024px) {
+            .top-bar {
+                grid-template-columns: 1fr;
+            }
+            
+            .standards-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .phva-cycle {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .main-content {
+                padding: 30px 20px;
+            }
+            
+            .story-title {
+                font-size: 2rem;
+            }
+
+            .horizontal-nav-item {
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+
+            .phva-cycle {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🌍 Buenas Prácticas y Auditorías en Seguridad Vial</h1>
+            <p class="subtitle">Sábado - Semana 1: Estándares Internacionales y Metodologías de Auditoría</p>
+            
+            <!-- Menú horizontal de navegación -->
+            <div style="display: flex; justify-content: center; gap: 15px; margin: 25px 0; flex-wrap: wrap;">
+                <div class="horizontal-nav-item active" onclick="goToPage(1)" data-page="1">
+                    <span style="font-size: 1.2rem; margin-right: 8px;">🌍</span>
+                    <span style="font-weight: 600; font-size: 0.9rem;">Estándares ONU</span>
+                </div>
+                <div class="horizontal-nav-item" onclick="goToPage(2)" data-page="2">
+                    <span style="font-size: 1.2rem; margin-right: 8px;">📊</span>
+                    <span style="font-weight: 600; font-size: 0.9rem;">OCDE & ISO</span>
+                </div>
+                <div class="horizontal-nav-item" onclick="goToPage(3)" data-page="3">
+                    <span style="font-size: 1.2rem; margin-right: 8px;">🔄</span>
+                    <span style="font-weight: 600; font-size: 0.9rem;">Ciclo PHVA</span>
+                </div>
+                <div class="horizontal-nav-item" onclick="goToPage(4)" data-page="4">
+                    <span style="font-size: 1.2rem; margin-right: 8px;">🔍</span>
+                    <span style="font-weight: 600; font-size: 0.9rem;">Auditorías</span>
+                </div>
+                <div class="horizontal-nav-item" onclick="goToPage(5)" data-page="5">
+                    <span style="font-size: 1.2rem; margin-right: 8px;">📋</span>
+                    <span style="font-weight: 600; font-size: 0.9rem;">Inspecciones</span>
+                </div>
+                <div class="horizontal-nav-item" onclick="goToPage(6)" data-page="6">
+                    <span style="font-size: 1.2rem; margin-right: 8px;">🎯</span>
+                    <span style="font-weight: 600; font-size: 0.9rem;">Práctica</span>
+                </div>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar"></div>
+            </div>
+        </header>
+
+        <div class="top-bar">
+            <div class="timer-card">
+                <h3>⏱️ Tiempo de Sesión</h3>
+                <p>Duración estimada del microcurso</p>
+                <div class="timer-display" id="timerDisplay">25:00</div>
+                <button class="start-btn" onclick="startMicrocourse()">Iniciar Microcurso</button>
+            </div>
+            
+            <div class="module-nav">
+                <h4>📚 Navegación del Curso</h4>
+                <div class="nav-grid">
+                    <div class="module-item" onclick="goToPage(1)">
+                        <div class="module-icon">🌍</div>
+                        <div class="module-title">Estándares ONU</div>
+                    </div>
+                    <div class="module-item" onclick="goToPage(2)">
+                        <div class="module-icon">📊</div>
+                        <div class="module-title">OCDE & ISO</div>
+                    </div>
+                    <div class="module-item" onclick="goToPage(3)">
+                        <div class="module-icon">🔄</div>
+                        <div class="module-title">Ciclo PHVA</div>
+                    </div>
+                    <div class="module-item" onclick="goToPage(4)">
+                        <div class="module-icon">🔍</div>
+                        <div class="module-title">Auditorías</div>
+                    </div>
+                    <div class="module-item" onclick="goToPage(5)">
+                        <div class="module-icon">📋</div>
+                        <div class="module-title">Inspecciones</div>
+                    </div>
+                    <div class="module-item" onclick="goToPage(6)">
+                        <div class="module-icon">🎯</div>
+                        <div class="module-title">Aplicación Práctica</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="lesson-grid">
+            <main class="main-content">
+                <!-- Página 1: Estándares ONU -->
+                <div id="page1" class="story-page active">
+                    <div class="story-header">
+                        <h2 class="story-title">🌍 Estándares Internacionales ONU</h2>
+                        <p class="story-subtitle">Capítulo 1: Ana descubre los marcos globales de seguridad vial</p>
+                    </div>
+
+                    <div class="character-intro">
+                        <div class="character-avatar">👩‍🌍</div>
+                        <div class="character-info">
+                            <h3>Ana Rodríguez - Preparación Módulo 2</h3>
+                            <p>En su último día de la primera semana, Ana debe prepararse para el Módulo 2 estudiando las mejores prácticas internacionales. Descubre que existe un ecosistema global de estándares y metodologías que guían la seguridad vial mundial.</p>
+                        </div>
+                    </div>
+
+                    <div class="story-content">
+                        <p>Era sábado por la mañana cuando Ana recibió un correo de su supervisor: "Ana, para el Módulo 2 necesitas conocer los estándares internacionales. Comienza con los marcos de la ONU, son la base de todo lo que hacemos en seguridad vial global."</p>
+
+                        <div class="quote-box">
+                            "Los estándares internacionales no son solo documentos técnicos, son el resultado de décadas de investigación, experiencia y vidas salvadas. Cada recomendación tiene detrás miles de historias de éxito."
+                        </div>
+
+                        <p>Ana descubrió que la Organización de las Naciones Unidas ha desarrollado un marco integral para la seguridad vial que incluye desde objetivos globales hasta metodologías específicas de implementación.</p>
+                    </div>
+
+                    <div class="standards-grid">
+                        <div class="standard-card un-card">
+                            <div class="standard-header">
+                                <span class="standard-icon">🎯</span>
+                                <h4 class="standard-name">Objetivos de Desarrollo Sostenible</h4>
+                            </div>
+                            <p class="standard-description">Meta 3.6: Reducir a la mitad las muertes y lesiones por accidentes de tráfico para 2030.</p>
+                            <div class="standard-examples">
+                                <h5>🎯 Componentes Clave:</h5>
+                                <ul>
+                                    <li>Reducción del 50% en muertes viales para 2030</li>
+                                    <li>Enfoque en usuarios vulnerables (peatones, ciclistas)</li>
+                                    <li>Integración con sistemas de salud pública</li>
+                                    <li>Monitoreo y reporte sistemático de avances</li>
+                                    <li>Cooperación internacional y transferencia de conocimiento</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="standard-card un-card">
+                            <div class="standard-header">
+                                <span class="standard-icon">🛡️</span>
+                                <h4 class="standard-name">Plan Mundial para el Decenio de Acción</h4>
+                            </div>
+                            <p class="standard-description">Estrategia integral 2021-2030 basada en el enfoque de Sistema Seguro.</p>
+                            <div class="standard-examples">
+                                <h5>🎯 Pilares Fundamentales:</h5>
+                                <ul>
+                                    <li>Gestión de la seguridad vial (liderazgo y coordinación)</li>
+                                    <li>Vías de tránsito y movilidad más seguras</li>
+                                    <li>Vehículos más seguros y tecnología protectora</li>
+                                    <li>Usuarios de las vías más seguros</li>
+                                    <li>Respuesta tras los accidentes y rehabilitación</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="standard-card un-card">
+                            <div class="standard-header">
+                                <span class="standard-icon">📋</span>
+                                <h4 class="standard-name">Convenios y Acuerdos Internacionales</h4>
+                            </div>
+                            <p class="standard-description">Marco legal internacional que establece estándares mínimos para la seguridad vial.</p>
+                            <div class="standard-examples">
+                                <h5>🎯 Principales Instrumentos:</h5>
+                                <ul>
+                                    <li>Convenio de Viena sobre Circulación Vial (1968)</li>
+                                    <li>Convenio de Viena sobre Señalización Vial (1968)</li>
+                                    <li>Acuerdo Europeo sobre Señalización Vial (1971)</li>
+                                    <li>Reglamentos técnicos mundiales de vehículos</li>
+                                    <li>Directrices para infraestructura vial segura</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="standard-card un-card">
+                            <div class="standard-header">
+                                <span class="standard-icon">📊</span>
+                                <h4 class="standard-name">Sistema de Monitoreo Global</h4>
+                            </div>
+                            <p class="standard-description">Metodologías estandarizadas para medir, reportar y comparar el desempeño en seguridad vial.</p>
+                            <div class="standard-examples">
+                                <h5>🎯 Indicadores Clave:</h5>
+                                <ul>
+                                    <li>Tasa de mortalidad por 100,000 habitantes</li>
+                                    <li>Muertes por 10,000 vehículos registrados</li>
+                                    <li>Índice de seguridad por tipo de usuario</li>
+                                    <li>Cumplimiento de legislación de seguridad</li>
+                                    <li>Inversión en infraestructura segura</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flashcard-container">
+                        <div class="flashcard" onclick="flipCard(this)">
+                            <div class="flashcard-front">
+                                <div>
+                                    <h3 style="margin-bottom: 20px;">🤔 Flash Card</h3>
+                                    <p style="font-size: 1.2rem; font-weight: 600;">¿Cuál es el estándar de seguridad vial globalmente más reconocido de la ONU?</p>
+                                    <p style="font-size: 0.9rem; opacity: 0.8; margin-top: 20px;">Haz clic para ver la respuesta</p>
+                                </div>
+                            </div>
+                            <div class="flashcard-back">
+                                <div>
+                                    <h3 style="margin-bottom: 15px;">✅ Respuesta</h3>
+                                    <p style="font-size: 1.1rem; font-weight: 600; margin-bottom: 15px;">El Plan Mundial para el Decenio de Acción para la Seguridad Vial 2021-2030</p>
+                                    <p style="font-size: 0.95rem;">Basado en el enfoque de Sistema Seguro, establece los 5 pilares fundamentales para reducir las muertes viales en un 50% para 2030.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="eureka-moment">
+                        <h4>💡 Descubrimiento Clave</h4>
+                        <p>"Los estándares de la ONU no son solo recomendaciones, son el resultado de consensos globales basados en evidencia científica. Implementar estos marcos significa adoptar las mejores prácticas mundiales probadas en diferentes contextos y culturas."</p>
+                    </div>
+                </div>
+
+                <!-- Página 2: OCDE & ISO -->
+                <div id="page2" class="story-page">
+                    <div class="story-header">
+                        <h2 class="story-title">📊 Estándares OCDE e ISO</h2>
+                        <p class="story-subtitle">Capítulo 2: Metodologías técnicas y económicas especializadas</p>
+                    </div>
+
+                    <div class="story-content">
+                        <p>Continuando su investigación, Ana descubrió que además de los marcos de la ONU, existen organizaciones especializadas que desarrollan estándares técnicos y metodológicos más específicos para la implementación práctica de la seguridad vial.</p>
+
+                        <div class="quote-box">
+                            "La OCDE aporta la perspectiva económica y de políticas públicas, mientras que ISO proporciona los estándares técnicos. Juntos crean un ecosistema completo para la implementación efectiva de la seguridad vial."
+                        </div>
+                    </div>
+
+                    <div class="standards-grid">
+                        <div class="standard-card oecd-card">
+                            <div class="standard-header">
+                                <span class="standard-icon">💰</span>
+                                <h4 class="standard-name">OCDE - Análisis Económico</h4>
+                            </div>
+                            <p class="standard-description">Metodologías para evaluar el costo-beneficio de intervenciones en seguridad vial y políticas públicas efectivas.</p>
+                            <div class="standard-examples">
+                                <h5>🎯 Herramientas Principales:</h5>
+                                <ul>
+                                    <li>Análisis costo-beneficio de medidas de seguridad</li>
+                                    <li>Valoración económica de vidas salvadas</li>
+                                    <li>Metodologías de evaluación de políticas</li>
+                                    <li>Indicadores de desempeño económico</li>
+                                    <li>Benchmarking internacional de inversiones</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="standard-card oecd-card">
+                            <div class="standard-header">
+                                <span class="standard-icon">📈</span>
+                                <h4 class="standard-name">OCDE - Indicadores de Desempeño</h4>
+                            </div>
+                            <p class="standard-description">Sistema integral de métricas para monitorear y comparar el desempeño en seguridad vial entre países.</p>
+                            <div class="standard-examples">
+                                <h5>🎯 Métricas Clave:</h5>
+                                <ul>
+                                    <li>Indicadores de exposición al riesgo</li>
+                                    <li>Métricas de comportamiento de usuarios</li>
+                                    <li>Indicadores de calidad de infraestructura</li>
+                                    <li>Medidas de efectividad de políticas</li>
+                                    <li>Índices de seguridad vehicular</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="standard-card iso-card">
+                            <div class="standard-header">
+                                <span class="standard-icon">⚙️</span>
+                                <h4 class="standard-name">ISO 39001 - Sistemas de Gestión</h4>
+                            </div>
+                            <p class="standard-description">Estándar internacional para sistemas de gestión de seguridad vial en organizaciones.</p>
+                            <div class="standard-examples">
+                                <h5>🎯 Componentes del Sistema:</h5>
+                                <ul>
+                                    <li>Política y objetivos de seguridad vial</li>
+                                    <li>Planificación basada en riesgos</li>
+                                    <li>Implementación y operación controlada</li>
+                                    <li>Monitoreo y medición de desempeño</li>
+                                    <li>Mejora continua del sistema</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="standard-card iso-card">
+                            <div class="standard-header">
+                                <span class="standard-icon">🛣️</span>
+                                <h4 class="standard-name">ISO - Estándares Técnicos</h4>
+                            </div>
+                            <p class="standard-description">Especificaciones técnicas para infraestructura, señalización y sistemas de seguridad vial.</p>
+                            <div class="standard-examples">
+                                <h5>🎯 Áreas Técnicas:</h5>
+                                <ul>
+                                    <li>Especificaciones de señalización vial</li>
+                                    <li>Estándares de barreras de seguridad</li>
+                                    <li>Sistemas inteligentes de transporte</li>
+                                    <li>Materiales y durabilidad de infraestructura</li>
+                                    <li>Protocolos de ensayo y certificación</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="interactive-tool">
+                        <h4 style="margin-bottom: 20px;">📊 Calculadora de Análisis Costo-Beneficio OCDE</h4>
+                        
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Tipo de intervención:</label>
+                        <select class="tool-input" id="interventionType">
+                            <option value="">Seleccionar intervención</option>
+                            <option value="infrastructure">Mejora de infraestructura</option>
+                            <option value="enforcement">Programa de enforcement</option>
+                            <option value="education">Campaña educativa</option>
+                            <option value="technology">Implementación tecnológica</option>
+                            <option value="legislation">Nueva legislación</option>
+                        </select>
+                        
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Costo de implementación (USD):</label>
+                        <input type="number" class="tool-input" id="implementationCost" placeholder="Costo total de la intervención">
+                        
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Población beneficiada:</label>
+                        <input type="number" class="tool-input" id="beneficiaryPopulation" placeholder="Número de personas beneficiadas">
+                        
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Reducción esperada de accidentes (%):</label>
+                        <input type="number" class="tool-input" id="accidentReduction" placeholder="Porcentaje de reducción esperado">
+                        
+                        <button class="tool-btn" onclick="calculateCostBenefit()">📈 Calcular Costo-Beneficio</button>
+                        
+                        <div id="costBenefitResult" class="tool-result" style="display: none;">
+                            <h5 style="margin-bottom: 15px;">📊 Análisis Costo-Beneficio OCDE</h5>
+                            <div id="costBenefitContent"></div>
+                        </div>
+                    </div>
+
+                    <div class="learning-objectives">
+                        <h4>🎯 Ventajas de los Estándares OCDE e ISO:</h4>
+                        <ul>
+                            <li>Metodologías probadas para justificar inversiones en seguridad vial</li>
+                            <li>Sistemas de gestión certificables internacionalmente</li>
+                            <li>Herramientas de benchmarking con mejores prácticas globales</li>
+                            <li>Especificaciones técnicas detalladas para implementación</li>
+                            <li>Marco para la mejora continua y la innovación</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Página 3: Ciclo PHVA -->
+                <div id="page3" class="story-page">
+                    <div class="story-header">
+                        <h2 class="story-title">🔄 Ciclo PHVA en Seguridad Vial</h2>
+                        <p class="story-subtitle">Capítulo 3: Metodología de mejora continua aplicada</p>
+                    </div>
+
+                    <div class="story-content">
+                        <p>Ana descubrió que todos los estándares internacionales comparten una metodología común: el ciclo PHVA (Planificar, Hacer, Verificar, Actuar). Esta metodología, originalmente desarrollada por Deming, se ha convertido en la base de la gestión moderna de seguridad vial.</p>
+
+                        <div class="quote-box">
+                            "El ciclo PHVA no es solo una metodología, es una filosofía de mejora continua. En seguridad vial, cada ciclo completo significa vidas salvadas y comunidades más seguras."
+                        </div>
+                    </div>
+
+                    <div class="phva-cycle">
+                        <div class="phva-step plan-step" onclick="showPHVADetails('plan')">
+                            <div class="phva-icon">📋</div>
+                            <h4 class="phva-title">PLANIFICAR</h4>
+                            <p class="phva-description">Identificar problemas, establecer objetivos y desarrollar estrategias basadas en datos y evidencia.</p>
+                        </div>
+
+                        <div class="phva-step do-step" onclick="showPHVADetails('do')">
+                            <div class="phva-icon">⚡</div>
+                            <h4 class="phva-title">HACER</h4>
+                            <p class="phva-description">Implementar las medidas planificadas de manera controlada y sistemática.</p>
+                        </div>
+
+                        <div class="phva-step check-step" onclick="showPHVADetails('check')">
+                            <div class="phva-icon">📊</div>
+                            <h4 class="phva-title">VERIFICAR</h4>
+                            <p class="phva-description">Monitorear y evaluar los resultados comparándolos con los objetivos establecidos.</p>
+                        </div>
+
+                        <div class="phva-step act-step" onclick="showPHVADetails('act')">
+                            <div class="phva-icon">🔄</div>
+                            <h4 class="phva-title">ACTUAR</h4>
+                            <p class="phva-description">Tomar acciones correctivas y de mejora basadas en los resultados de la verificación.</p>
+                        </div>
+                    </div>
+
+                    <div class="flashcard-container">
+                        <div class="flashcard" onclick="flipCard(this)">
+                            <div class="flashcard-front">
+                                <div>
+                                    <h3 style="margin-bottom: 20px;">🤔 Flash Card</h3>
+                                    <p style="font-size: 1.2rem; font-weight: 600;">¿Qué es el ciclo PHVA en Seguridad Vial?</p>
+                                    <p style="font-size: 0.9rem; opacity: 0.8; margin-top: 20px;">Haz clic para ver la respuesta</p>
+                                </div>
+                            </div>
+                            <div class="flashcard-back">
+                                <div>
+                                    <h3 style="margin-bottom: 15px;">✅ Respuesta</h3>
+                                    <p style="font-size: 1.1rem; font-weight: 600; margin-bottom: 15px;">Metodología de mejora continua: Planificar, Hacer, Verificar, Actuar</p>
+                                    <p style="font-size: 0.95rem;">Ciclo sistemático que permite identificar problemas, implementar soluciones, evaluar resultados y mejorar continuamente la seguridad vial.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="interactive-tool">
+                        <h4 style="margin-bottom: 20px;">🔄 Generador de Plan PHVA</h4>
+                        
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Problema de seguridad vial identificado:</label>
+                        <textarea class="tool-input" id="phvaProblem" rows="3" placeholder="Describe el problema específico que quieres abordar..."></textarea>
+                        
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Objetivo específico y medible:</label>
+                        <input type="text" class="tool-input" id="phvaObjective" placeholder="Ej: Reducir accidentes en 30% en 12 meses">
+                        
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Recursos disponibles:</label>
+                        <select class="tool-input" id="phvaResources">
+                            <option value="">Seleccionar nivel de recursos</option>
+                            <option value="limitados">Recursos limitados</option>
+                            <option value="moderados">Recursos moderados</option>
+                            <option value="amplios">Recursos amplios</option>
+                        </select>
+                        
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Plazo de implementación:</label>
+                        <select class="tool-input" id="phvaTimeframe">
+                            <option value="">Seleccionar plazo</option>
+                            <option value="3meses">3 meses</option>
+                            <option value="6meses">6 meses</option>
+                            <option value="12meses">12 meses</option>
+                            <option value="24meses">24 meses</option>
+                        </select>
+                        
+                        <button class="tool-btn" onclick="generatePHVAPlan()">🚀 Generar Plan PHVA</button>
+                        
+                        <div id="phvaResult" class="tool-result" style="display: none;">
+                            <h5 style="margin-bottom: 15px;">📋 Plan PHVA Personalizado</h5>
+                            <div id="phvaContent"></div>
+                        </div>
+                    </div>
+
+                    <div class="eureka-moment">
+                        <h4>💡 Poder del Ciclo PHVA</h4>
+                        <p>"El ciclo PHVA transforma la gestión de seguridad vial de reactiva a proactiva. No esperamos que ocurran accidentes para actuar, sino que mejoramos continuamente basándonos en datos y evidencia científica."</p>
+                    </div>
+                </div>
+
+                <!-- Página 4: Auditorías de Seguridad Vial -->
+                <div id="page4" class="story-page">
+                    <div class="story-header">
+                        <h2 class="story-title">🔍 Auditorías de Seguridad Vial</h2>
+                        <p class="story-subtitle">Capítulo 4: Evaluación sistemática y proactiva de riesgos</p>
+                    </div>
+
+                    <div class="story-content">
+                        <p>Ana aprendió que las auditorías de seguridad vial son evaluaciones sistemáticas y proactivas que identifican riesgos potenciales antes de que se conviertan en accidentes reales. Esta metodología preventiva es fundamental para implementar el enfoque de Sistema Seguro.</p>
+
+                        <div class="quote-box">
+                            "Una auditoría de seguridad vial bien ejecutada puede prevenir décadas de accidentes futuros. Es la diferencia entre reaccionar a tragedias y prevenirlas sistemáticamente."
+                        </div>
+                    </div>
+
+                    <div class="audit-process">
+                        <h4 style="text-align: center; color: #2d3748; margin-bottom: 30px;">🔍 Proceso de Auditoría de Seguridad Vial</h4>
+                        
+                        <div class="audit-steps">
+                            <div class="audit-step">
+                                <div class="audit-step-number">1</div>
+                                <h5 class="audit-step-title">Preparación</h5>
+                                <p class="audit-step-desc">Definir alcance, objetivos y conformar equipo multidisciplinario de auditores certificados.</p>
+                            </div>
+
+                            <div class="audit-step">
+                                <div class="audit-step-number">2</div>
+                                <h5 class="audit-step-title">Revisión Documental</h5>
+                                <p class="audit-step-desc">Analizar planos, estudios de tráfico, historial de accidentes y normativas aplicables.</p>
+                            </div>
+
+                            <div class="audit-step">
+                                <div class="audit-step-number">3</div>
+                                <h5 class="audit-step-title">Inspección de Campo</h5>
+                                <p class="audit-step-desc">Evaluación in-situ en diferentes condiciones climáticas y horarios de operación.</p>
+                            </div>
+
+                            <div class="audit-step">
+                                <div class="audit-step-number">4</div>
+                                <h5 class="audit-step-title">Análisis de Riesgos</h5>
+                                <p class="audit-step-desc">Identificar peligros potenciales y evaluar probabilidad e impacto de accidentes.</p>
+                            </div>
+
+                            <div class="audit-step">
+                                <div class="audit-step-number">5</div>
+                                <h5 class="audit-step-title">Recomendaciones</h5>
+                                <p class="audit-step-desc">Desarrollar medidas correctivas priorizadas por riesgo y costo-beneficio.</p>
+                            </div>
+
+                            <div class="audit-step">
+                                <div class="audit-step-number">6</div>
+                                <h5 class="audit-step-title">Seguimiento</h5>
+                                <p class="audit-step-desc">Monitorear implementación de recomendaciones y evaluar efectividad.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="standards-grid">
+                        <div class="standard-card">
+                            <div class="standard-header">
+                                <span class="standard-icon">🏗️</span>
+                                <h4 class="standard-name">Auditoría de Diseño</h4>
+                            </div>
+                            <p class="standard-description">Evaluación durante la fase de diseño de nuevos proyectos viales.</p>
+                            <div class="standard-examples">
+                                <h5>🎯 Aspectos Evaluados:</h5>
+                                <ul>
+                                    <li>Geometría y alineamiento horizontal/vertical</li>
+                                    <li>Intersecciones y accesos</li>
+                                    <li>Señalización y demarcación</li>
+                                    <li>Iluminación y visibilidad</li>
+                                    <li>Drenaje y condiciones climáticas</li>
+                                    <li>Integración con infraestructura existente</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="standard-card">
+                            <div class="standard-header">
+                                <span class="standard-icon">🚧</span>
+                                <h4 class="standard-name">Auditoría Pre-Apertura</h4>
+                            </div>
+                            <p class="standard-description">Verificación final antes de la puesta en servicio de infraestructura nueva.</p>
+                            <div class="standard-examples">
+                                <h5>🎯 Verificaciones Clave:</h5>
+                                <ul>
+                                    <li>Conformidad con diseño aprobado</li>
+                                    <li>Funcionamiento de sistemas de control</li>
+                                    <li>Calidad de construcción y materiales</li>
+                                    <li>Señalización temporal durante construcción</li>
+                                    <li>Condiciones de seguridad para apertura</li>
+                                    <li>Protocolos de emergencia y mantenimiento</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="standard-card">
+                            <div class="standard-header">
+                                <span class="standard-icon">🛣️</span>
+                                <h4 class="standard-name">Auditoría de Infraestructura Existente</h4>
+                            </div>
+                            <p class="standard-description">Evaluación sistemática de vías en operación para identificar mejoras de seguridad.</p>
+                            <div class="standard-examples">
+                                <h5>🎯 Elementos Analizados:</h5>
+                                <ul>
+                                    <li>Historial de accidentalidad y patrones</li>
+                                    <li>Estado de conservación de infraestructura</li>
+                                    <li>Adecuación a volúmenes de tráfico actuales</li>
+                                    <li>Cumplimiento de estándares vigentes</li>
+                                    <li>Necesidades de usuarios vulnerables</li>
+                                    <li>Oportunidades de mejora tecnológica</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="interactive-tool">
+                        <h4 style="margin-bottom: 20px;">🔍 Generador de Lista de Verificación para Auditoría</h4>
+                        
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Tipo de auditoría:</label>
+                        <select class="tool-input" id="auditType">
+                            <option value="">Seleccionar tipo</option>
+                            <option value="design">Auditoría de Diseño</option>
+                            <option value="preopen">Auditoría Pre-Apertura</option>
+                            <option value="existing">Auditoría de Infraestructura Existente</option>
+                            <option value="safety">Auditoría de Seguridad Específica</option>
+                        </select>
+                        
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Tipo de vía:</label>
+                        <select class="tool-input" id="roadType">
+                            <option value="">Seleccionar tipo de vía</option>
+                            <option value="urban">Vía urbana</option>
+                            <option value="highway">Autopista/Autovía</option>
+                            <option value="rural">Carretera rural</option>
+                            <option value="intersection">Intersección</option>
+                        </select>
+                        
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Usuarios principales:</label>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px;">
+                            <label style="display: flex; align-items: center; color: white;">
+                                <input type="checkbox" id="vehicles" style="margin-right: 8px;"> Vehículos motorizados
+                            </label>
+                            <label style="display: flex; align-items: center; color: white;">
+                                <input type="checkbox" id="pedestrians" style="margin-right: 8px;"> Peatones
+                            </label>
+                            <label style="display: flex; align-items: center; color: white;">
+                                <input type="checkbox" id="cyclists" style="margin-right: 8px;"> Ciclistas
+                            </label>
+                            <label style="display: flex; align-items: center; color: white;">
+                                <input type="checkbox" id="heavyVehicles" style="margin-right: 8px;"> Vehículos pesados
+                            </label>
+                        </div>
+                        
+                        <button class="tool-btn" onclick="generateAuditChecklist()">📋 Generar Lista de Verificación</button>
+                        
+                        <div id="auditResult" class="tool-result" style="display: none;">
+                            <h5 style="margin-bottom: 15px;">📋 Lista de Verificación Personalizada</h5>
+                            <div id="auditContent"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Página 5: Inspecciones y Revisiones -->
+                <div id="page5" class="story-page">
+                    <div class="story-header">
+                        <h2 class="story-title">📋 Inspecciones y Revisiones de Seguridad Vial</h2>
+                        <p class="story-subtitle">Capítulo 5: Monitoreo continuo y mantenimiento preventivo</p>
+                    </div>
+
+                    <div class="story-content">
+                        <p>Ana comprendió que mientras las auditorías son evaluaciones integrales y periódicas, las inspecciones y revisiones son actividades de monitoreo continuo que aseguran el mantenimiento de los estándares de seguridad en el tiempo.</p>
+
+                        <div class="quote-box">
+                            "Las inspecciones regulares son como los chequeos médicos: detectan problemas antes de que se conviertan en emergencias. En seguridad vial, una inspección oportuna puede prevenir tragedias."
+                        </div>
+                    </div>
+
+                    <div class="standards-grid">
+                        <div class="standard-card">
+                            <div class="standard-header">
+                                <span class="standard-icon">🔍</span>
+                                <h4 class="standard-name">Inspecciones de Rutina</h4>
+                            </div>
+                            <p class="standard-description">Verificaciones regulares del estado y funcionamiento de elementos de seguridad vial.</p>
+                            <div class="standard-examples">
+                                <h5>🎯 Frecuencia y Elementos:</h5>
+                                <ul>
+                                    <li>Señalización vertical y horizontal (mensual)</li>
+                                    <li>Sistemas de iluminación (quincenal)</li>
+                                    <li>Barreras y dispositivos de contención (mensual)</li>
+                                    <li>Drenaje y sistemas de evacuación (trimestral)</li>
+                                    <li>Pavimento y marcas viales (mensual)</li>
+                                    <li>Sistemas electrónicos y semáforos (semanal)</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="standard-card">
+                            <div class="standard-header">
+                                <span class="standard-icon">⚠️</span>
+                                <h4 class="standard-name">Inspecciones de Emergencia</h4>
+                            </div>
+                            <p class="standard-description">Evaluaciones inmediatas tras eventos que puedan afectar la seguridad vial.</p>
+                            <div class="standard-examples">
+                                <h5>🎯 Situaciones de Activación:</h5>
+                                <ul>
+                                    <li>Después de accidentes graves o múltiples</li>
+                                    <li>Eventos climáticos extremos (tormentas, inundaciones)</li>
+                                    <li>Daños por vandalismo o actos de terceros</li>
+                                    <li>Fallas reportadas en sistemas críticos</li>
+                                    <li>Cambios significativos en patrones de tráfico</li>
+                                    <li>Alertas de sistemas de monitoreo automático</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="standard-card">
+                            <div class="standard-header">
+                                <span class="standard-icon">📊</span>
+                                <h4 class="standard-name">Revisiones de Desempeño</h4>
+                            </div>
+                            <p class="standard-description">Análisis periódico de la efectividad de medidas implementadas y tendencias de seguridad.</p>
+                            <div class="standard-examples">
+                                <h5>🎯 Métricas Evaluadas:</h5>
+                                <ul>
+                                    <li>Evolución de tasas de accidentalidad</li>
+                                    <li>Efectividad de controles implementados</li>
+                                    <li>Cumplimiento de objetivos de seguridad</li>
+                                    <li>Satisfacción y percepción de usuarios</li>
+                                    <li>Costo-efectividad de intervenciones</li>
+                                    <li>Comparación con benchmarks internacionales</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="standard-card">
+                            <div class="standard-header">
+                                <span class="standard-icon">🔄</span>
+                                <h4 class="standard-name">Revisiones de Actualización</h4>
+                            </div>
+                            <p class="standard-description">Evaluación de la necesidad de actualizar estándares y procedimientos según nuevas tecnologías y normativas.</p>
+                            <div class="standard-examples">
+                                <h5>🎯 Aspectos Revisados:</h5>
+                                <ul>
+                                    <li>Cambios en normativas y estándares</li>
+                                    <li>Nuevas tecnologías disponibles</li>
+                                    <li>Lecciones aprendidas de otros proyectos</li>
+                                    <li>Evolución de mejores prácticas internacionales</li>
+                                    <li>Cambios en patrones de movilidad</li>
+                                    <li>Actualizaciones en metodologías de evaluación</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="interactive-tool">
+                        <h4 style="margin-bottom: 20px;">📋 Planificador de Inspecciones</h4>
+                        
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Tipo de infraestructura:</label>
+                        <select class="tool-input" id="infraType">
+                            <option value="">Seleccionar infraestructura</option>
+                            <option value="urban_road">Vía urbana principal</option>
+                            <option value="highway">Autopista</option>
+                            <option value="intersection">Intersección semaforizada</option>
+                            <option value="bridge">Puente o viaducto</option>
+                            <option value="tunnel">Túnel</option>
+                        </select>
+                        
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Longitud del tramo (km):</label>
+                        <input type="number" class="tool-input" id="segmentLength" placeholder="Longitud en kilómetros">
+                        
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Volumen de tráfico diario:</label>
+                        <select class="tool-input" id="trafficVolume">
+                            <option value="">Seleccionar volumen</option>
+                            <option value="low">Bajo (< 5,000 veh/día)</option>
+                            <option value="medium">Medio (5,000 - 20,000 veh/día)</option>
+                            <option value="high">Alto (20,000 - 50,000 veh/día)</option>
+                            <option value="very_high">Muy Alto (> 50,000 veh/día)</option>
+                        </select>
+                        
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Condiciones especiales:</label>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px;">
+                            <label style="display: flex; align-items: center; color: white;">
+                                <input type="checkbox" id="weatherExposed" style="margin-right: 8px;"> Exposición climática severa
+                            </label>
+                            <label style="display: flex; align-items: center; color: white;">
+                                <input type="checkbox" id="heavyTraffic" style="margin-right: 8px;"> Tráfico pesado frecuente
+                            </label>
+                            <label style="display: flex; align-items: center; color: white;">
+                                <input type="checkbox" id="accidentHistory" style="margin-right: 8px;"> Historial de accidentes
+                            </label>
+                            <label style="display: flex; align-items: center; color: white;">
+                                <input type="checkbox" id="criticalInfra" style="margin-right: 8px;"> Infraestructura crítica
+                            </label>
+                        </div>
+                        
+                        <button class="tool-btn" onclick="generateInspectionPlan()">📅 Generar Plan de Inspecciones</button>
+                        
+                        <div id="inspectionResult" class="tool-result" style="display: none;">
+                            <h5 style="margin-bottom: 15px;">📅 Plan de Inspecciones Personalizado</h5>
+                            <div id="inspectionContent"></div>
+                        </div>
+                    </div>
+
+                    <div class="eureka-moment">
+                        <h4>💡 Importancia del Monitoreo Continuo</h4>
+                        <p>"Las inspecciones y revisiones regulares son la diferencia entre una infraestructura que se mantiene segura y una que se deteriora gradualmente hasta convertirse en un riesgo. La prevención siempre es más efectiva y económica que la corrección."</p>
+                    </div>
+                </div>
+
+                <!-- Página 6: Aplicación Práctica Integral -->
+                <div id="page6" class="story-page">
+                    <div class="story-header">
+                        <h2 class="story-title">🎯 Aplicación Práctica Integral</h2>
+                        <p class="story-subtitle">Capítulo 6: Ana integra estándares internacionales con metodologías de auditoría</p>
+                    </div>
+
+                    <div class="story-content">
+                        <p>Al final de su jornada de sábado, Ana comprendió que los estándares internacionales, el ciclo PHVA, las auditorías y las inspecciones no son elementos separados, sino componentes de un sistema integral de gestión de seguridad vial que se potencia mutuamente.</p>
+
+                        <div class="quote-box">
+                            "Los estándares internacionales nos dicen QUÉ hacer, el ciclo PHVA nos dice CÓMO hacerlo sistemáticamente, las auditorías nos dicen CUÁNDO actuar, y las inspecciones nos aseguran que TODO se mantenga funcionando correctamente."
+                        </div>
+                    </div>
+
+                    <div class="interactive-tool">
+                        <h4 style="margin-bottom: 20px;">🌍 Generador de Estrategia Integral Basada en Estándares Internacionales</h4>
+                        
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Contexto del proyecto:</label>
+                        <textarea class="tool-input" id="projectContext" rows="3" placeholder="Describe el contexto y alcance de tu proyecto de seguridad vial..."></textarea>
+                        
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Estándares de referencia:</label>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px;">
+                            <label style="display: flex; align-items: center; color: white;">
+                                <input type="checkbox" id="unStandards" style="margin-right: 8px;"> Estándares ONU
+                            </label>
+                            <label style="display: flex; align-items: center; color: white;">
+                                <input type="checkbox" id="oecdStandards" style="margin-right: 8px;"> Metodologías OCDE
+                            </label>
+                            <label style="display: flex; align-items: center; color: white;">
+                                <input type="checkbox" id="isoStandards" style="margin-right: 8px;"> ISO 39001
+                            </label>
+                            <label style="display: flex; align-items: center; color: white;">
+                                <input type="checkbox" id="whoStandards" style="margin-right: 8px;"> Directrices OMS
+                            </label>
+                        </div>
+                        
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Nivel de madurez organizacional:</label>
+                        <select class="tool-input" id="maturityLevel">
+                            <option value="">Seleccionar nivel</option>
+                            <option value="inicial">Inicial - Primeros pasos en seguridad vial</option>
+                            <option value="desarrollo">En desarrollo - Algunos procesos establecidos</option>
+                            <option value="maduro">Maduro - Sistemas consolidados</option>
+                            <option value="optimizado">Optimizado - Mejora continua avanzada</option>
+                        </select>
+                        
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Objetivo principal:</label>
+                        <select class="tool-input" id="mainObjective">
+                            <option value="">Seleccionar objetivo</option>
+                            <option value="reduce_fatalities">Reducir fatalidades</option>
+                            <option value="improve_infrastructure">Mejorar infraestructura</option>
+                            <option value="enhance_enforcement">Fortalecer enforcement</option>
+                            <option value="education_programs">Desarrollar programas educativos</option>
+                            <option value="comprehensive_system">Sistema integral de gestión</option>
+                        </select>
+                        
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Presupuesto disponible (USD):</label>
+                        <input type="number" class="tool-input" id="totalBudget" placeholder="Presupuesto total disponible">
+                        
+                        <button class="tool-btn" onclick="generateComprehensiveStrategy()">🚀 Generar Estrategia Integral</button>
+                        
+                        <div id="comprehensiveResult" class="tool-result" style="display: none;">
+                            <h5 style="margin-bottom: 15px;">🌍 Estrategia Integral Basada en Estándares Internacionales</h5>
+                            <div id="comprehensiveContent"></div>
+                        </div>
+                    </div>
+
+                    <div class="learning-objectives">
+                        <h4>🎯 Preparación Completa para el Módulo 2:</h4>
+                        <ul>
+                            <li>Dominio de estándares internacionales ONU, OCDE e ISO aplicados a seguridad vial</li>
+                            <li>Comprensión profunda del ciclo PHVA como metodología de mejora continua</li>
+                            <li>Capacidad para diseñar y ejecutar auditorías de seguridad vial efectivas</li>
+                            <li>Habilidades para planificar inspecciones y revisiones sistemáticas</li>
+                            <li>Visión integral que conecta estándares globales con implementación local</li>
+                            <li>Preparación para liderar proyectos de seguridad vial de clase mundial</li>
+                        </ul>
+                    </div>
+
+                    <div class="eureka-moment">
+                        <h4>💡 Reflexión Final de Ana</h4>
+                        <p>"Ahora entiendo que la seguridad vial no es solo una responsabilidad local, sino parte de un movimiento global. Los estándares internacionales nos conectan con las mejores prácticas mundiales, y las metodologías de auditoría nos dan las herramientas para implementarlas efectivamente. Estoy lista para el Módulo 2 con una perspectiva verdaderamente internacional."</p>
+                    </div>
+                </div>
+
+                <!-- Navegación entre páginas -->
+                <div class="page-navigation">
+                    <button id="prevBtn" class="nav-btn" onclick="changePage(-1)">← Anterior</button>
+                    
+                    <div class="page-indicators">
+                        <div class="page-dot active" onclick="goToPage(1)"></div>
+                        <div class="page-dot" onclick="goToPage(2)"></div>
+                        <div class="page-dot" onclick="goToPage(3)"></div>
+                        <div class="page-dot" onclick="goToPage(4)"></div>
+                        <div class="page-dot" onclick="goToPage(5)"></div>
+                        <div class="page-dot" onclick="goToPage(6)"></div>
+                    </div>
+                    
+                    <button id="nextBtn" class="nav-btn" onclick="changePage(1)">Siguiente →</button>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        let microcourseTimer;
+        let timeRemaining = 1500; // 25 minutes
+        let isRunning = false;
+
+        function startMicrocourse() {
+            if (!isRunning) {
+                isRunning = true;
+                microcourseTimer = setInterval(updateTimer, 1000);
+                document.querySelector('.start-btn').textContent = 'Pausar Microcurso';
+                document.querySelector('.start-btn').style.background = 'rgba(255,255,255,0.3)';
+            } else {
+                pauseMicrocourse();
+            }
+        }
+
+        function pauseMicrocourse() {
+            isRunning = false;
+            clearInterval(microcourseTimer);
+            document.querySelector('.start-btn').textContent = 'Continuar Microcurso';
+            document.querySelector('.start-btn').style.background = 'rgba(255,255,255,0.2)';
+        }
+
+        function updateTimer() {
+            timeRemaining--;
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            document.getElementById('timerDisplay').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeRemaining <= 0) {
+                clearInterval(microcourseTimer);
+                completeMicrocourse();
+            }
+        }
+
+        function completeMicrocourse() {
+            document.getElementById('timerDisplay').textContent = '¡Completado!';
+            document.querySelector('.start-btn').textContent = 'Microcurso Finalizado';
+            document.querySelector('.start-btn').disabled = true;
+            document.querySelector('.start-btn').style.opacity = '0.6';
+        }
+
+        // Page navigation variables
+        let currentPage = 1;
+        const totalPages = 6;
+
+        // Page navigation functions
+        function goToPage(pageNumber) {
+            if (pageNumber < 1 || pageNumber > totalPages) return;
+            
+            // Hide all pages
+            document.querySelectorAll('.story-page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Show selected page
+            document.getElementById(`page${pageNumber}`).classList.add('active');
+            
+            // Update navigation
+            updateNavigation(pageNumber);
+            updateSidebarNavigation(pageNumber);
+            updatePageIndicators(pageNumber);
+            
+            currentPage = pageNumber;
+            
+            // Scroll to top of main content
+            const mainContent = document.querySelector('.main-content');
+            mainContent.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        function changePage(direction) {
+            const newPage = currentPage + direction;
+            goToPage(newPage);
+            
+            // Scroll to top of the page
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        function updateNavigation(pageNumber) {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            prevBtn.disabled = pageNumber === 1;
+            nextBtn.disabled = pageNumber === totalPages;
+            
+            if (pageNumber === totalPages) {
+                nextBtn.textContent = '🎉 Finalizar';
+            } else {
+                nextBtn.textContent = 'Siguiente →';
+            }
+        }
+
+        function updateSidebarNavigation(pageNumber) {
+            // Update sidebar navigation
+            document.querySelectorAll('.module-item').forEach((item, index) => {
+                item.classList.remove('active');
+                if (index + 1 === pageNumber) {
+                    item.classList.add('active');
+                }
+            });
+            
+            // Update horizontal navigation
+            document.querySelectorAll('.horizontal-nav-item').forEach((item) => {
+                item.classList.remove('active');
+                if (parseInt(item.dataset.page) === pageNumber) {
+                    item.classList.add('active');
+                }
+            });
+        }
+
+        function updatePageIndicators(pageNumber) {
+            document.querySelectorAll('.page-dot').forEach((dot, index) => {
+                dot.classList.remove('active');
+                if (index + 1 === pageNumber) {
+                    dot.classList.add('active');
+                }
+            });
+        }
+
+        // Flash card functionality
+        function flipCard(card) {
+            card.classList.toggle('flipped');
+        }
+
+        // PHVA Details
+        function showPHVADetails(phase) {
+            const details = {
+                plan: {
+                    title: '📋 PLANIFICAR - Fase de Análisis y Diseño',
+                    content: `
+                        <h4>🎯 Objetivos de la Fase:</h4>
+                        <ul>
+                            <li>Identificar y analizar problemas de seguridad vial</li>
+                            <li>Establecer objetivos SMART (específicos, medibles, alcanzables, relevantes, temporales)</li>
+                            <li>Desarrollar estrategias basadas en evidencia científica</li>
+                            <li>Asignar recursos y responsabilidades</li>
+                        </ul>
+                        
+                        <h4>🔍 Actividades Clave:</h4>
+                        <ul>
+                            <li>Análisis de datos de accidentalidad</li>
+                            <li>Diagnóstico de infraestructura y comportamientos</li>
+                            <li>Benchmarking con mejores prácticas</li>
+                            <li>Desarrollo de plan de acción detallado</li>
+                        </ul>
+                    `
+                },
+                do: {
+                    title: '⚡ HACER - Fase de Implementación',
+                    content: `
+                        <h4>🎯 Objetivos de la Fase:</h4>
+                        <ul>
+                            <li>Ejecutar las medidas planificadas de manera sistemática</li>
+                            <li>Mantener control sobre la calidad de implementación</li>
+                            <li>Documentar el proceso y las decisiones tomadas</li>
+                            <li>Gestionar cambios y adaptaciones necesarias</li>
+                        </ul>
+                        
+                        <h4>🔍 Actividades Clave:</h4>
+                        <ul>
+                            <li>Implementación de controles de ingeniería</li>
+                            <li>Ejecución de programas educativos</li>
+                            <li>Activación de medidas de enforcement</li>
+                            <li>Monitoreo de avance y calidad</li>
+                        </ul>
+                    `
+                },
+                check: {
+                    title: '📊 VERIFICAR - Fase de Evaluación',
+                    content: `
+                        <h4>🎯 Objetivos de la Fase:</h4>
+                        <ul>
+                            <li>Medir y evaluar los resultados obtenidos</li>
+                            <li>Comparar resultados con objetivos establecidos</li>
+                            <li>Identificar desviaciones y sus causas</li>
+                            <li>Generar evidencia para la toma de decisiones</li>
+                        </ul>
+                        
+                        <h4>🔍 Actividades Clave:</h4>
+                        <ul>
+                            <li>Recolección y análisis de datos de desempeño</li>
+                            <li>Evaluación de efectividad de medidas</li>
+                            <li>Análisis de costo-beneficio real</li>
+                            <li>Identificación de lecciones aprendidas</li>
+                        </ul>
+                    `
+                },
+                act: {
+                    title: '🔄 ACTUAR - Fase de Mejora',
+                    content: `
+                        <h4>🎯 Objetivos de la Fase:</h4>
+                        <ul>
+                            <li>Tomar acciones correctivas basadas en resultados</li>
+                            <li>Estandarizar las mejores prácticas identificadas</li>
+                            <li>Planificar el siguiente ciclo de mejora</li>
+                            <li>Institucionalizar el aprendizaje organizacional</li>
+                        </ul>
+                        
+                        <h4>🔍 Actividades Clave:</h4>
+                        <ul>
+                            <li>Implementación de acciones correctivas</li>
+                            <li>Actualización de procedimientos y estándares</li>
+                            <li>Capacitación basada en lecciones aprendidas</li>
+                            <li>Planificación del próximo ciclo PHVA</li>
+                        </ul>
+                    `
+                }
+            };
+
+            const detail = details[phase];
+            if (detail) {
+                // Create a simple alert-style display
+                const resultDiv = document.createElement('div');
+                resultDiv.innerHTML = `
+                    <div style="background: white; padding: 30px; border-radius: 16px; box-shadow: 0 25px 50px rgba(0,0,0,0.3); max-width: 600px; margin: 20px auto;">
+                        <h3 style="color: #2d3748; margin-bottom: 20px;">${detail.title}</h3>
+                        <div style="color: #4a5568; line-height: 1.6;">${detail.content}</div>
+                        <button onclick="this.parentElement.parentElement.remove()" style="background: #e53e3e; color: white; border: none; padding: 10px 20px; border-radius: 8px; margin-top: 20px; cursor: pointer;">Cerrar</button>
+                    </div>
+                `;
+                resultDiv.style.position = 'fixed';
+                resultDiv.style.top = '0';
+                resultDiv.style.left = '0';
+                resultDiv.style.width = '100%';
+                resultDiv.style.height = '100%';
+                resultDiv.style.background = 'rgba(0,0,0,0.8)';
+                resultDiv.style.display = 'flex';
+                resultDiv.style.alignItems = 'center';
+                resultDiv.style.justifyContent = 'center';
+                resultDiv.style.zIndex = '1000';
+                document.body.appendChild(resultDiv);
+            }
+        }
+
+        // Interactive tool functions
+        function calculateCostBenefit() {
+            const intervention = document.getElementById('interventionType').value;
+            const cost = parseInt(document.getElementById('implementationCost').value);
+            const population = parseInt(document.getElementById('beneficiaryPopulation').value);
+            const reduction = parseInt(document.getElementById('accidentReduction').value);
+
+            if (!intervention || !cost || !population || !reduction) {
+                showToolResult('costBenefitResult', 'Por favor, completa todos los campos.');
+                return;
+            }
+
+            const interventionData = {
+                infrastructure: { multiplier: 1.5, lifespan: 20, maintenance: 0.05 },
+                enforcement: { multiplier: 1.2, lifespan: 5, maintenance: 0.15 },
+                education: { multiplier: 0.8, lifespan: 3, maintenance: 0.10 },
+                technology: { multiplier: 2.0, lifespan: 10, maintenance: 0.08 },
+                legislation: { multiplier: 1.0, lifespan: 15, maintenance: 0.02 }
+            };
+
+            const data = interventionData[intervention];
+            const annualBenefit = (population * 0.001 * reduction / 100) * 50000 * data.multiplier;
+            const annualCost = cost * data.maintenance;
+            const netBenefit = (annualBenefit - annualCost) * data.lifespan - cost;
+            const bcRatio = (annualBenefit * data.lifespan) / cost;
+
+            let recommendation = '';
+            if (bcRatio > 3) {
+                recommendation = 'Altamente recomendado - Excelente retorno de inversión';
+            } else if (bcRatio > 1.5) {
+                recommendation = 'Recomendado - Buen retorno de inversión';
+            } else if (bcRatio > 1) {
+                recommendation = 'Viable - Retorno positivo pero moderado';
+            } else {
+                recommendation = 'No recomendado - Retorno insuficiente';
+            }
+
+            const result = `
+                <div style="background: rgba(255,255,255,0.9); padding: 20px; border-radius: 12px; color: #2d3748;">
+                    <h6 style="color: #667eea; margin-bottom: 15px;">📊 Análisis Costo-Beneficio OCDE</h6>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                        <div style="text-align: center; background: #f7fafc; padding: 15px; border-radius: 8px;">
+                            <strong>Relación B/C</strong><br>
+                            <span style="color: ${bcRatio > 1 ? '#48bb78' : '#e53e3e'}; font-size: 2rem; font-weight: bold;">${bcRatio.toFixed(2)}</span>
+                        </div>
+                        <div style="text-align: center; background: #f7fafc; padding: 15px; border-radius: 8px;">
+                            <strong>Beneficio Neto</strong><br>
+                            <span style="color: ${netBenefit > 0 ? '#48bb78' : '#e53e3e'}; font-size: 1.5rem; font-weight: bold;">$${netBenefit.toLocaleString()}</span>
+                        </div>
+                    </div>
+                    <div style="background: #e6fffa; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <strong>💡 Recomendación:</strong><br>
+                        ${recommendation}
+                    </div>
+                    <div style="background: #f7fafc; padding: 15px; border-radius: 8px;">
+                        <p style="margin: 0; color: #4a5568;"><strong>Beneficio anual:</strong> $${annualBenefit.toLocaleString()}</p>
+                        <p style="margin: 5px 0 0 0; color: #4a5568;"><strong>Costo anual de mantenimiento:</strong> $${annualCost.toLocaleString()}</p>
+                        <p style="margin: 5px 0 0 0; color: #4a5568;"><strong>Vida útil estimada:</strong> ${data.lifespan} años</p>
+                    </div>
+                </div>
+            `;
+
+            showToolResult('costBenefitResult', result);
+        }
+
+        function generatePHVAPlan() {
+            const problem = document.getElementById('phvaProblem').value;
+            const objective = document.getElementById('phvaObjective').value;
+            const resources = document.getElementById('phvaResources').value;
+            const timeframe = document.getElementById('phvaTimeframe').value;
+
+            if (!problem || !objective || !resources || !timeframe) {
+                showToolResult('phvaResult', 'Por favor, completa todos los campos.');
+                return;
+            }
+
+            const resourceLevels = {
+                limitados: { budget: 'Bajo', team: 'Pequeño', complexity: 'Básico' },
+                moderados: { budget: 'Medio', team: 'Mediano', complexity: 'Intermedio' },
+                amplios: { budget: 'Alto', team: 'Grande', complexity: 'Avanzado' }
+            };
+
+            const timeframes = {
+                '3meses': { urgency: 'Alta', phases: 'Aceleradas', monitoring: 'Semanal' },
+                '6meses': { urgency: 'Media', phases: 'Normales', monitoring: 'Quincenal' },
+                '12meses': { urgency: 'Baja', phases: 'Detalladas', monitoring: 'Mensual' },
+                '24meses': { urgency: 'Muy Baja', phases: 'Exhaustivas', monitoring: 'Trimestral' }
+            };
+
+            const resourceData = resourceLevels[resources];
+            const timeData = timeframes[timeframe];
+
+            const result = `
+                <div style="background: rgba(255,255,255,0.9); padding: 25px; border-radius: 12px; color: #2d3748;">
+                    <h6 style="color: #667eea; margin-bottom: 20px; font-size: 1.2rem;">🔄 Plan PHVA Personalizado</h6>
+                    
+                    <div style="background: #f7fafc; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                        <h6 style="margin: 0 0 10px 0;">📋 Resumen del Proyecto</h6>
+                        <p style="margin: 0;"><strong>Problema:</strong> ${problem}</p>
+                        <p style="margin: 5px 0 0 0;"><strong>Objetivo:</strong> ${objective}</p>
+                        <p style="margin: 5px 0 0 0;"><strong>Recursos:</strong> ${resourceData.budget} | <strong>Plazo:</strong> ${timeframe}</p>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px;">
+                        <div style="background: linear-gradient(135deg, #4299e1, #3182ce); color: white; padding: 20px; border-radius: 12px;">
+                            <h6 style="margin: 0 0 15px 0;">📋 PLANIFICAR</h6>
+                            <ul style="margin: 0; padding-left: 20px; font-size: 0.9rem;">
+                                <li>Análisis detallado del problema</li>
+                                <li>Definición de indicadores de éxito</li>
+                                <li>Asignación de recursos ${resourceData.budget.toLowerCase()}s</li>
+                                <li>Cronograma ${timeData.phases.toLowerCase()}</li>
+                            </ul>
+                        </div>
+                        
+                        <div style="background: linear-gradient(135deg, #48bb78, #38a169); color: white; padding: 20px; border-radius: 12px;">
+                            <h6 style="margin: 0 0 15px 0;">⚡ HACER</h6>
+                            <ul style="margin: 0; padding-left: 20px; font-size: 0.9rem;">
+                                <li>Implementación ${resourceData.complexity.toLowerCase()}</li>
+                                <li>Equipo de trabajo ${resourceData.team.toLowerCase()}</li>
+                                <li>Urgencia ${timeData.urgency.toLowerCase()}</li>
+                                <li>Control de calidad continuo</li>
+                            </ul>
+                        </div>
+                        
+                        <div style="background: linear-gradient(135deg, #ed8936, #dd6b20); color: white; padding: 20px; border-radius: 12px;">
+                            <h6 style="margin: 0 0 15px 0;">📊 VERIFICAR</h6>
+                            <ul style="margin: 0; padding-left: 20px; font-size: 0.9rem;">
+                                <li>Monitoreo ${timeData.monitoring.toLowerCase()}</li>
+                                <li>Evaluación de indicadores</li>
+                                <li>Análisis de desviaciones</li>
+                                <li>Reporte de avances</li>
+                            </ul>
+                        </div>
+                        
+                        <div style="background: linear-gradient(135deg, #e53e3e, #c53030); color: white; padding: 20px; border-radius: 12px;">
+                            <h6 style="margin: 0 0 15px 0;">🔄 ACTUAR</h6>
+                            <ul style="margin: 0; padding-left: 20px; font-size: 0.9rem;">
+                                <li>Acciones correctivas</li>
+                                <li>Mejoras identificadas</li>
+                                <li>Estandarización de procesos</li>
+                                <li>Planificación del siguiente ciclo</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div style="background: #e6fffa; padding: 20px; border-radius: 12px; border-left: 4px solid #4facfe;">
+                        <h6 style="color: #2d3748; margin: 0 0 15px 0;">📅 Cronograma Sugerido</h6>
+                        <div style="display: grid; gap: 8px;">
+                            <div style="background: rgba(66,153,225,0.1); padding: 8px; border-radius: 6px;">
+                                <strong>Semanas 1-2:</strong> Planificación detallada y preparación
+                            </div>
+                            <div style="background: rgba(72,187,120,0.1); padding: 8px; border-radius: 6px;">
+                                <strong>Semanas 3-${Math.ceil(parseInt(timeframe.replace('meses', '')) * 4 * 0.7)}:</strong> Implementación y ejecución
+                            </div>
+                            <div style="background: rgba(237,137,54,0.1); padding: 8px; border-radius: 6px;">
+                                <strong>Semanas ${Math.ceil(parseInt(timeframe.replace('meses', '')) * 4 * 0.7)}-${Math.ceil(parseInt(timeframe.replace('meses', '')) * 4 * 0.9)}:</strong> Verificación y evaluación
+                            </div>
+                            <div style="background: rgba(229,62,62,0.1); padding: 8px; border-radius: 6px;">
+                                <strong>Últimas semanas:</strong> Acciones de mejora y cierre
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            showToolResult('phvaResult', result);
+        }
+
+        function generateAuditChecklist() {
+            const auditType = document.getElementById('auditType').value;
+            const roadType = document.getElementById('roadType').value;
+            
+            // Get selected users
+            const selectedUsers = [];
+            if (document.getElementById('vehicles').checked) selectedUsers.push('Vehículos motorizados');
+            if (document.getElementById('pedestrians').checked) selectedUsers.push('Peatones');
+            if (document.getElementById('cyclists').checked) selectedUsers.push('Ciclistas');
+            if (document.getElementById('heavyVehicles').checked) selectedUsers.push('Vehículos pesados');
+
+            if (!auditType || !roadType || selectedUsers.length === 0) {
+                showToolResult('auditResult', 'Por favor, completa todos los campos y selecciona al menos un tipo de usuario.');
+                return;
+            }
+
+            const checklistItems = {
+                design: {
+                    urban: [
+                        'Geometría adecuada para velocidades urbanas (30-50 km/h)',
+                        'Visibilidad en intersecciones y cruces peatonales',
+                        'Integración con transporte público',
+                        'Facilidades para peatones y ciclistas',
+                        'Señalización clara y consistente',
+                        'Iluminación adecuada para uso nocturno'
+                    ],
+                    highway: [
+                        'Diseño geométrico para altas velocidades',
+                        'Distancias de visibilidad de parada y adelantamiento',
+                        'Diseño de intercambiadores y accesos',
+                        'Sistemas de contención vehicular',
+                        'Drenaje y manejo de aguas pluviales',
+                        'Señalización para condiciones de alta velocidad'
+                    ],
+                    rural: [
+                        'Adaptación al terreno natural',
+                        'Visibilidad en curvas y pendientes',
+                        'Tratamiento de intersecciones rurales',
+                        'Consideración de fauna silvestre',
+                        'Drenaje en zonas de inundación',
+                        'Señalización para condiciones variables'
+                    ],
+                    intersection: [
+                        'Geometría que minimice puntos de conflicto',
+                        'Fases semafóricas optimizadas',
+                        'Visibilidad entre usuarios',
+                        'Facilidades para giros protegidos',
+                        'Señalización horizontal y vertical clara',
+                        'Consideración de todos los movimientos'
+                    ]
+                }
+            };
+
+            const items = checklistItems[auditType]?.[roadType] || [
+                'Verificación general de seguridad',
+                'Cumplimiento de normativas vigentes',
+                'Adecuación para usuarios seleccionados',
+                'Condiciones de visibilidad',
+                'Estado de señalización',
+                'Sistemas de drenaje'
+            ];
+
+            const result = `
+                <div style="background: rgba(255,255,255,0.9); padding: 25px; border-radius: 12px; color: #2d3748;">
+                    <h6 style="color: #667eea; margin-bottom: 20px; font-size: 1.2rem;">📋 Lista de Verificación para Auditoría</h6>
+                    
+                    <div style="background: #f7fafc; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                        <h6 style="margin: 0 0 15px 0;">📍 Información de la Auditoría</h6>
+                        <p style="margin: 0;"><strong>Tipo:</strong> ${auditType} | <strong>Vía:</strong> ${roadType}</p>
+                        <p style="margin: 5px 0 0 0;"><strong>Usuarios considerados:</strong> ${selectedUsers.join(', ')}</p>
+                    </div>
+
+                    <div style="background: #e6fffa; padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #4facfe;">
+                        <h6 style="color: #2d3748; margin: 0 0 15px 0;">✅ Elementos a Verificar</h6>
+                        ${items.map((item, index) => `
+                            <div style="background: rgba(102,126,234,0.1); padding: 12px; border-radius: 8px; margin: 8px 0; display: flex; align-items: center;">
+                                <input type="checkbox" style="margin-right: 12px; transform: scale(1.2);">
+                                <span>${index + 1}. ${item}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div style="background: #fff7ed; padding: 20px; border-radius: 12px; border-left: 4px solid #ed8936;">
+                        <h6 style="color: #2d3748; margin: 0 0 10px 0;">📝 Instrucciones de Uso</h6>
+                        <ul style="margin: 0; color: #4a5568; line-height: 1.6;">
+                            <li>Marque cada elemento verificado durante la inspección</li>
+                            <li>Documente observaciones y no conformidades</li>
+                            <li>Tome fotografías de evidencias relevantes</li>
+                            <li>Priorice recomendaciones por nivel de riesgo</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+
+            showToolResult('auditResult', result);
+        }
+
+        function generateInspectionPlan() {
+            const infraType = document.getElementById('infraType').value;
+            const length = parseFloat(document.getElementById('segmentLength').value);
+            const volume = document.getElementById('trafficVolume').value;
+            
+            // Get special conditions
+            const conditions = [];
+            if (document.getElementById('weatherExposed').checked) conditions.push('Exposición climática');
+            if (document.getElementById('heavyTraffic').checked) conditions.push('Tráfico pesado');
+            if (document.getElementById('accidentHistory').checked) conditions.push('Historial de accidentes');
+            if (document.getElementById('criticalInfra').checked) conditions.push('Infraestructura crítica');
+
+            if (!infraType || !length || !volume) {
+                showToolResult('inspectionResult', 'Por favor, completa todos los campos obligatorios.');
+                return;
+            }
+
+            const frequencies = {
+                low: { routine: 'Mensual', detailed: 'Semestral', emergency: 'Según necesidad' },
+                medium: { routine: 'Quincenal', detailed: 'Trimestral', emergency: 'Según necesidad' },
+                high: { routine: 'Semanal', detailed: 'Mensual', emergency: 'Según necesidad' },
+                very_high: { routine: 'Diaria', detailed: 'Quincenal', emergency: 'Según necesidad' }
+            };
+
+            const freq = frequencies[volume];
+            const riskMultiplier = conditions.length > 0 ? 1.5 : 1.0;
+            const lengthFactor = length > 10 ? 'Extendida' : length > 5 ? 'Normal' : 'Reducida';
+
+            const result = `
+                <div style="background: rgba(255,255,255,0.9); padding: 25px; border-radius: 12px; color: #2d3748;">
+                    <h6 style="color: #667eea; margin-bottom: 20px; font-size: 1.2rem;">📅 Plan de Inspecciones Personalizado</h6>
+                    
+                    <div style="background: #f7fafc; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                        <h6 style="margin: 0 0 15px 0;">📍 Características del Tramo</h6>
+                        <p style="margin: 0;"><strong>Tipo:</strong> ${infraType} | <strong>Longitud:</strong> ${length} km</p>
+                        <p style="margin: 5px 0 0 0;"><strong>Volumen:</strong> ${volume} | <strong>Condiciones especiales:</strong> ${conditions.length > 0 ? conditions.join(', ') : 'Ninguna'}</p>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px;">
+                        <div style="background: linear-gradient(135deg, #48bb78, #38a169); color: white; padding: 20px; border-radius: 12px; text-align: center;">
+                            <h6 style="margin: 0 0 10px 0;">🔍 Rutinarias</h6>
+                            <div style="font-size: 1.5rem; font-weight: bold;">${freq.routine}</div>
+                            <div style="font-size: 0.9rem; opacity: 0.9;">Inspecciones básicas</div>
+                        </div>
+                        
+                        <div style="background: linear-gradient(135deg, #ed8936, #dd6b20); color: white; padding: 20px; border-radius: 12px; text-align: center;">
+                            <h6 style="margin: 0 0 10px 0;">📊 Detalladas</h6>
+                            <div style="font-size: 1.5rem; font-weight: bold;">${freq.detailed}</div>
+                            <div style="font-size: 0.9rem; opacity: 0.9;">Evaluaciones completas</div>
+                        </div>
+                        
+                        <div style="background: linear-gradient(135deg, #e53e3e, #c53030); color: white; padding: 20px; border-radius: 12px; text-align: center;">
+                            <h6 style="margin: 0 0 10px 0;">⚠️ Emergencia</h6>
+                            <div style="font-size: 1.5rem; font-weight: bold;">24h</div>
+                            <div style="font-size: 0.9rem; opacity: 0.9;">Respuesta inmediata</div>
+                        </div>
+                    </div>
+
+                    <div style="background: #e6fffa; padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #4facfe;">
+                        <h6 style="color: #2d3748; margin: 0 0 15px 0;">📋 Elementos a Inspeccionar</h6>
+                        <div style="display: grid; gap: 8px;">
+                            <div style="background: rgba(72,187,120,0.1); padding: 10px; border-radius: 6px;">
+                                <strong>Señalización:</strong> Visibilidad, estado, cumplimiento normativo
+                            </div>
+                            <div style="background: rgba(72,187,120,0.1); padding: 10px; border-radius: 6px;">
+                                <strong>Pavimento:</strong> Grietas, baches, demarcación horizontal
+                            </div>
+                            <div style="background: rgba(72,187,120,0.1); padding: 10px; border-radius: 6px;">
+                                <strong>Drenaje:</strong> Funcionamiento, obstrucciones, erosión
+                            </div>
+                            <div style="background: rgba(72,187,120,0.1); padding: 10px; border-radius: 6px;">
+                                <strong>Iluminación:</strong> Funcionamiento, cobertura, eficiencia
+                            </div>
+                            <div style="background: rgba(72,187,120,0.1); padding: 10px; border-radius: 6px;">
+                                <strong>Barreras:</strong> Integridad, anclajes, continuidad
+                            </div>
+                        </div>
+                    </div>
+
+                    ${conditions.length > 0 ? `
+                    <div style="background: #fff7ed; padding: 20px; border-radius: 12px; border-left: 4px solid #ed8936;">
+                        <h6 style="color: #2d3748; margin: 0 0 10px 0;">⚠️ Consideraciones Especiales</h6>
+                        <p style="margin: 0; color: #4a5568;">Debido a las condiciones especiales identificadas, se recomienda:</p>
+                        <ul style="margin: 10px 0 0 0; color: #4a5568;">
+                            <li>Aumentar frecuencia de inspecciones en ${Math.round(riskMultiplier * 100 - 100)}%</li>
+                            <li>Monitoreo especial durante condiciones adversas</li>
+                            <li>Coordinación con equipos de emergencia</li>
+                            <li>Documentación detallada de incidencias</li>
+                        </ul>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+
+            showToolResult('inspectionResult', result);
+        }
+
+        function generateComprehensiveStrategy() {
+            const context = document.getElementById('projectContext').value;
+            const maturity = document.getElementById('maturityLevel').value;
+            const objective = document.getElementById('mainObjective').value;
+            const budget = parseInt(document.getElementById('totalBudget').value);
+            
+            // Get selected standards
+            const selectedStandards = [];
+            if (document.getElementById('unStandards').checked) selectedStandards.push('ONU');
+            if (document.getElementById('oecdStandards').checked) selectedStandards.push('OCDE');
+            if (document.getElementById('isoStandards').checked) selectedStandards.push('ISO 39001');
+            if (document.getElementById('whoStandards').checked) selectedStandards.push('OMS');
+
+            if (!context || !maturity || !objective || !budget || selectedStandards.length === 0) {
+                showToolResult('comprehensiveResult', 'Por favor, completa todos los campos y selecciona al menos un estándar.');
+                return;
+            }
+
+            const maturityLevels = {
+                inicial: { 
+                    focus: 'Establecimiento de bases', 
+                    timeline: '12-18 meses',
+                    priority: 'Capacitación y estructura básica'
+                },
+                desarrollo: { 
+                    focus: 'Sistematización de procesos', 
+                    timeline: '8-12 meses',
+                    priority: 'Implementación de metodologías'
+                },
+                maduro: { 
+                    focus: 'Optimización y mejora', 
+                    timeline: '6-9 meses',
+                    priority: 'Certificaciones y benchmarking'
+                },
+                optimizado: { 
+                    focus: 'Innovación y liderazgo', 
+                    timeline: '3-6 meses',
+                    priority: 'Investigación y desarrollo'
+                }
+            };
+
+            const objectives = {
+                reduce_fatalities: 'Reducción de fatalidades en 50% según ODS 3.6',
+                improve_infrastructure: 'Infraestructura vial clase mundial',
+                enhance_enforcement: 'Sistema de enforcement inteligente',
+                education_programs: 'Programas educativos de impacto',
+                comprehensive_system: 'Sistema integral de gestión ISO 39001'
+            };
+
+            const maturityData = maturityLevels[maturity];
+            const objectiveText = objectives[objective];
+
+            const result = `
+                <div style="background: rgba(255,255,255,0.9); padding: 25px; border-radius: 12px; color: #2d3748;">
+                    <h6 style="color: #667eea; margin-bottom: 20px; font-size: 1.2rem;">🌍 Estrategia Integral Basada en Estándares Internacionales</h6>
+                    
+                    <div style="background: #f7fafc; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                        <h6 style="margin: 0 0 15px 0;">📋 Resumen Ejecutivo</h6>
+                        <p style="margin: 0;"><strong>Contexto:</strong> ${context}</p>
+                        <p style="margin: 5px 0 0 0;"><strong>Objetivo:</strong> ${objectiveText}</p>
+                        <p style="margin: 5px 0 0 0;"><strong>Madurez:</strong> ${maturity} | <strong>Presupuesto:</strong> $${budget.toLocaleString()}</p>
+                        <p style="margin: 5px 0 0 0;"><strong>Estándares aplicados:</strong> ${selectedStandards.join(', ')}</p>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(${selectedStandards.length}, 1fr); gap: 15px; margin-bottom: 20px;">
+                        ${selectedStandards.includes('ONU') ? `
+                        <div style="background: linear-gradient(135deg, #4299e1, #3182ce); color: white; padding: 20px; border-radius: 12px;">
+                            <h6 style="margin: 0 0 15px 0;">🌍 Marco ONU</h6>
+                            <ul style="margin: 0; padding-left: 20px; font-size: 0.9rem;">
+                                <li>Plan Mundial Decenio 2021-2030</li>
+                                <li>Enfoque Sistema Seguro</li>
+                                <li>5 Pilares fundamentales</li>
+                                <li>Indicadores ODS 3.6</li>
+                            </ul>
+                        </div>
+                        ` : ''}
+                        
+                        ${selectedStandards.includes('OCDE') ? `
+                        <div style="background: linear-gradient(135deg, #48bb78, #38a169); color: white; padding: 20px; border-radius: 12px;">
+                            <h6 style="margin: 0 0 15px 0;">📊 Metodología OCDE</h6>
+                            <ul style="margin: 0; padding-left: 20px; font-size: 0.9rem;">
+                                <li>Análisis costo-beneficio</li>
+                                <li>Indicadores de desempeño</li>
+                                <li>Benchmarking internacional</li>
+                                <li>Evaluación de políticas</li>
+                            </ul>
+                        </div>
+                        ` : ''}
+                        
+                        ${selectedStandards.includes('ISO 39001') ? `
+                        <div style="background: linear-gradient(135deg, #ed8936, #dd6b20); color: white; padding: 20px; border-radius: 12px;">
+                            <h6 style="margin: 0 0 15px 0;">⚙️ ISO 39001</h6>
+                            <ul style="margin: 0; padding-left: 20px; font-size: 0.9rem;">
+                                <li>Sistema de gestión certificable</li>
+                                <li>Ciclo PHVA estructurado</li>
+                                <li>Mejora continua</li>
+                                <li>Auditorías sistemáticas</li>
+                            </ul>
+                        </div>
+                        ` : ''}
+                        
+                        ${selectedStandards.includes('OMS') ? `
+                        <div style="background: linear-gradient(135deg, #e53e3e, #c53030); color: white; padding: 20px; border-radius: 12px;">
+                            <h6 style="margin: 0 0 15px 0;">🏥 Directrices OMS</h6>
+                            <ul style="margin: 0; padding-left: 20px; font-size: 0.9rem;">
+                                <li>Enfoque de salud pública</li>
+                                <li>Prevención de lesiones</li>
+                                <li>Respuesta post-accidente</li>
+                                <li>Rehabilitación integral</li>
+                            </ul>
+                        </div>
+                        ` : ''}
+                    </div>
+
+                    <div style="background: #e6fffa; padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #4facfe;">
+                        <h6 style="color: #2d3748; margin: 0 0 15px 0;">🎯 Plan de Implementación Adaptado</h6>
+                        <div style="display: grid; gap: 12px;">
+                            <div style="background: rgba(102,126,234,0.1); padding: 12px; border-radius: 8px;">
+                                <strong>Enfoque:</strong> ${maturityData.focus}
+                            </div>
+                            <div style="background: rgba(102,126,234,0.1); padding: 12px; border-radius: 8px;">
+                                <strong>Cronograma:</strong> ${maturityData.timeline}
+                            </div>
+                            <div style="background: rgba(102,126,234,0.1); padding: 12px; border-radius: 8px;">
+                                <strong>Prioridad:</strong> ${maturityData.priority}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background: #fff7ed; padding: 20px; border-radius: 12px; border-left: 4px solid #ed8936;">
+                        <h6 style="color: #2d3748; margin: 0 0 15px 0;">📈 Resultados Esperados</h6>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                            <div>
+                                <strong>Impacto en seguridad:</strong><br>
+                                • Reducción de accidentes: 30-60%<br>
+                                • Mejora en indicadores ONU: Significativa<br>
+                                • Certificación internacional: Posible
+                            </div>
+                            <div>
+                                <strong>Beneficios organizacionales:</strong><br>
+                                • ROI estimado: 200-500%<br>
+                                • Reconocimiento internacional<br>
+                                • Capacidades técnicas avanzadas
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            showToolResult('comprehensiveResult', result);
+        }
+
+        function showToolResult(elementId, content) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = content;
+            element.style.display = 'block';
+            element.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateNavigation(1);
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99598ea702fbb6f2',t:'MTc2MTY0NTMyMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
