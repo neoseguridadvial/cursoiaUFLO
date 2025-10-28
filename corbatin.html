@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis de Siniestros Viales - Metodología Bowtie</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            color: #1e293b;
+        }
+        /* Estilos para los conectores */
+        .threat-container, .consequence-container {
+            position: relative;
+        }
+        .preventive-barrier-connector, .mitigation-barrier-connector {
+            position: absolute;
+            top: 50%;
+            border-top: 2px dashed #94a3b8;
+            z-index: 0;
+        }
+        .preventive-barrier-connector {
+            right: -40px;
+            width: 40px;
+            transform: translateY(-50%);
+        }
+        .mitigation-barrier-connector {
+            left: -40px;
+            width: 40px;
+            transform: translateY(-50%);
+        }
+        .bowtie-knot {
+            position: relative;
+        }
+        .bowtie-knot::before, .bowtie-knot::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            transform: translateY(-50%);
+        }
+        /* Lazo izquierdo del corbatín */
+        .bowtie-knot::before {
+            left: -40px;
+            border-width: 40px 40px 40px 0;
+            border-color: transparent #38bdf8 transparent transparent;
+        }
+        /* Lazo derecho del corbatín */
+        .bowtie-knot::after {
+            right: -40px;
+            border-width: 40px 0 40px 40px;
+            border-color: transparent transparent transparent #38bdf8;
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .card:hover {
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
+            transform: translateY(-2px);
+        }
+        .add-btn {
+            background-color: #3b82f6;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+        .add-btn:hover {
+            background-color: #2563eb;
+        }
+        .delete-btn {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #ef4444;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .card:hover .delete-btn {
+            opacity: 1;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            width: 90%;
+            max-width: 500px;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div id="app" class="max-w-7xl mx-auto">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-800">Análisis de Siniestro Vial</h1>
+            <p class="text-slate-500 mt-2 text-lg">Metodología de Análisis Bowtie ("Corbatín")</p>
+        </header>
+
+        <main class="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
+            
+            <!-- Columna de Amenazas y Barreras Preventivas -->
+            <div class="lg:col-span-2 space-y-6">
+                <h2 class="text-xl font-semibold text-center text-rose-600">Amenazas</h2>
+                <div id="threats-container" class="space-y-8">
+                    <!-- Las amenazas se agregarán aquí dinámicamente -->
+                </div>
+                <div class="text-center mt-4">
+                    <button id="add-threat-btn" class="add-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block -mt-1 mr-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>
+                        Añadir Amenaza
+                    </button>
+                </div>
+            </div>
+
+            <!-- Columna Central: Evento Principal -->
+            <div class="flex items-center justify-center lg:mt-32">
+                 <div class="relative flex items-center justify-center h-full">
+                    <div id="top-event" class="card bowtie-knot bg-sky-400 text-white p-4 w-48 text-center z-10">
+                        <h3 class="font-bold text-lg">Siniestro Vial</h3>
+                        <p id="top-event-desc" class="text-sm mt-1">Pérdida de control que resulta en un incidente.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna de Consecuencias y Barreras de Mitigación -->
+            <div class="lg:col-span-2 space-y-6">
+                <h2 class="text-xl font-semibold text-center text-amber-600">Consecuencias</h2>
+                <div id="consequences-container" class="space-y-8">
+                    <!-- Las consecuencias se agregarán aquí dinámicamente -->
+                </div>
+                <div class="text-center mt-4">
+                    <button id="add-consequence-btn" class="add-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block -mt-1 mr-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>
+                        Añadir Consecuencia
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal para editar texto -->
+    <div id="edit-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3 class="text-lg font-bold mb-4">Editar Elemento</h3>
+            <textarea id="modal-textarea" class="w-full p-2 border rounded-md" rows="4"></textarea>
+            <div class="mt-4 flex justify-end gap-2">
+                <button id="modal-cancel-btn" class="bg-slate-200 text-slate-800 px-4 py-2 rounded-md hover:bg-slate-300">Cancelar</button>
+                <button id="modal-save-btn" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const threatsContainer = document.getElementById('threats-container');
+            const consequencesContainer = document.getElementById('consequences-container');
+            const addThreatBtn = document.getElementById('add-threat-btn');
+            const addConsequenceBtn = document.getElementById('add-consequence-btn');
+            
+            // --- Funcionalidad del Modal ---
+            const editModal = document.getElementById('edit-modal');
+            const modalTextarea = document.getElementById('modal-textarea');
+            const modalSaveBtn = document.getElementById('modal-save-btn');
+            const modalCancelBtn = document.getElementById('modal-cancel-btn');
+            let currentEditingElement = null;
+
+            function openModal(element) {
+                currentEditingElement = element;
+                modalTextarea.value = element.innerText;
+                editModal.classList.remove('hidden');
+                modalTextarea.focus();
+            }
+
+            function closeModal() {
+                editModal.classList.add('hidden');
+                currentEditingElement = null;
+            }
+            
+            modalSaveBtn.addEventListener('click', () => {
+                if (currentEditingElement) {
+                    currentEditingElement.innerText = modalTextarea.value;
+                }
+                closeModal();
+            });
+            
+            modalCancelBtn.addEventListener('click', closeModal);
+
+            document.getElementById('top-event-desc').addEventListener('click', function() {
+                openModal(this);
+            });
+
+            // --- Funciones para crear elementos ---
+
+            const createDeletableCard = (text, bgColor, textColor = 'text-slate-800') => {
+                const card = document.createElement('div');
+                card.className = `card relative p-3 ${bgColor} ${textColor}`;
+                
+                const content = document.createElement('p');
+                content.innerText = text;
+                content.className = 'editable text-sm';
+                content.addEventListener('click', () => openModal(content));
+
+                const deleteBtn = document.createElement('div');
+                deleteBtn.className = 'delete-btn';
+                deleteBtn.innerHTML = '&times;';
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    // Dependiendo del padre, eliminamos el contenedor correcto
+                    let elementToRemove = card.closest('.threat-item, .consequence-item, .barrier-item');
+                     if (elementToRemove) {
+                        elementToRemove.remove();
+                    } else {
+                        card.remove(); // Fallback por si acaso
+                    }
+                });
+
+                card.appendChild(content);
+                card.appendChild(deleteBtn);
+                return card;
+            };
+
+            const createBarrier = (type) => {
+                const isPreventive = type === 'preventive';
+                const text = isPreventive ? "Nueva barrera preventiva" : "Nueva barrera de mitigación";
+                const color = isPreventive ? 'bg-emerald-100' : 'bg-cyan-100';
+
+                const barrierItem = document.createElement('div');
+                barrierItem.className = 'barrier-item flex items-center gap-4 justify-end';
+
+                const card = createDeletableCard(text, color);
+                
+                const connector = document.createElement('div');
+                connector.className = isPreventive ? 'preventive-barrier-connector' : 'mitigation-barrier-connector';
+                
+                card.appendChild(connector);
+                barrierItem.appendChild(card);
+                return barrierItem;
+            };
+            
+            const createThreat = () => {
+                const threatItem = document.createElement('div');
+                threatItem.className = 'threat-item';
+
+                const container = document.createElement('div');
+                container.className = 'threat-container flex items-center gap-4';
+
+                const card = createDeletableCard("Nueva amenaza (ej: Exceso de velocidad)", 'bg-rose-100');
+                
+                // Barreras preventivas
+                const barriersSide = document.createElement('div');
+                barriersSide.className = 'preventive-barriers flex-grow space-y-2';
+
+                const addBarrierBtn = document.createElement('button');
+                addBarrierBtn.className = 'text-xs bg-emerald-500 text-white px-2 py-1 rounded-full hover:bg-emerald-600 transition-colors w-full';
+                addBarrierBtn.innerText = '+ Barrera Preventiva';
+                addBarrierBtn.onclick = () => {
+                    const newBarrier = createBarrier('preventive');
+                    barriersSide.insertBefore(newBarrier, addBarrierBtn);
+                };
+                
+                barriersSide.appendChild(addBarrierBtn);
+                
+                container.appendChild(card);
+                container.appendChild(barriersSide);
+                threatItem.appendChild(container);
+
+                threatsContainer.appendChild(threatItem);
+            };
+
+            const createConsequence = () => {
+                const consequenceItem = document.createElement('div');
+                consequenceItem.className = 'consequence-item';
+
+                const container = document.createElement('div');
+                container.className = 'consequence-container flex items-center flex-row-reverse gap-4';
+
+                const card = createDeletableCard("Nueva consecuencia (ej: Lesiones graves)", 'bg-amber-100');
+
+                // Barreras de mitigación
+                const barriersSide = document.createElement('div');
+                barriersSide.className = 'mitigation-barriers flex-grow space-y-2';
+
+                const addBarrierBtn = document.createElement('button');
+                addBarrierBtn.className = 'text-xs bg-cyan-500 text-white px-2 py-1 rounded-full hover:bg-cyan-600 transition-colors w-full';
+                addBarrierBtn.innerText = '+ Barrera de Mitigación';
+                addBarrierBtn.onclick = () => {
+                    const newBarrier = createBarrier('mitigation');
+                    // Invertimos el orden para que crezcan hacia la izquierda
+                    barriersSide.insertBefore(newBarrier, addBarrierBtn);
+                };
+
+                barriersSide.appendChild(addBarrierBtn);
+                
+                container.appendChild(card);
+                container.appendChild(barriersSide);
+                consequenceItem.appendChild(container);
+                
+                consequencesContainer.appendChild(consequenceItem);
+            };
+
+            // Event Listeners para añadir elementos principales
+            addThreatBtn.addEventListener('click', createThreat);
+            addConsequenceBtn.addEventListener('click', createConsequence);
+            
+            // Crear elementos iniciales de ejemplo
+            createThreat();
+            createConsequence();
+
+        });
+    </script>
+</body>
+</html>
