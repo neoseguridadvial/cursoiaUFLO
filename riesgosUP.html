@@ -1,0 +1,724 @@
+<!DOCTYPE DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autoevaluación de Gestión de Riesgos Viales - Road Risk Toolkit</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .progress-bar {
+            transition: width 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-full">
+    <div class="container mx-auto px-4 py-8 max-w-5xl">
+        <!-- Header -->
+        <header class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h1 class="text-3xl font-bold text-indigo-900 mb-2">Autoevaluación de Gestión de Riesgos Viales</h1>
+            <p class="text-gray-600">Road Risk Toolkit GRSF - Nivel de Unidad Empresarial</p>
+        </header>
+
+        <!-- Company Info -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8 fade-in">
+            <h2 class="text-xl font-semibold text-indigo-900 mb-4">Información de la Empresa</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="companyName" class="block text-sm font-medium text-gray-700 mb-2">Nombre de la Empresa</label>
+                    <input type="text" id="companyName" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="Ingrese el nombre">
+                </div>
+                <div>
+                    <label for="evaluationDate" class="block text-sm font-medium text-gray-700 mb-2">Fecha de Evaluación</label>
+                    <input type="date" id="evaluationDate" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                </div>
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="bg-blue-50 border-l-4 border-blue-500 p-6 mb-8 rounded-r-lg">
+            <h3 class="text-lg font-semibold text-blue-900 mb-3">📋 Instrucciones de Evaluación</h3>
+            <div class="space-y-2 text-sm text-blue-800">
+                <p><strong>Niveles de Autoevaluación:</strong></p>
+                <ul class="list-disc list-inside ml-4 space-y-1">
+                    <li><strong>Alto (1 punto):</strong> Todo lo incluido en los detalles está en su lugar</li>
+                    <li><strong>Intermedio (0.5 puntos):</strong> Parte de lo incluido en los detalles está en su lugar</li>
+                    <li><strong>Bajo (0 puntos):</strong> Poco o nada de los detalles está en su lugar</li>
+                </ul>
+                <p class="mt-3"><strong>Clasificación General:</strong></p>
+                <ul class="list-disc list-inside ml-4 space-y-1">
+                    <li>🟢 <strong>Buena:</strong> 75-100%</li>
+                    <li>🟡 <strong>Intermedia:</strong> 25-75%</li>
+                    <li>🔴 <strong>Baja:</strong> 0-25%</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-sm font-medium text-gray-700">Progreso de Evaluación</span>
+                <span class="text-sm font-medium text-indigo-600" id="progressText">0%</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-3">
+                <div id="progressBar" class="progress-bar bg-indigo-600 h-3 rounded-full" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- Evaluation Sections -->
+        <div id="evaluationSections" class="space-y-6">
+            <!-- Sections will be generated here -->
+        </div>
+
+        <!-- Results Section -->
+        <div id="resultsSection" class="bg-white rounded-lg shadow-lg p-6 mt-8 hidden">
+            <h2 class="text-2xl font-bold text-indigo-900 mb-6">📊 Resultados de la Evaluación</h2>
+            
+            <!-- Consolidated Results Summary -->
+            <div class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg p-6 mb-8 text-white">
+                <h3 class="text-xl font-bold mb-4 text-center">📊 Resumen Consolidado de Resultados</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                    <div>
+                        <p class="text-sm opacity-90 mb-1">Puntaje Máximo</p>
+                        <p class="text-2xl font-bold" id="maxScore">30</p>
+                    </div>
+                    <div>
+                        <p class="text-sm opacity-90 mb-1">Puntaje Obtenido</p>
+                        <p class="text-2xl font-bold" id="obtainedScore">0</p>
+                    </div>
+                    <div>
+                        <p class="text-sm opacity-90 mb-1">Valoración /10</p>
+                        <p class="text-2xl font-bold" id="ratingOutOf10">0.0</p>
+                    </div>
+                    <div>
+                        <p class="text-sm opacity-90 mb-1">Porcentaje</p>
+                        <p class="text-2xl font-bold" id="percentageScore">0%</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg p-6 text-white">
+                    <p class="text-sm opacity-90 mb-2">Puntuación Total</p>
+                    <p class="text-4xl font-bold" id="totalScore">0</p>
+                    <p class="text-sm opacity-90 mt-2" id="totalPossible">de 30 puntos</p>
+                </div>
+                <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg p-6 text-white">
+                    <p class="text-sm opacity-90 mb-2">Valoración</p>
+                    <p class="text-4xl font-bold" id="ratingDisplay">0.0/10</p>
+                </div>
+                <div class="rounded-lg p-6 text-white" id="classificationBox">
+                    <p class="text-sm opacity-90 mb-2">Clasificación</p>
+                    <p class="text-4xl font-bold" id="classification">-</p>
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold text-indigo-900 mb-4">Resultados por Categoría</h3>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div id="categoryResults" class="space-y-4">
+                        <!-- Category results will be inserted here -->
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <h4 class="text-lg font-semibold text-gray-800 mb-4 text-center">📈 Gráfico Radar por Categorías</h4>
+                        <div class="flex justify-center">
+                            <svg id="radarChart" width="350" height="350" viewBox="0 0 350 350">
+                                <!-- Radar chart will be drawn here -->
+                            </svg>
+                        </div>
+                        <div class="mt-4 text-center">
+                            <div class="flex items-center justify-center space-x-4 text-sm">
+                                <div class="flex items-center">
+                                    <div class="w-3 h-3 bg-indigo-600 rounded-full mr-2"></div>
+                                    <span class="text-gray-600">Puntuación Obtenida</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="w-3 h-3 border-2 border-gray-400 rounded-full mr-2"></div>
+                                    <span class="text-gray-600">Puntuación Máxima</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-4">
+                <button onclick="generateReport()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200">
+                    📄 Generar Reporte
+                </button>
+                <button onclick="resetEvaluation()" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-200">
+                    🔄 Nueva Evaluación
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const evaluationData = {
+            "Gestión": [
+                {
+                    tema: "Gestión Financiera - Coste Total del Riesgo",
+                    detalle: "El Coste Total del Riesgo, incluidas TODAS las pérdidas no aseguradas / costes ocultos, se conoce y comprende en toda la organización, y también se entiende en relación con la forma en que los ingresos necesarios para financiar el Coste Total del Riesgo se relacionan con el producto o servicio principal."
+                },
+                {
+                    tema: "Gestión Financiera - Presupuesto de Gestión de Riesgos",
+                    detalle: "El programa de gestión del riesgo vial relacionado con el trabajo tiene un presupuesto separado, suficiente para las acciones acordadas, limitado y revisado al menos anualmente en función de la evolución de la estrategia y el programa."
+                },
+                {
+                    tema: "Conflictos Operacionales - Alineación de prácticas",
+                    detalle: "Las políticas, procedimientos y prácticas operacionales están totalmente alineados con los requisitos de conducción segura y las políticas de conducción segura de la organización. Cualquier cambio en las operaciones, incluidas las adquisiciones, tiene en cuenta los requisitos de conducción segura antes de llevarse a cabo."
+                },
+                {
+                    tema: "Supervisión del Conductor - Seguimiento",
+                    detalle: "Todos los conductores, incluidos los conductores de la Flota Gris, son supervisados de manera rutinaria y transparente mediante el uso de datos de telemetría, unidades acompañadas, informes públicos de mala conducción observada, análisis de registros (combustible, mantenimiento, teléfono móvil) según corresponda."
+                }
+            ],
+            "Políticas y Procedimientos": [
+                {
+                    tema: "Conducción en el Trabajo - Política de gestión",
+                    detalle: "Existe una política integral, revisada y actualizada anualmente."
+                },
+                {
+                    tema: "Conducción en el Trabajo - Legislación",
+                    detalle: "La política cumple totalmente con la legislación local, en todas las áreas de operación, y establece claramente las expectativas con las que debe cumplir el empleado."
+                },
+                {
+                    tema: "Política de Conducción Distraída - Teléfonos móviles",
+                    detalle: "No se permite el uso de teléfonos móviles mientras se conduce, incluido el sistema de manos libres, y se realiza una revisión para verificar el cumplimiento. Los conductores nunca deben usar su smartphone para otra cosa que no sea navegación (si está permitido en la política) mientras conducen."
+                },
+                {
+                    tema: "Política de Conducción Distraída - Otras distracciones",
+                    detalle: "El uso de cualquier material potencialmente distractor no está permitido mientras se conduce, con revisiones para verificar el cumplimiento."
+                },
+                {
+                    tema: "Política de Gestión del Cansancio - Horas de trabajo",
+                    detalle: "Existe una política que limita la duración total de la jornada laboral, incluida la conducción y los desplazamientos, con una auditoría de seguimiento para demostrar el cumplimiento."
+                },
+                {
+                    tema: "Política de Alcohol y Drogas",
+                    detalle: "Existe una política clara sobre consumo de alcohol y drogas, con procedimientos de verificación y cumplimiento establecidos."
+                },
+                {
+                    tema: "Problemas de Vista - Examinación de la vista",
+                    detalle: "Todos los empleados que realizan viajes por carretera relacionados con el trabajo, incluidos los conductores de la Flota Gris, reciben pruebas de visión al menos una vez cada 2 años, con una auditoría de seguimiento."
+                },
+                {
+                    tema: "Gestión de la Velocidad - Exceso de velocidad",
+                    detalle: "Existe una política formal sobre la conducción dentro de los límites de velocidad y a una velocidad adecuada para las condiciones prevalecientes de la carretera (p. ej. en condiciones climáticas adversas), con una auditoría de seguimiento que cubre a todos los empleados, incluidos los conductores de la Flota Gris."
+                },
+                {
+                    tema: "Gestión de Política - Revisiones y actualizaciones",
+                    detalle: "Las políticas se revisan y actualizan anualmente para tener en cuenta los cambios en las prácticas operativas, la gestión de la seguridad vial, los cambios en la legislación y las iniciativas de mejora continua."
+                },
+                {
+                    tema: "Gestión de la Flota Gris - Objetivo",
+                    detalle: "O hay empleados que NUNCA viajan en vehículos que no sean propiedad o estén administrados por la empresa o TODOS los empleados que VIAJEN por carretera por objetivos de trabajo están sujetos a la política."
+                },
+                {
+                    tema: "Revisión - Auditoría de seguimiento",
+                    detalle: "Existe una auditoría de seguimiento para TODAS las políticas para demostrar que se están siguiendo y que son efectivas."
+                }
+            ],
+            "Evaluar": [
+                {
+                    tema: "Evaluación de riesgos - Para todos los conductores",
+                    detalle: "Se evalúan los riesgos para todos los conductores que conduzcan alguna vez por motivos de trabajo, incluyendo a los conductores de flota gris."
+                },
+                {
+                    tema: "Verificaciones del Permiso de Conducir - Todos los permisos",
+                    detalle: "Se verifican los permisos de conducir de todos los conductores, incluidos los conductores de vehículos de la Flota Gris, para asegurarse de que están en vigor y son válidos mientras se conduce el vehículo."
+                }
+            ],
+            "Control": [
+                {
+                    tema: "Intervenciones del Conductor - ¿Qué intervenciones existen?",
+                    detalle: "Una combinación de: en el vehículo, en el aula y en línea, en función de la necesidad identificada por los datos de evaluación (evaluaciones de riesgos, informes de colisión, datos de telemetría de comportamiento del conductor y verificaciones de permisos conducir)."
+                }
+            ],
+            "Medida": [
+                {
+                    tema: "Gestión de accidentes - Costes directos",
+                    detalle: "Todos los interesados conocen y entienden todos los costes de seguro, y cualquier coste por debajo del deducible (por debajo del exceso de seguro) asociados con incidentes de conducción. Esto ayuda a garantizar que todos entiendan las implicaciones completas para el negocio de un accidente."
+                },
+                {
+                    tema: "Indicadores Clave de Rendimiento - Indicadores rezagados",
+                    detalle: "Los indicadores rezagados, incluidos los accidentes por millón de millas (CPMM), los costes de accidentes, el coste de mantenimiento y la cantidad de infracciones de conducción, son conocidos por todos los conductores, incluidos los empleados que conducen vehículos de la Flota Gris, se registran mensualmente y son conocidos y entendidos por todos los interesados."
+                },
+                {
+                    tema: "Informes de Accidentes - Informe del conductor",
+                    detalle: "El conductor registra los datos completos, incluyendo fotografías, para cada incidente e informa a las aseguradoras inmediatamente y al Superiores Inmediato en 24 horas."
+                },
+                {
+                    tema: "Informes de Accidentes - Fichas de accidentes",
+                    detalle: "Todos los conductores, incluidos los empleados que conducen vehículos de la Flota Gris, tienen una ficha de accidentes completa o equivalente, que cubre todos los detalles que serán útiles en el análisis posterior de la causa raíz, así como lo requieren las aseguradoras, para permitir que todos los detalles del incidente se registren de forma sistemática. Hay evidencia de que estas se completan en su totalidad después de cada incidente."
+                },
+                {
+                    tema: "Informes de Gestión - Visibilidad para la alta gerencia",
+                    detalle: "Todos los Indicadores Clave de Rendimiento del programa de gestión de riesgos viales relacionados con el trabajo se distribuyen a todos los gerentes principales al menos mensualmente."
+                }
+            ],
+            "Conductor": [
+                {
+                    tema: "Manual del Conductor - Manuales suministrados",
+                    detalle: "Se proporcionan manuales para conductores a TODOS los empleados que realizan viajes por carretera relacionados con el trabajo, incluidos los empleados que conducen vehículos de la Flota Gris, que incluyen todos los elementos clave de políticas y procedimientos junto con consejos de conducción segura. El manual debe ayudar a los empleados a cumplir con sus políticas y procedimientos de conducción segura."
+                },
+                {
+                    tema: "Manual del Conductor - Revisión y actualización",
+                    detalle: "Los manuales se revisan anualmente y/o cada vez que se realizan cambios significativos en las políticas y procedimientos o consejos de seguridad de conducción y se actualizan en consecuencia."
+                },
+                {
+                    tema: "Responsabilidades del Conductor - Condiciones para conducir",
+                    detalle: "Todos los conductores, incluidos los empleados que conducen vehículos de la Flota Gris, se aseguran de que estén en condiciones de conducir antes de realizar CUALQUIER viaje por carretera relacionado con el trabajo. Esto incluye cuestiones relacionadas con la salud, la vista, la discapacidad y la fatiga."
+                },
+                {
+                    tema: "Responsabilidades del Conductor - Cumplimiento legislativo",
+                    detalle: "Todos los conductores, incluidos los empleados que conducen vehículos de la Flota Gris, cumplen plenamente con toda la legislación local. Hay una auditoría de seguimiento que demuestra que la mayoría de los conductores cumplen con esta obligación (p. ej. por multas por exceso de velocidad)."
+                },
+                {
+                    tema: "Responsabilidades del Conductor - Notificación de cambios",
+                    detalle: "Todos los conductores, incluidos los empleados que conducen vehículos de la Flota Gris, están totalmente obligados a notificar a su Superior Inmediato sobre cualquier cambio en las circunstancias que podrían cambiar los riesgos que enfrentan. Esto incluye problemas de salud, cambios de dirección y cambios en los permisos de conducir."
+                },
+                {
+                    tema: "Responsabilidades del Conductor - Legalidad del vehículo",
+                    detalle: "Todos los conductores, incluidos los empleados que conducen vehículos de la Flota Gris, son plenamente conscientes de su obligación de garantizar que el vehículo que utilizan para viajes por carretera relacionados con el trabajo, independientemente de su propiedad, sea completamente legal y cumpla con los requisitos mínimos de seguridad de la empresa. Existen pruebas de que esta obligación generalmente se cumple (p. ej. de los registros de mantenimiento, como los vehículos que tienen uno o más neumáticos defectuosos)."
+                }
+            ],
+            "Viaje": [
+                {
+                    tema: "Evaluación de la necesidad de viajar - Los viajes innecesarios son eliminados",
+                    detalle: "Los viajes se eliminan siempre que sea posible, a través de cambios en las prácticas operativas (p. ej. mediante el uso de videoconferencia para reemplazar la necesidad de viajar en algunos casos)."
+                },
+                {
+                    tema: "Condiciones Climáticas Adversas - Conducción en climas extremos",
+                    detalle: "No se realizan viajes en condiciones climáticas extremas, donde las autoridades han aconsejado no viajar o donde su evaluación dinámica de riesgos muestra que existen riesgos inaceptables."
+                }
+            ],
+            "Vehículo": [
+                {
+                    tema: "Selección del Vehículo - Los vehículos se adecuan al propósito",
+                    detalle: "Todos los vehículos, incluidos los vehículos de la Flota Gris, son adecuados para los viajes requeridos (adecuados para el propósito). Esto incluye problemas ergonómicos en torno a las posiciones de los asientos, lo que se transporta en el vehículo y la carga/descarga."
+                },
+                {
+                    tema: "Selección del Vehículo - Especificación de seguridad mínima",
+                    detalle: "Todos los vehículos están equipados con cinturones de seguridad para todos los asientos, 2 espejos retrovisores, 2 airbags y Control Electrónico de Estabilidad como mínimo. Si su especificación de seguridad mínima es más avanzada, entonces debería usarse como estos criterios."
+                },
+                {
+                    tema: "Mantenimiento del Vehículo - Mantenimiento de rutina",
+                    detalle: "Todos los conductores revisan sus vehículos al menos una vez por semana, con evidencia como soporte. Para furgonetas y camiones, estos controles se llevan a cabo diariamente. Existe una auditoría de seguimiento para apoyar esto."
+                },
+                {
+                    tema: "Mantenimiento del Vehículo - Reparación",
+                    detalle: "Todos los vehículos, incluidos los vehículos de la Flota Gris, son verificados según los programas del fabricante y/o intervalos variables, por talleres OEM [Original Equipment Manufacturer (Fabricante de Equipo Original)]. Existe una auditoría de seguimiento para apoyar esto."
+                }
+            ]
+        };
+
+        let responses = {};
+        let totalQuestions = 0;
+
+        function initializeEvaluation() {
+            const container = document.getElementById('evaluationSections');
+            let questionId = 0;
+
+            Object.keys(evaluationData).forEach((category, categoryIndex) => {
+                const section = document.createElement('div');
+                section.className = 'bg-white rounded-lg shadow-lg fade-in';
+                
+                let sectionHTML = `
+                    <div class="p-6 border-b border-gray-200">
+                        <button onclick="toggleSection('${category}')" class="w-full flex items-center justify-between text-left">
+                            <h2 class="text-2xl font-bold text-indigo-900">
+                                ${category} (${evaluationData[category].length} preguntas)
+                            </h2>
+                            <svg id="icon-${category}" class="w-6 h-6 text-indigo-600 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div id="content-${category}" class="p-6 ${categoryIndex === 0 ? '' : 'hidden'}">
+                `;
+
+                evaluationData[category].forEach(item => {
+                    const id = `q${questionId}`;
+                    totalQuestions++;
+                    
+                    sectionHTML += `
+                        <div class="mb-8 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                            <h3 class="font-semibold text-lg text-gray-800 mb-3">${item.tema}</h3>
+                            <p class="text-sm text-gray-600 mb-4 leading-relaxed">${item.detalle}</p>
+                            
+                            <div class="space-y-2">
+                                <label class="flex items-center p-3 bg-white rounded-lg border-2 border-gray-200 cursor-pointer hover:border-green-400 transition duration-200">
+                                    <input type="radio" name="${id}" value="1" onchange="updateResponse('${id}', 1, '${category}')" class="w-5 h-5 text-green-600">
+                                    <span class="ml-3 text-gray-700">
+                                        <strong class="text-green-600">Alto (1 punto)</strong> - Todo está en su lugar
+                                    </span>
+                                </label>
+                                
+                                <label class="flex items-center p-3 bg-white rounded-lg border-2 border-gray-200 cursor-pointer hover:border-yellow-400 transition duration-200">
+                                    <input type="radio" name="${id}" value="0.5" onchange="updateResponse('${id}', 0.5, '${category}')" class="w-5 h-5 text-yellow-600">
+                                    <span class="ml-3 text-gray-700">
+                                        <strong class="text-yellow-600">Intermedio (0.5 puntos)</strong> - Parte está en su lugar
+                                    </span>
+                                </label>
+                                
+                                <label class="flex items-center p-3 bg-white rounded-lg border-2 border-gray-200 cursor-pointer hover:border-red-400 transition duration-200">
+                                    <input type="radio" name="${id}" value="0" onchange="updateResponse('${id}', 0, '${category}')" class="w-5 h-5 text-red-600">
+                                    <span class="ml-3 text-gray-700">
+                                        <strong class="text-red-600">Bajo (0 puntos)</strong> - Poco o nada está en su lugar
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                    `;
+                    
+                    questionId++;
+                });
+
+                sectionHTML += '</div>';
+                section.innerHTML = sectionHTML;
+                container.appendChild(section);
+            });
+
+            document.getElementById('evaluationDate').valueAsDate = new Date();
+        }
+
+        function toggleSection(category) {
+            const content = document.getElementById(`content-${category}`);
+            const icon = document.getElementById(`icon-${category}`);
+            
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                content.classList.add('hidden');
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        function updateResponse(questionId, score, category) {
+            responses[questionId] = { score, category };
+            updateProgress();
+            checkCompletion();
+        }
+
+        function updateProgress() {
+            const answered = Object.keys(responses).length;
+            const percentage = Math.round((answered / totalQuestions) * 100);
+            
+            document.getElementById('progressBar').style.width = percentage + '%';
+            document.getElementById('progressText').textContent = percentage + '%';
+        }
+
+        function checkCompletion() {
+            if (Object.keys(responses).length === totalQuestions) {
+                calculateResults();
+            }
+        }
+
+        function calculateResults() {
+            let totalScore = 0;
+            const categoryScores = {};
+
+            Object.values(responses).forEach(response => {
+                totalScore += response.score;
+                
+                if (!categoryScores[response.category]) {
+                    categoryScores[response.category] = { score: 0, count: 0 };
+                }
+                categoryScores[response.category].score += response.score;
+                categoryScores[response.category].count += 1;
+            });
+
+            const percentage = (totalScore / totalQuestions) * 100;
+            let classification, classColor;
+
+            if (percentage >= 75) {
+                classification = "Buena";
+                classColor = "from-green-500 to-green-600";
+            } else if (percentage >= 25) {
+                classification = "Intermedia";
+                classColor = "from-yellow-500 to-yellow-600";
+            } else {
+                classification = "Baja";
+                classColor = "from-red-500 to-red-600";
+            }
+
+            // Calculate rating out of 10
+            const ratingOutOf10 = (percentage / 100) * 10;
+            
+            // Update all display elements
+            document.getElementById('maxScore').textContent = totalQuestions;
+            document.getElementById('obtainedScore').textContent = totalScore.toFixed(1);
+            document.getElementById('ratingOutOf10').textContent = ratingOutOf10.toFixed(1);
+            document.getElementById('totalScore').textContent = totalScore.toFixed(1);
+            document.getElementById('totalPossible').textContent = `de ${totalQuestions} puntos`;
+            document.getElementById('percentageScore').textContent = percentage.toFixed(1) + '%';
+            document.getElementById('ratingDisplay').textContent = ratingOutOf10.toFixed(1) + '/10';
+            document.getElementById('classification').textContent = classification;
+            document.getElementById('classificationBox').className = `rounded-lg p-6 text-white bg-gradient-to-br ${classColor}`;
+
+            const categoryResultsHTML = Object.keys(categoryScores).map(category => {
+                const catScore = categoryScores[category].score;
+                const catMax = categoryScores[category].count;
+                const catPercentage = (catScore / catMax) * 100;
+                
+                return `
+                    <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="font-semibold text-gray-800">${category}</h4>
+                            <span class="text-sm font-medium text-indigo-600">${catScore.toFixed(1)} / ${catMax}</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-indigo-600 h-2 rounded-full" style="width: ${catPercentage}%"></div>
+                        </div>
+                        <p class="text-xs text-gray-600 mt-1">${catPercentage.toFixed(1)}%</p>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('categoryResults').innerHTML = categoryResultsHTML;
+            createRadarChart(categoryScores);
+            document.getElementById('resultsSection').classList.remove('hidden');
+            document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function generateReport() {
+            const companyName = document.getElementById('companyName').value || 'Sin especificar';
+            const evaluationDate = document.getElementById('evaluationDate').value || new Date().toISOString().split('T')[0];
+            
+            let totalScore = 0;
+            Object.values(responses).forEach(response => {
+                totalScore += response.score;
+            });
+            const percentage = (totalScore / totalQuestions) * 100;
+            
+            let classification;
+            if (percentage >= 75) classification = "Buena";
+            else if (percentage >= 25) classification = "Intermedia";
+            else classification = "Baja";
+
+            let reportContent = `REPORTE DE AUTOEVALUACIÓN DE GESTIÓN DE RIESGOS VIALES\n`;
+            reportContent += `Road Risk Toolkit GRSF\n`;
+            reportContent += `${'='.repeat(60)}\n\n`;
+            reportContent += `Empresa: ${companyName}\n`;
+            reportContent += `Fecha de Evaluación: ${evaluationDate}\n\n`;
+            reportContent += `RESULTADOS GENERALES\n`;
+            reportContent += `${'-'.repeat(60)}\n`;
+            reportContent += `Puntuación Total: ${totalScore.toFixed(1)} de ${totalQuestions} puntos\n`;
+            reportContent += `Porcentaje: ${percentage.toFixed(1)}%\n`;
+            reportContent += `Clasificación: ${classification}\n\n`;
+            
+            reportContent += `DETALLES POR CATEGORÍA\n`;
+            reportContent += `${'-'.repeat(60)}\n\n`;
+
+            const categoryScores = {};
+            Object.values(responses).forEach(response => {
+                if (!categoryScores[response.category]) {
+                    categoryScores[response.category] = { score: 0, count: 0 };
+                }
+                categoryScores[response.category].score += response.score;
+                categoryScores[response.category].count += 1;
+            });
+
+            Object.keys(categoryScores).forEach(category => {
+                const catScore = categoryScores[category].score;
+                const catMax = categoryScores[category].count;
+                const catPercentage = (catScore / catMax) * 100;
+                reportContent += `${category}:\n`;
+                reportContent += `  Puntuación: ${catScore.toFixed(1)} / ${catMax}\n`;
+                reportContent += `  Porcentaje: ${catPercentage.toFixed(1)}%\n\n`;
+            });
+
+            reportContent += `\n${'='.repeat(60)}\n`;
+            reportContent += `Generado por Road Risk Toolkit - Autoevaluación\n`;
+            reportContent += `Para más información: https://roadrisktoolkit.com/\n`;
+
+            const blob = new Blob([reportContent], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Reporte_Evaluacion_${companyName.replace(/\s+/g, '_')}_${evaluationDate}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        function createRadarChart(categoryScores) {
+            const svg = document.getElementById('radarChart');
+            svg.innerHTML = '';
+            
+            const centerX = 175;
+            const centerY = 175;
+            const maxRadius = 130;
+            const categories = Object.keys(categoryScores);
+            const numCategories = categories.length;
+            
+            // Create background circles with labels
+            for (let i = 1; i <= 5; i++) {
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', centerX);
+                circle.setAttribute('cy', centerY);
+                circle.setAttribute('r', (maxRadius * i) / 5);
+                circle.setAttribute('fill', 'none');
+                circle.setAttribute('stroke', i === 5 ? '#9ca3af' : '#e5e7eb');
+                circle.setAttribute('stroke-width', i === 5 ? '2' : '1');
+                svg.appendChild(circle);
+                
+                // Add percentage labels
+                if (i === 5) {
+                    const percentages = [20, 40, 60, 80, 100];
+                    percentages.forEach((perc, idx) => {
+                        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                        text.setAttribute('x', centerX + 5);
+                        text.setAttribute('y', centerY - (maxRadius * (idx + 1)) / 5 + 4);
+                        text.setAttribute('font-size', '10');
+                        text.setAttribute('fill', '#6b7280');
+                        text.textContent = perc + '%';
+                        svg.appendChild(text);
+                    });
+                }
+            }
+            
+            // Create axis lines and labels
+            categories.forEach((category, index) => {
+                const angle = (index * 2 * Math.PI) / numCategories - Math.PI / 2;
+                const x = centerX + Math.cos(angle) * maxRadius;
+                const y = centerY + Math.sin(angle) * maxRadius;
+                
+                // Axis line
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', centerX);
+                line.setAttribute('y1', centerY);
+                line.setAttribute('x2', x);
+                line.setAttribute('y2', y);
+                line.setAttribute('stroke', '#9ca3af');
+                line.setAttribute('stroke-width', '2');
+                svg.appendChild(line);
+                
+                // Label with better positioning
+                const labelDistance = maxRadius + 35;
+                const labelX = centerX + Math.cos(angle) * labelDistance;
+                const labelY = centerY + Math.sin(angle) * labelDistance;
+                
+                // Create text with line breaks for long category names
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', labelX);
+                text.setAttribute('y', labelY);
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('dominant-baseline', 'middle');
+                text.setAttribute('font-size', '11');
+                text.setAttribute('font-weight', 'bold');
+                text.setAttribute('fill', '#1f2937');
+                
+                // Split long category names
+                const words = category.split(' ');
+                if (words.length > 2) {
+                    const tspan1 = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+                    tspan1.setAttribute('x', labelX);
+                    tspan1.setAttribute('dy', '-6');
+                    tspan1.textContent = words.slice(0, 2).join(' ');
+                    text.appendChild(tspan1);
+                    
+                    const tspan2 = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+                    tspan2.setAttribute('x', labelX);
+                    tspan2.setAttribute('dy', '12');
+                    tspan2.textContent = words.slice(2).join(' ');
+                    text.appendChild(tspan2);
+                } else {
+                    text.textContent = category;
+                }
+                
+                svg.appendChild(text);
+            });
+            
+            // Create data polygon
+            let pathData = '';
+            const dataPoints = [];
+            
+            categories.forEach((category, index) => {
+                const score = categoryScores[category].score;
+                const maxScore = categoryScores[category].count;
+                const percentage = (score / maxScore) * 100;
+                const radius = (maxRadius * percentage) / 100;
+                
+                const angle = (index * 2 * Math.PI) / numCategories - Math.PI / 2;
+                const x = centerX + Math.cos(angle) * radius;
+                const y = centerY + Math.sin(angle) * radius;
+                
+                dataPoints.push({ x, y, percentage: percentage.toFixed(1), category });
+                
+                if (index === 0) {
+                    pathData += `M ${x} ${y}`;
+                } else {
+                    pathData += ` L ${x} ${y}`;
+                }
+            });
+            
+            pathData += ' Z';
+            
+            // Add filled polygon
+            const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            polygon.setAttribute('d', pathData);
+            polygon.setAttribute('fill', 'rgba(79, 70, 229, 0.3)');
+            polygon.setAttribute('stroke', '#4f46e5');
+            polygon.setAttribute('stroke-width', '3');
+            svg.appendChild(polygon);
+            
+            // Add data points with values
+            dataPoints.forEach(point => {
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', point.x);
+                circle.setAttribute('cy', point.y);
+                circle.setAttribute('r', '5');
+                circle.setAttribute('fill', '#4f46e5');
+                circle.setAttribute('stroke', 'white');
+                circle.setAttribute('stroke-width', '2');
+                svg.appendChild(circle);
+                
+                // Add percentage value near the point
+                const valueText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                valueText.setAttribute('x', point.x);
+                valueText.setAttribute('y', point.y - 10);
+                valueText.setAttribute('text-anchor', 'middle');
+                valueText.setAttribute('font-size', '10');
+                valueText.setAttribute('font-weight', 'bold');
+                valueText.setAttribute('fill', '#1f2937');
+                valueText.setAttribute('background', 'white');
+                valueText.textContent = point.percentage + '%';
+                svg.appendChild(valueText);
+            });
+        }
+
+        function resetEvaluation() {
+            responses = {};
+            document.getElementById('companyName').value = '';
+            document.getElementById('evaluationDate').valueAsDate = new Date();
+            
+            const radios = document.querySelectorAll('input[type="radio"]');
+            radios.forEach(radio => radio.checked = false);
+            
+            document.getElementById('progressBar').style.width = '0%';
+            document.getElementById('progressText').textContent = '0%';
+            document.getElementById('resultsSection').classList.add('hidden');
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        initializeEvaluation();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9966582d57eeb6ec',t:'MTc2MTc3OTQwNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
