@@ -1,0 +1,522 @@
+import React, { useState } from 'react';
+import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Car, Bike, AlertTriangle, Users, TrendingDown, TrendingUp, Shield, AlertCircle } from 'lucide-react';
+
+const ResumenVialLaRioja = () => {
+  const [seccionActiva, setSeccionActiva] = useState('general');
+
+  const datosGenerales = {
+    fecha: "26, 29 y 30 de noviembre de 2024",
+    vehiculos4Ruedas: 2765,
+    vehiculos2Ruedas: 2898,
+    ocupantes4Ruedas: 4148,
+    ocupantes2Ruedas: 3885
+  };
+
+  const datosAutosComparativo = [
+    { indicador: 'Vehículo Protegido', val2022: 30.9, val2024: 27.7 },
+    { indicador: 'Conductor', val2022: 39.6, val2024: 34.8 },
+    { indicador: 'Copiloto', val2022: 34.3, val2024: 23.9 },
+    { indicador: 'Asientos Traseros', val2022: 19.1, val2024: 8.4 }
+  ];
+
+  const datosMotosComparativo = [
+    { indicador: 'Vehículo Protegido', val2022: 90.1, val2024: 71.8 },
+    { indicador: 'Conductor', val2022: 92.2, val2024: 78.2 },
+    { indicador: 'Acompañante 1', val2022: 85.9, val2024: 62.7 },
+    { indicador: 'Resto Pasajeros', val2022: 94.2, val2024: 54.8 }
+  ];
+
+  const datosDistraccion = [
+    { tipo: 'Automóviles', val2022: 15.4, val2024: 14.4 },
+    { tipo: 'Motocicletas', val2022: 5.2, val2024: 7.7 }
+  ];
+
+  const datosCelular = [
+    { tipo: 'Autos', porcentaje: 11.2 },
+    { tipo: 'Motos', porcentaje: 3.7 }
+  ];
+
+  const datosSemaforo = [
+    { vehiculo: 'Automóviles', respeta: 95.6, noRespeta: 4.4 },
+    { vehiculo: 'Motocicletas', respeta: 76.1, noRespeta: 23.9 }
+  ];
+
+  const datosMenores = [
+    { categoria: 'Autos (0-10 años)', protegidos: 8.2, noProtegidos: 91.8 },
+    { categoria: 'Motos (0-14 años)', protegidos: 49.0, noProtegidos: 51.0 }
+  ];
+
+  const COLORS = ['#10b981', '#ef4444', '#3b82f6', '#f59e0b'];
+
+  const SeccionGeneral = () => (
+    <div className="space-y-6">
+      <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-6 rounded-lg shadow-lg">
+        <h2 className="text-2xl font-bold mb-2">Estudio Observacional de Seguridad Vial</h2>
+        <p className="text-lg">Municipio de La Rioja - Diciembre 2024</p>
+        <p className="text-sm mt-2 opacity-90">Comparativa 2022 vs 2024</p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white p-4 rounded-lg shadow border-l-4 border-blue-500">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-500 text-sm">Vehículos 4 Ruedas</p>
+              <p className="text-2xl font-bold text-blue-600">{datosGenerales.vehiculos4Ruedas}</p>
+            </div>
+            <Car className="text-blue-500" size={32} />
+          </div>
+        </div>
+
+        <div className="bg-white p-4 rounded-lg shadow border-l-4 border-green-500">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-500 text-sm">Vehículos 2 Ruedas</p>
+              <p className="text-2xl font-bold text-green-600">{datosGenerales.vehiculos2Ruedas}</p>
+            </div>
+            <Bike className="text-green-500" size={32} />
+          </div>
+        </div>
+
+        <div className="bg-white p-4 rounded-lg shadow border-l-4 border-purple-500">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-500 text-sm">Ocupantes Autos</p>
+              <p className="text-2xl font-bold text-purple-600">{datosGenerales.ocupantes4Ruedas}</p>
+            </div>
+            <Users className="text-purple-500" size={32} />
+          </div>
+        </div>
+
+        <div className="bg-white p-4 rounded-lg shadow border-l-4 border-orange-500">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-500 text-sm">Ocupantes Motos</p>
+              <p className="text-2xl font-bold text-orange-600">{datosGenerales.ocupantes2Ruedas}</p>
+            </div>
+            <Users className="text-orange-500" size={32} />
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded">
+        <div className="flex items-start">
+          <AlertTriangle className="text-yellow-600 mr-3 flex-shrink-0" size={24} />
+          <div>
+            <h3 className="font-bold text-yellow-800 mb-2">Hallazgos Principales</h3>
+            <ul className="text-yellow-900 space-y-1 text-sm">
+              <li>• <strong>Descenso crítico</strong> en uso de cinturón: del 30.9% al 27.7% en vehículos totalmente protegidos</li>
+              <li>• <strong>Caída alarmante</strong> en uso de casco: del 90.1% al 71.8% en motocicletas protegidas</li>
+              <li>• <strong>Aumento preocupante</strong> en uso de celular: de 7.5% a 11.2% en conductores de autos</li>
+              <li>• <strong>Protección de menores crítica</strong>: solo 8.2% de menores en autos correctamente protegidos</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const SeccionAutomoviles = () => (
+    <div className="space-y-6">
+      <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+        <h3 className="font-bold text-blue-900 flex items-center mb-2">
+          <Car className="mr-2" size={24} />
+          Vehículos de 4 o más Ruedas
+        </h3>
+        <p className="text-blue-800 text-sm">Base: 2,765 vehículos observados en 2024</p>
+      </div>
+
+      <div className="bg-white p-6 rounded-lg shadow">
+        <h4 className="font-bold mb-4 flex items-center">
+          <TrendingDown className="text-red-500 mr-2" />
+          Uso de Cinturón de Seguridad - Comparativa 2022 vs 2024
+        </h4>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={datosAutosComparativo}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="indicador" angle={-15} textAnchor="end" height={80} />
+            <YAxis label={{ value: 'Porcentaje (%)', angle: -90, position: 'insideLeft' }} />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="val2022" fill="#3b82f6" name="2022" />
+            <Bar dataKey="val2024" fill="#ef4444" name="2024" />
+          </BarChart>
+        </ResponsiveContainer>
+        <div className="mt-4 p-3 bg-red-50 rounded">
+          <p className="text-sm text-red-800">
+            <AlertCircle className="inline mr-1" size={16} />
+            <strong>Descensos significativos en todas las posiciones:</strong> Conductor (-4.8pp), Copiloto (-10.4pp), Asientos traseros (-10.7pp)
+          </p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h4 className="font-bold mb-4">Respeto del Semáforo</h4>
+          <ResponsiveContainer width="100%" height={200}>
+            <PieChart>
+              <Pie
+                data={[
+                  { name: 'Respeta', value: 95.6 },
+                  { name: 'No respeta', value: 4.4 }
+                ]}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={({ name, value }) => `${name}: ${value}%`}
+                outerRadius={80}
+                fill="#8884d8"
+                dataKey="value"
+              >
+                <Cell fill="#10b981" />
+                <Cell fill="#ef4444" />
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+          <p className="text-center text-sm text-gray-600 mt-2">Base: 597 vehículos en primera línea</p>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h4 className="font-bold mb-4">Factores de Distracción</h4>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
+              <span className="text-sm">Conductores distraídos</span>
+              <span className="font-bold text-orange-600">14.4%</span>
+            </div>
+            <div className="flex items-center justify-between p-2 bg-red-50 rounded">
+              <span className="text-sm">Uso de celular/GPS</span>
+              <span className="font-bold text-red-600">11.2%</span>
+            </div>
+            <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
+              <span className="text-sm">Comer/tomar</span>
+              <span className="font-bold">0.8%</span>
+            </div>
+            <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
+              <span className="text-sm">Fumar</span>
+              <span className="font-bold">1.0%</span>
+            </div>
+          </div>
+          <div className="mt-3 p-2 bg-yellow-50 rounded">
+            <p className="text-xs text-yellow-800">
+              <TrendingUp className="inline mr-1" size={14} />
+              Incremento en uso de celular: 7.5% (2022) → 11.2% (2024)
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white p-6 rounded-lg shadow">
+        <h4 className="font-bold mb-4 text-red-700 flex items-center">
+          <AlertTriangle className="mr-2" />
+          Protección de Menores (0-10 años)
+        </h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="text-center p-4 bg-orange-50 rounded">
+            <p className="text-4xl font-bold text-orange-600">5.6%</p>
+            <p className="text-sm text-gray-700">Vehículos con al menos un menor</p>
+            <p className="text-xs text-gray-500 mt-1">(↑ desde 3.3% en 2022)</p>
+          </div>
+          <div className="text-center p-4 bg-red-50 rounded">
+            <p className="text-4xl font-bold text-red-600">8.2%</p>
+            <p className="text-sm text-gray-700">Menores correctamente protegidos</p>
+            <p className="text-xs text-red-600 mt-1 font-semibold">91.8% SIN protección adecuada</p>
+          </div>
+        </div>
+        <div className="mt-4 p-3 bg-red-100 border-l-4 border-red-500 rounded">
+          <p className="text-sm text-red-900">
+            <strong>Crítico:</strong> Base de 351 menores observados, solo 8.2% viajan con protección legal adecuada en asientos traseros.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+
+  const SeccionMotocicletas = () => (
+    <div className="space-y-6">
+      <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-500">
+        <h3 className="font-bold text-green-900 flex items-center mb-2">
+          <Bike className="mr-2" size={24} />
+          Vehículos de 2 Ruedas
+        </h3>
+        <p className="text-green-800 text-sm">Base: 2,898 vehículos observados en 2024</p>
+      </div>
+
+      <div className="bg-white p-6 rounded-lg shadow">
+        <h4 className="font-bold mb-4 flex items-center">
+          <TrendingDown className="text-red-500 mr-2" />
+          Uso de Casco - Comparativa 2022 vs 2024
+        </h4>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={datosMotosComparativo}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="indicador" angle={-15} textAnchor="end" height={80} />
+            <YAxis label={{ value: 'Porcentaje (%)', angle: -90, position: 'insideLeft' }} />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="val2022" fill="#10b981" name="2022" />
+            <Bar dataKey="val2024" fill="#ef4444" name="2024" />
+          </BarChart>
+        </ResponsiveContainer>
+        <div className="mt-4 p-3 bg-red-50 rounded">
+          <p className="text-sm text-red-800">
+            <AlertCircle className="inline mr-1" size={16} />
+            <strong>Caída alarmante en todas las posiciones:</strong> Conductor (-14.0pp), Acompañante 1 (-23.2pp), Resto pasajeros (-39.4pp)
+          </p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h4 className="font-bold mb-4">Respeto del Semáforo</h4>
+          <ResponsiveContainer width="100%" height={200}>
+            <PieChart>
+              <Pie
+                data={[
+                  { name: 'Respeta', value: 76.1 },
+                  { name: 'No respeta', value: 23.9 }
+                ]}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={({ name, value }) => `${name}: ${value}%`}
+                outerRadius={80}
+                fill="#8884d8"
+                dataKey="value"
+              >
+                <Cell fill="#10b981" />
+                <Cell fill="#ef4444" />
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+          <p className="text-center text-sm text-gray-600 mt-2">Base: 1,094 motos observadas</p>
+          <div className="mt-2 p-2 bg-orange-50 rounded">
+            <p className="text-xs text-orange-800 text-center">
+              23.9% de motociclistas se adelantan en amarillo/rojo
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h4 className="font-bold mb-4">Factores de Distracción</h4>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
+              <span className="text-sm">Conductores distraídos</span>
+              <span className="font-bold text-orange-600">7.7%</span>
+            </div>
+            <div className="flex items-center justify-between p-2 bg-red-50 rounded">
+              <span className="text-sm">Uso de celular</span>
+              <span className="font-bold text-red-600">3.7%</span>
+            </div>
+            <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
+              <span className="text-sm">Porta objeto</span>
+              <span className="font-bold">3.0%</span>
+            </div>
+            <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
+              <span className="text-sm">Lleva casco y no lo usa</span>
+              <span className="font-bold">0.6%</span>
+            </div>
+          </div>
+          <div className="mt-3 p-2 bg-red-50 rounded">
+            <p className="text-xs text-red-800">
+              <TrendingUp className="inline mr-1" size={14} />
+              Incremento significativo: 5.2% (2022) → 7.7% (2024)
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white p-6 rounded-lg shadow">
+        <h4 className="font-bold mb-4 text-red-700 flex items-center">
+          <AlertTriangle className="mr-2" />
+          Protección de Menores (0-14 años)
+        </h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="text-center p-4 bg-orange-50 rounded">
+            <p className="text-4xl font-bold text-orange-600">10.9%</p>
+            <p className="text-sm text-gray-700">Motos con al menos un menor</p>
+            <p className="text-xs text-gray-500 mt-1">(↑ desde 4.6% en 2022)</p>
+          </div>
+          <div className="text-center p-4 bg-red-50 rounded">
+            <p className="text-4xl font-bold text-red-600">49.0%</p>
+            <p className="text-sm text-gray-700">Menores usando casco</p>
+            <p className="text-xs text-red-600 mt-1 font-semibold">↓ desde 75.6% en 2022</p>
+          </div>
+        </div>
+        <div className="mt-4 p-3 bg-red-100 border-l-4 border-red-500 rounded">
+          <p className="text-sm text-red-900">
+            <strong>Alarmante:</strong> Descenso de 26.6 puntos porcentuales en uso de casco en menores. 51% de menores viajan sin protección.
+          </p>
+        </div>
+      </div>
+
+      <div className="bg-white p-6 rounded-lg shadow">
+        <h4 className="font-bold mb-4">Uso de Luces Diurnas</h4>
+        <div className="text-center p-6 bg-green-50 rounded">
+          <p className="text-5xl font-bold text-green-600">51.8%</p>
+          <p className="text-gray-700 mt-2">de motocicletas usan luces diurnas</p>
+          <div className="mt-3 p-2 bg-green-100 rounded inline-block">
+            <p className="text-sm text-green-800">
+              <TrendingUp className="inline mr-1" size={14} />
+              Incremento significativo desde 37.8% en 2022
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const SeccionComparativa = () => (
+    <div className="space-y-6">
+      <div className="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-500">
+        <h3 className="font-bold text-purple-900 mb-2">Análisis Comparativo 2022 vs 2024</h3>
+        <p className="text-purple-800 text-sm">Tendencias y cambios significativos en seguridad vial</p>
+      </div>
+
+      <div className="bg-white p-6 rounded-lg shadow">
+        <h4 className="font-bold mb-4">Evolución del Uso de Elementos de Seguridad</h4>
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart data={[
+            { anio: '2022', cinturon: 30.9, casco: 90.1 },
+            { anio: '2024', cinturon: 27.7, casco: 71.8 }
+          ]}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="anio" />
+            <YAxis label={{ value: 'Porcentaje (%)', angle: -90, position: 'insideLeft' }} />
+            <Tooltip />
+            <Legend />
+            <Line type="monotone" dataKey="cinturon" stroke="#3b82f6" strokeWidth={3} name="Cinturón (Autos)" />
+            <Line type="monotone" dataKey="casco" stroke="#10b981" strokeWidth={3} name="Casco (Motos)" />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h4 className="font-bold mb-4">Distracción al Volante</h4>
+          <ResponsiveContainer width="100%" height={250}>
+            <BarChart data={datosDistraccion}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="tipo" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="val2022" fill="#9ca3af" name="2022" />
+              <Bar dataKey="val2024" fill="#f59e0b" name="2024" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h4 className="font-bold mb-4">Uso de Celular 2024</h4>
+          <ResponsiveContainer width="100%" height={250}>
+            <BarChart data={datosCelular} layout="vertical">
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis type="number" />
+              <YAxis type="category" dataKey="tipo" />
+              <Tooltip />
+              <Bar dataKey="porcentaje" fill="#ef4444" name="% Uso celular" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      <div className="bg-white p-6 rounded-lg shadow">
+        <h4 className="font-bold mb-4">Protección de Menores - Situación 2024</h4>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={datosMenores}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="categoria" angle={-15} textAnchor="end" height={80} />
+            <YAxis label={{ value: 'Porcentaje (%)', angle: -90, position: 'insideLeft' }} />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="protegidos" fill="#10b981" name="Protegidos" stackId="a" />
+            <Bar dataKey="noProtegidos" fill="#ef4444" name="No Protegidos" stackId="a" />
+          </BarChart>
+        </ResponsiveContainer>
+        <div className="mt-4 p-3 bg-red-50 rounded">
+          <p className="text-sm text-red-800 text-center">
+            <strong>Situación crítica:</strong> Solo 8.2% de menores en autos y 49.0% en motos viajan correctamente protegidos
+          </p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-red-50 p-4 rounded-lg border-l-4 border-red-500">
+          <AlertTriangle className="text-red-600 mb-2" size={32} />
+          <h5 className="font-bold text-red-900 mb-2">Alertas Críticas</h5>
+          <ul className="text-sm text-red-800 space-y-1">
+            <li>• TVP autos: -3.2 pp</li>
+            <li>• TVP motos: -18.3 pp</li>
+            <li>• Casco menores: -26.6 pp</li>
+          </ul>
+        </div>
+
+        <div className="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-500">
+          <AlertCircle className="text-orange-600 mb-2" size={32} />
+          <h5 className="font-bold text-orange-900 mb-2">Preocupaciones</h5>
+          <ul className="text-sm text-orange-800 space-y-1">
+            <li>• Celular autos: +3.7 pp</li>
+            <li>• Celular motos: +2.8 pp</li>
+            <li>• Distracción motos: +2.5 pp</li>
+          </ul>
+        </div>
+
+        <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-500">
+          <Shield className="text-green-600 mb-2" size={32} />
+          <h5 className="font-bold text-green-900 mb-2">Aspectos Positivos</h5>
+          <ul className="text-sm text-green-800 space-y-1">
+            <li>• Respeto semáforo autos: 95.6%</li>
+            <li>• Luces motos: +14.0 pp</li>
+            <li>• Muestra ampliada</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+
+  const secciones = [
+    { id: 'general', nombre: 'Resumen General', icono: Shield },
+    { id: 'automoviles', nombre: 'Automóviles', icono: Car },
+    { id: 'motocicletas', nombre: 'Motocicletas', icono: Bike },
+    { id: 'comparativa', nombre: 'Análisis Comparativo', icono: TrendingDown }
+  ];
+
+  return (
+    <div className="min-h-screen bg-gray-100 p-4">
+      <div className="max-w-7xl mx-auto">
+        <div className="bg-white rounded-lg shadow mb-6 p-4">
+          <div className="flex flex-wrap gap-2">
+            {secciones.map(seccion => {
+              const Icono = seccion.icono;
+              return (
+                <button
+                  key={seccion.id}
+                  onClick={() => setSeccionActiva(seccion.id)}
+                  className={`flex items-center px-4 py-2 rounded-lg transition-all ${
+                    seccionActiva === seccion.id
+                      ? 'bg-blue-600 text-white shadow-md'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  <Icono size={18} className="mr-2" />
+                  {seccion.nombre}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="transition-all duration-300">
+          {seccionActiva === 'general' && <SeccionGeneral />}
+          {seccionActiva === 'automoviles' && <SeccionAutomoviles />}
+          {seccionActiva === 'motocicletas' && <SeccionMotocicletas />}
+          {seccionActiva === 'comparativa' && <SeccionComparativa />}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ResumenVialLaRioja;
