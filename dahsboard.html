@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Savi AI | Dashboards de Siniestralidad Vial (Argentina)</title>
+    <!-- Carga de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Carga de Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- Estilo de Fuente Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* Estilo Principal Neon */
+        body {
+            background-color: #0f0f23; /* Fondo oscuro */
+            color: #e0f2fe; /* Texto claro */
+            font-family: 'Inter', sans-serif;
+        }
+        :root {
+            --neon-blue: #0ea5e9;
+            --neon-green: #34d399;
+            --neon-pink: #f472b6;
+            --bg-dark-card: #1f2937;
+        }
+        .progress-bar-fill {
+            transition: width 0.6s ease-in-out;
+            background-image: linear-gradient(to right, var(--neon-blue), var(--neon-green));
+        }
+        .flashcard-container { perspective: 1000px; width: 100%; max-width: 400px; margin: auto; cursor: pointer; }
+        .flashcard { position: relative; width: 100%; height: 200px; transform-style: preserve-3d; transition: transform 0.6s; }
+        .flashcard-flipped { transform: rotateY(180deg); }
+        .flashcard-face {
+            position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 0.75rem; box-shadow: 0 0 20px rgba(14, 165, 233, 0.4);
+            padding: 1.5rem; text-align: center; background-color: var(--bg-dark-card);
+        }
+        .flashcard-back {
+            transform: rotateY(180deg); background-image: linear-gradient(135deg, #1f2937, #374151);
+            box-shadow: 0 0 20px rgba(52, 211, 153, 0.6);
+        }
+        #savi-avatar {
+            font-size: 2.5rem; line-height: 1; animation: pulse-neon 2s infinite;
+        }
+        @keyframes pulse-neon {
+            0%, 100% { text-shadow: 0 0 5px var(--neon-blue), 0 0 10px var(--neon-green); }
+            50% { text-shadow: 0 0 10px var(--neon-pink), 0 0 20px var(--neon-blue); }
+        }
+        .nav-btn {
+            background-color: var(--neon-blue); box-shadow: 0 0 10px rgba(14, 165, 233, 0.5);
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+        .nav-btn:hover {
+            background-color: var(--neon-green); box-shadow: 0 0 15px rgba(52, 211, 153, 0.7);
+        }
+        .nav-btn:disabled { background-color: #4b5563; box-shadow: none; cursor: not-allowed; }
+
+        /* Estilos específicos para Top Tips (Modal) */
+        .top-tip-btn {
+            background-color: #f472b6; color: white; border-radius: 9999px;
+            padding: 0.25rem 0.6rem; font-weight: bold; font-size: 0.75rem;
+            box-shadow: 0 0 8px rgba(244, 114, 182, 0.7);
+            cursor: pointer; transition: transform 0.2s;
+        }
+        .top-tip-btn:hover { transform: scale(1.1); }
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.8); z-index: 50;
+        }
+        .modal-content {
+            background-color: #1f2937; border: 2px solid var(--neon-pink);
+            box-shadow: 0 0 25px rgba(244, 114, 182, 0.8);
+            max-width: 90%; max-height: 90vh;
+        }
+
+        /* Drag & Drop */
+        #drop-zone { border: 3px dashed var(--neon-blue); transition: border-color 0.3s, background-color 0.3s; }
+        #drop-zone.dragover { border-color: var(--neon-green); background-color: #1e2a39; }
+    </style>
+</head>
+<body>
+
+    <div class="min-h-screen p-4 md:p-8">
+
+        <!-- Encabezado y Barra de Progreso -->
+        <header class="mb-8">
+            <div class="flex justify-between items-center mb-4">
+                <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-pink-500">
+                    Savi AI: Dashboard Vial | Argentina
+                </h1>
+            </div>
+            <div class="bg-gray-700/50 rounded-full h-3">
+                <div id="progress-bar" class="progress-bar-fill h-3 rounded-full" style="width: 0%;"></div>
+            </div>
+            <div class="text-sm text-gray-400 mt-1">
+                <span id="step-info">Paso 1 de 6: Fundamentos y Arquitectura</span>
+            </div>
+        </header>
+
+        <!-- Contenido Principal (Grid Responsive) -->
+        <main class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+
+            <!-- Columna del Mentor Savi (Fija o Lateral) -->
+            <div class="lg:col-span-1">
+                <div class="sticky top-8 bg-gray-800/70 p-6 rounded-xl border border-blue-500/30 backdrop-blur-sm">
+                    <div class="flex items-center space-x-4 mb-4">
+                        <span id="savi-avatar" class="text-neon-blue">🤖</span>
+                        <h2 class="text-2xl font-bold text-neon-blue">Mentor Savi</h2>
+                    </div>
+                    <div id="savi-message" class="text-gray-200 text-lg italic border-l-4 border-neon-green pl-4">
+                        ¡Hola! Soy Savi. Comencemos a construir dashboards que salvan vidas con datos e IA.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna de Contenido del Curso -->
+            <div class="lg:col-span-3 bg-gray-900/50 p-8 rounded-xl shadow-2xl shadow-blue-900/40">
+                <div id="course-content">
+                    <!-- El contenido del paso actual se inyectará aquí -->
+                </div>
+            </div>
+        </main>
+
+        <!-- Controles de Navegación -->
+        <footer class="mt-12 flex justify-between p-4 bg-gray-800/70 rounded-lg">
+            <button id="prev-btn" onclick="goToStep(currentStep - 1)" class="nav-btn px-6 py-2 rounded-lg font-semibold text-white disabled:opacity-50">
+                ← Anterior
+            </button>
+            <div id="step-indicators" class="flex space-x-2 items-center">
+                <!-- Indicadores de paso inyectados por JS -->
+            </div>
+            <button id="next-btn" onclick="goToStep(currentStep + 1)" class="nav-btn px-6 py-2 rounded-lg font-semibold text-white">
+                Siguiente →
+            </button>
+        </footer>
+    </div>
+
+    <!-- MODAL DE TOP TIPS (Ventana Emergente) -->
+    <div id="top-tip-modal" class="fixed inset-0 hidden items-center justify-center modal-overlay">
+        <div class="modal-content p-6 rounded-xl relative overflow-auto">
+            <h3 id="tip-title" class="text-3xl font-bold mb-4 text-neon-pink"></h3>
+            <div id="tip-content" class="text-gray-200 space-y-4"></div>
+            <button onclick="hideTip()" class="absolute top-3 right-3 text-3xl font-light text-gray-400 hover:text-white">&times;</button>
+        </div>
+    </div>
+
+
+    <!-- Script principal de la aplicación -->
+    <script>
+        // --- INICIALIZACIÓN Y CONFIGURACIÓN ---
+
+        let currentStep = 1;
+        let userDashboardData = null;
+        let charts = {};
+        const TOTAL_STEPS = 6;
+
+        // Variables de Entorno (Mantener para cumplir el formato)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'savi-dashboard-vial';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+
+        // Datos Simulados y Constantes (Mismos que antes, con nuevos mensajes)
+        const SIMULATED_DATA = {
+            heatmap_scores: [
+                [1, 2, 4, 6, 8, 7, 5, 3, 2, 1, 1, 2, 3, 4, 5, 7, 9, 8, 6, 4, 3, 2, 1, 1],
+                [2, 3, 5, 7, 9, 8, 6, 4, 3, 2, 1, 1, 2, 3, 5, 8, 10, 9, 7, 5, 4, 3, 2, 1],
+                [1, 2, 4, 6, 8, 7, 5, 3, 2, 1, 1, 2, 3, 4, 6, 8, 11, 10, 8, 6, 4, 3, 2, 1],
+                [3, 4, 6, 8, 10, 9, 7, 5, 4, 3, 2, 1, 2, 4, 7, 10, 12, 11, 9, 7, 5, 4, 3, 2],
+                [5, 6, 8, 10, 12, 11, 9, 7, 6, 5, 4, 3, 4, 6, 9, 12, 15, 14, 12, 10, 8, 6, 4, 3],
+                [6, 7, 9, 11, 13, 12, 10, 8, 7, 6, 5, 4, 5, 7, 10, 13, 16, 15, 13, 11, 9, 7, 5, 4],
+                [4, 5, 7, 9, 11, 10, 8, 6, 5, 4, 3, 2, 3, 5, 8, 11, 14, 13, 11, 9, 7, 5, 4, 3],
+            ],
+            monthly_data: [
+                { month: 'Ene', incidents: 3200, fatalities: 280 }, { month: 'Feb', incidents: 2800, fatalities: 250 },
+                { month: 'Mar', incidents: 3500, fatalities: 310 }, { month: 'Abr', incidents: 3100, fatalities: 270 },
+                { month: 'May', incidents: 3000, fatalities: 265 }, { month: 'Jun', incidents: 2700, fatalities: 240 },
+                { month: 'Jul', incidents: 2900, fatalities: 255 }, { month: 'Ago', incidents: 3300, fatalities: 290 },
+                { month: 'Sep', incidents: 3600, fatalities: 320 }, { month: 'Oct', incidents: 3900, fatalities: 350 },
+                { month: 'Nov', incidents: 4100, fatalities: 370 }, { month: 'Dic', incidents: 4500, fatalities: 400 }
+            ],
+            initial_filter_data: [
+                { type: 'Auto', count: 1250, color: '#0ea5e9', fatal_count: 120 },
+                { type: 'Moto', count: 850, color: '#f472b6', fatal_count: 250 },
+                { type: 'Camión', count: 200, color: '#34d399', fatal_count: 80 },
+                { type: 'Bicicleta', count: 300, color: '#fbbf24', fatal_count: 10 }
+            ],
+            csv_sample: `fecha,severidad,ubicacion,heridos,fallecidos,tipo_vehiculo
+2024-10-01,Fatal,Av. 9 de Julio (CABA),0,1,Moto
+2024-10-03,Grave,Ruta Nacional 9 (Córdoba),3,0,Auto
+2024-10-08,Leve,B° General Paz (Rosario),1,0,Camioneta
+2024-10-15,Fatal,Ruta Provincial 2 (Buenos Aires),0,1,Auto
+2024-10-22,Grave,Av. General Paz (CABA),2,0,Moto
+2024-10-29,Leve,Mendoza Capital,1,0,Bicicleta
+2024-11-05,Fatal,Ruta Nacional 7 (Mendoza),0,1,Camión
+2024-11-12,Grave,Av. Circunvalación (Santa Fe),4,0,Auto
+2024-11-19,Leve,Calle Corrientes (CABA),1,0,Moto
+2024-11-26,Grave,Autopista Buenos Aires-La Plata,5,0,Auto`
+        };
+
+        const SAVI_MESSAGES = {
+            1: "El primer paso es la arquitectura. ¡Construyamos la base sólida de nuestro dashboard en HTML y JS!",
+            2: "Los KPIs son el corazón. Define tus métricas de impacto para pasar de solo contar a realmente medir.",
+            3: "Ahora visualizamos. El Heatmap transforma datos crudos en inteligencia espacial. ¡Aprende a crearlo!",
+            4: "El tiempo es un factor crítico. Usaremos series temporales para predecir cuándo y dónde actuar.",
+            5: "El control está en tus manos. Aprende a construir filtros para aislar patrones y encontrar la causa raíz.",
+            6: "¡Laboratorio AI activo! Carga tus datos y analicemos cómo la Inteligencia Artificial puede potenciar tu dashboard.",
+            7: "¡Misión cumplida! Tu dashboard potenciado por datos e IA está listo. ¡El análisis continuo salva vidas!"
+        };
+
+        const FLASH_CARDS = { /* Se mantienen las flash cards */
+            1: [
+                { question: "¿Qué es un Dashboard de Siniestralidad Vial?", answer: "Una herramienta visual y dinámica que consolida datos de accidentes para monitorear el rendimiento y tomar decisiones estratégicas." },
+                { question: "Dato clave de Argentina (ANSV):", answer: "Argentina registra consistentemente más de 5.000 muertes por año en siniestros viales." },
+                { question: "¿Qué es un Punto Negro?", answer: "Un tramo de vía donde se concentra una alta cantidad de accidentes en un período determinado. Prioridad 1 para intervención." },
+            ],
+            2: [
+                { question: "KPI clave: Tasa de Mortalidad", answer: "Fórmula: (Fallecidos / Población) * 100.000. Benchmark argentino: ~12.1 muertes por 100k habitantes." },
+                { question: "Diferencia KPI vs. OKR", answer: "KPI mide el rendimiento actual. OKR define la meta y cómo medirás el éxito (Objetivo: Reducir Fatalidades, KR: Reducir 15% en 12 meses)." },
+                { question: "OKR Municipal (Ejemplo):", answer: "Objetivo: Eliminar la siniestralidad grave en Av. 9 de Julio. Resultado Clave: 0 accidentes fatales/graves en el próximo trimestre." },
+            ]
+        };
+
+        const TOP_TIPS = {
+            1: {
+                title: "Arquitectura del Dashboard (HTML, Tailwind, JS)",
+                content: `
+                    <p>Un dashboard es una aplicación *client-side* (del lado del navegador). La magia ocurre aquí:</p>
+                    <ul class="list-disc list-inside ml-4 mt-2 text-gray-300 space-y-2">
+                        <li><strong class="text-neon-green">HTML:</strong> Define la estructura (contenedores, títulos, botones). Usamos un enfoque de cuadrícula (Grid/Flexbox) para ser *responsive*.</li>
+                        <li><strong class="text-neon-green">Tailwind CSS:</strong> Acelera el diseño. Las clases como <code>bg-gray-900/50</code> o <code>text-transparent bg-clip-text</code> nos dan el look futurista sin escribir CSS aparte.</li>
+                        <li><strong class="text-neon-green">JavaScript:</strong> Es el cerebro. Maneja la navegación, la carga de CSV, las interacciones (Flash Cards) y, crucialmente, la actualización de los gráficos en tiempo real.</li>
+                    </ul>
+                `
+            },
+            2: {
+                title: "Cálculo del Índice de Severidad",
+                content: `
+                    <p>El Índice de Severidad (IS) no solo cuenta; pondera la gravedad. Una fórmula común es:</p>
+                    <p class="font-mono text-xl text-neon-pink mt-3 mb-3">IS = (Fallecidos * 10) / (Fallecidos + Heridos Graves)</p>
+                    <p><strong>Explicación:</strong> Multiplicamos los fallecidos por 10 (o un peso mayor, según el organismo) para darles una importancia mucho más alta que a los heridos graves. Esto asegura que si una zona tiene pocos accidentes, pero todos son fatales, su índice de riesgo se dispare, priorizando la intervención en esa "zona caliente".</p>
+                `
+            },
+            3: {
+                title: "Construcción Técnica del Heatmap con Chart.js",
+                content: `
+                    <p>Parece un Heatmap, pero técnicamente es un gráfico de *Burbujas* (Bubble Chart) en Chart.js, configurado para simular la intensidad de calor:</p>
+                    <ul class="list-disc list-inside ml-4 mt-2 text-gray-300 space-y-2">
+                        <li><strong class="text-neon-green">Ejes:</strong> El eje X es la hora (0-23) y el eje Y es el día de la semana.</li>
+                        <li><strong class="text-neon-green">Tercera Dimensión (Color/Tamaño):</strong> El valor Z (score de severidad) se mapea directamente al <code>pointRadius</code> (tamaño de la burbuja) y al <code>backgroundColor</code>.</li>
+                        <li><strong class="text-neon-green">Interpretación:</strong> Cuanto más grande y rojo/rosa sea el círculo, mayor es la concentración de siniestros graves en esa hora/día (Punto Negro Temporal).</li>
+                    </ul>
+                `
+            },
+            4: {
+                title: "Modelos de Predicción para la Seguridad Vial",
+                content: `
+                    <p>La IA no solo analiza el pasado, predice el futuro (dónde y cuándo ocurrirá el próximo siniestro).</p>
+                    <ul class="list-disc list-inside ml-4 mt-2 text-gray-300 space-y-2">
+                        <li><strong class="text-neon-green">ARIMA / Prophet:</strong> Modelos clásicos de series temporales. Ideales para predecir tendencias mensuales/anuales basándose solo en datos históricos (fecha/cantidad).</li>
+                        <li><strong class="text-neon-green">Machine Learning (Random Forest/XGBoost):</strong> Predicen la probabilidad de un accidente en una ubicación dada al integrar múltiples variables: clima, día de la semana, hora, eventos cercanos, obras viales, etc.</li>
+                        <li><strong class="text-neon-green">Integración:</strong> El dashboard usa estos resultados para mostrar un "Pico de Riesgo Proyectado" para la próxima semana/mes, permitiendo a la policía provincial reasignar recursos.</li>
+                    </ul>
+                `
+            },
+            5: {
+                title: "El Secreto del Filtrado en Tiempo Real",
+                content: `
+                    <p>El filtrado es la clave de la interactividad y no requiere un servidor para datos pequeños. </p>
+                    <ul class="list-disc list-inside ml-4 mt-2 text-gray-300 space-y-2">
+                        <li><strong class="text-neon-green">Evento Listener:</strong> Cada elemento <code>&lt;select&gt;</code> tiene un evento <code>onchange="updateFilterChart()"</code>.</li>
+                        <li><strong class="text-neon-green">Función de Lógica:</strong> La función <code>updateFilterChart()</code> lee los valores de los 3 filtros (severidad, vehículo, horario).</li>
+                        <li><strong class="text-neon-green">Recálculo:</strong> La función simula el subconjunto de datos y, crucialmente, llama a <code>charts.filter.update()</code> de Chart.js. Esto le dice al navegador que redibuje el gráfico instantáneamente, dando la ilusión de tiempo real.</li>
+                    </ul>
+                `
+            },
+            6: {
+                title: "IA en Dashboards: De Gemini a Imagen",
+                content: `
+                    <p>La Inteligencia Artificial lleva los dashboards de ser reactivos a proactivos. Modelos clave:</p>
+                    <ul class="list-disc list-inside ml-4 mt-2 text-gray-300 space-y-2">
+                        <li><strong class="text-neon-green">Gemini 2.5 Flash:</strong> Utilizado para análisis de texto complejo. Por ejemplo, procesar informes policiales de accidentes (campo 'narrativa') para extraer causas raíz no estructuradas (ej. 'distracción por celular', 'falla mecánica').</li>
+                        <li><strong class="text-neon-green">Modelos de Visión (Imagen):</strong> Cruciales. Pueden procesar imágenes de cámaras de tráfico en tiempo real para:
+                            <ul>
+                                <li>Detectar densidad vehicular anormal (alerta de congestión).</li>
+                                <li>Clasificar tipos de vehículos y su velocidad promedio.</li>
+                                <li>Identificar violaciones de tránsito (uso de casco, cinturón).</li>
+                            </ul>
+                        </li>
+                        <li><strong class="text-neon-green">Predictivos:</strong> Como vimos en el Paso 4, modelos de ML/DL para series temporales y clasificación de riesgo (alto/medio/bajo) por segmento de ruta.</li>
+                    </ul>
+                `
+            }
+        };
+
+        // --- FUNCIONES DE NAVEGACIÓN Y UI ---
+
+        /** Muestra el contenido del paso actual */
+        function showStep(step) {
+            currentStep = step;
+            const contentDiv = document.getElementById('course-content');
+
+            // 1. Limpiar y generar el nuevo contenido
+            contentDiv.innerHTML = getStepContent(step);
+
+            // 2. Ejecutar lógica específica del paso (inicializar gráficos, etc.)
+            executeStepLogic(step);
+
+            // 3. Actualizar UI
+            updateProgress(step);
+            updateNavigationButtons(step);
+            updateSaviMessage(step);
+        }
+
+        /** Muestra el modal de Top Tip */
+        window.showTip = function(step) {
+            const tip = TOP_TIPS[step];
+            document.getElementById('tip-title').textContent = tip.title;
+            document.getElementById('tip-content').innerHTML = tip.content;
+            document.getElementById('top-tip-modal').classList.remove('hidden');
+            document.getElementById('top-tip-modal').classList.add('flex');
+        }
+
+        /** Oculta el modal de Top Tip */
+        window.hideTip = function() {
+            document.getElementById('top-tip-modal').classList.add('hidden');
+            document.getElementById('top-tip-modal').classList.remove('flex');
+        }
+
+        // Resto de funciones de UI (goToStep, updateProgress, etc.) se mantienen igual
+        function goToStep(step) {
+            if (step >= 1 && step <= TOTAL_STEPS) {
+                showStep(step);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else if (step > TOTAL_STEPS) {
+                updateSaviMessage(7);
+                document.getElementById('course-content').innerHTML = STEPS[7].content;
+                document.getElementById('next-btn').disabled = true;
+            }
+        }
+
+        function updateProgress(step) {
+            const percentage = Math.round((step / TOTAL_STEPS) * 100);
+            document.getElementById('progress-bar').style.width = `${percentage}%`;
+            document.getElementById('step-info').textContent = `Paso ${step} de ${TOTAL_STEPS}: ${STEPS[step].title}`;
+            updateStepIndicators(step);
+        }
+
+        function updateNavigationButtons(step) {
+            document.getElementById('prev-btn').disabled = step === 1;
+            const nextBtn = document.getElementById('next-btn');
+            nextBtn.textContent = step === TOTAL_STEPS ? 'Finalizar Lección →' : 'Siguiente →';
+            nextBtn.onclick = () => goToStep(step + 1);
+        }
+
+        function updateStepIndicators(step) {
+            const container = document.getElementById('step-indicators');
+            container.innerHTML = '';
+            for (let i = 1; i <= TOTAL_STEPS; i++) {
+                const isCurrent = i === step;
+                const isCompleted = i < step;
+                const colorClass = isCurrent
+                    ? 'bg-neon-pink shadow-lg shadow-pink-500/50'
+                    : isCompleted
+                        ? 'bg-neon-green shadow-md shadow-green-500/50'
+                        : 'bg-gray-600';
+                const indicator = `<div onclick="goToStep(${i})" class="w-3 h-3 rounded-full ${colorClass} cursor-pointer transition transform hover:scale-125" title="${STEPS[i].title}"></div>`;
+                container.innerHTML += indicator;
+            }
+        }
+
+        function updateSaviMessage(step) {
+            const message = SAVI_MESSAGES[step] || SAVI_MESSAGES[7];
+            document.getElementById('savi-message').textContent = message;
+        }
+
+        window.toggleFlashCard = function(element) {
+            element.classList.toggle('flashcard-flipped');
+        }
+
+        // --- CONTENIDO NARRATIVO DE LOS PASOS (HTML TEMPLATES) ---
+
+        const STEPS = {
+            1: {
+                title: "Fundamentos y Arquitectura del Dashboard",
+                content: `
+                    <h2 class="text-3xl font-bold mb-6 text-neon-blue">1. La Misión: Salvar Vidas con Datos</h2>
+                    <p class="mb-4 text-gray-300">Antes de construir, debemos entender nuestra misión. Un dashboard de siniestralidad es nuestra línea de defensa contra la tragedia vial. En Argentina, esta herramienta es crítica: más de 5.000 familias pierden a un ser querido cada año. Nuestro dashboard debe ser la brújula que guíe a la <span class="text-neon-pink font-bold">ANSV (Agencia Nacional de Seguridad Vial)</span> y a las fuerzas provinciales.</p>
+
+                    <h3 class="text-2xl font-semibold mt-6 mb-4 text-neon-green">Arquitectura: Cómo se Construye</h3>
+                    <p class="mb-4 text-gray-300">Construimos sobre una base simple, pero poderosa: HTML para la estructura, Tailwind CSS para el diseño neón y JavaScript como el motor de datos y la interactividad. <span onclick="showTip(1)" class="top-tip-btn">TOP TIP 1</span></p>
+
+                    <h3 class="text-2xl font-semibold mt-8 mb-4 text-neon-blue">Conceptos Esenciales Rápidos</h3>
+                    <div class="grid md:grid-cols-3 gap-6">
+                        ${FLASH_CARDS[1].map((card, index) => `
+                            <div class="flashcard-container" onclick="toggleFlashCard(this.querySelector('.flashcard'))">
+                                <div class="flashcard" id="card-${index}">
+                                    <div class="flashcard-face">
+                                        <h3>${card.question}</h3>
+                                    </div>
+                                    <div class="flashcard-face flashcard-back">
+                                        <p>${card.answer}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `
+            },
+            2: {
+                title: "KPIs y OKRs: Definiendo el Impacto",
+                content: `
+                    <h2 class="text-3xl font-bold mb-6 text-neon-blue">2. Del Conteo a la Métrica de Rendimiento</h2>
+                    <p class="mb-4 text-gray-300">No es suficiente saber cuántos accidentes hubo. Debemos medir su impacto (KPI) y definir metas claras para el futuro (OKR). Si nuestro dashboard muestra una alta Tasa de Mortalidad, sabemos inmediatamente dónde aplicar recursos.</p>
+
+                    <h3 class="text-2xl font-semibold mt-6 mb-4 text-neon-green">El Crucial Índice de Severidad (IS)</h3>
+                    <p class="mb-4 text-gray-300">El IS es el KPI más sensible. Nos obliga a priorizar las fatalidades sobre otros incidentes. Si tu municipalidad tiene un IS alto, la policía de tránsito debe reestructurar su patrullaje inmediatamente. <span onclick="showTip(2)" class="top-tip-btn">TOP TIP 2</span></p>
+
+                    <div class="bg-gray-800 p-4 rounded-lg space-y-3">
+                        <p class="font-mono text-lg text-neon-pink">1. Tasa de Mortalidad Vial: <span class="font-bold">Mide la frecuencia de muertes.</span></p>
+                        <p class="font-mono text-lg text-neon-pink">2. Índice de Severidad: <span class="font-bold">Mide la gravedad de las consecuencias.</span></p>
+                    </div>
+
+                    <h3 class="text-2xl font-semibold mt-8 mb-4 text-neon-blue">Flash Cards: Profundizando en la Métrica</h3>
+                    <div class="grid md:grid-cols-3 gap-6">
+                        ${FLASH_CARDS[2].map((card, index) => `
+                            <div class="flashcard-container" onclick="toggleFlashCard(this.querySelector('.flashcard'))">
+                                <div class="flashcard" id="card-2-${index}">
+                                    <div class="flashcard-face">
+                                        <h3>${card.question}</h3>
+                                    </div>
+                                    <div class="flashcard-face flashcard-back">
+                                        <p>${card.answer}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `
+            },
+            3: {
+                title: "Visualización Geográfica: Mapas de Calor (Heatmap)",
+                content: `
+                    <h2 class="text-3xl font-bold mb-6 text-neon-blue">3. Detectando la Concentración del Riesgo</h2>
+                    <p class="mb-4 text-gray-300">Imagina que los datos son energía. El Mapa de Calor concentra esa energía en los lugares y momentos donde más se necesita intervención. Esto nos permite pasar de patrullar al azar a concentrar recursos en Puntos Negros específicos, como la intersección de la <span class="text-neon-pink font-bold">Av. Gral. Paz y la Autopista Dellepiane</span> o zonas de la <span class="text-neon-pink font-bold">Ruta Nacional 9</span>.</p>
+
+                    <h3 class="text-2xl font-semibold mt-6 mb-4 text-neon-green">Construcción Técnica: Bubble Chart vs. Heatmap</h3>
+                    <p class="mb-4 text-gray-300">Usamos una técnica ingeniosa de Chart.js para visualizar esto. <span onclick="showTip(3)" class="top-tip-btn">TOP TIP 3</span></p>
+
+                    <div class="bg-gray-800 p-6 rounded-lg">
+                        <canvas id="heatmapChart"></canvas>
+                    </div>
+
+                    <h3 class="text-2xl font-semibold mt-8 mb-4 text-neon-blue">Patrones Típicos Argentinos</h3>
+                    <p class="text-gray-300">Observa cómo los picos de severidad se concentran los <span class="font-bold text-neon-pink">Viernes y Sábados por la noche (18:00 - 04:00)</span>. Esto indica que la policía vial debe aumentar los controles de alcoholemia y velocidad en esas franjas horarias.</p>
+                `
+            },
+            4: {
+                title: "Análisis Temporal y Predicción con Datos",
+                content: `
+                    <h2 class="text-3xl font-bold mb-6 text-neon-blue">4. El Eje del Tiempo y la Estacionalidad del Accidente</h2>
+                    <p class="mb-4 text-gray-300">La siniestralidad no es plana. Se mueve con el clima, las vacaciones y las festividades. Diciembre, por ejemplo, siempre muestra un pico de fatalidades debido a la mayor circulación. Analizar las series de tiempo nos permite <span class="text-neon-green font-bold">anticipar y no solo reaccionar</span>.</p>
+
+                    <h3 class="text-2xl font-semibold mt-6 mb-4 text-neon-green">Modelos de Predicción y Análisis de Series</h3>
+                    <p class="mb-4 text-gray-300">Los dashboards avanzados integran modelos predictivos para proyectar el riesgo. <span onclick="showTip(4)" class="top-tip-btn">TOP TIP 4</span></p>
+
+                    <div class="bg-gray-800 p-6 rounded-lg">
+                        <canvas id="temporalChart"></canvas>
+                    </div>
+
+                    <h3 class="text-2xl font-semibold mt-8 mb-4 text-neon-blue">El Radar Semanal: Frecuencia Vs. Gravedad</h3>
+                    <div class="bg-gray-800 p-6 rounded-lg max-w-md mx-auto">
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                    <p class="text-sm text-gray-400 mt-4">El gráfico Radar confirma la hipótesis temporal: la mayor severidad acumulada ocurre los fines de semana.</p>
+                `
+            },
+            5: {
+                title: "Filtros Interactivos y Búsqueda de la Causa Raíz",
+                content: `
+                    <h2 class="text-3xl font-bold mb-6 text-neon-blue">5. El Control del Analista: Segmentación Inteligente</h2>
+                    <p class="mb-4 text-gray-300">Un dashboard debe empoderar al analista para hacer preguntas específicas. La interacción con filtros es lo que transforma un informe estático en una herramienta de investigación. Queremos saber: <span class="text-neon-pink font-bold">"¿Qué vehículo está involucrado en la mayoría de los accidentes fatales en la hora pico?"</span></p>
+
+                    <h3 class="text-2xl font-semibold mt-6 mb-4 text-neon-green">Construcción Técnica: Lógica de Filtrado</h3>
+                    <p class="mb-4 text-gray-300">Todo se reduce a escuchar los eventos del usuario y recalcular la visualización. <span onclick="showTip(5)" class="top-tip-btn">TOP TIP 5</span></p>
+
+                    <div class="grid md:grid-cols-3 gap-4 bg-gray-800 p-4 rounded-lg">
+                        <div class="flex flex-col">
+                            <label for="filter-severidad" class="text-neon-pink mb-1">Severidad:</label>
+                            <select id="filter-severidad" onchange="updateFilterChart()" class="bg-gray-700 border border-gray-600 rounded-lg p-2 text-white">
+                                <option value="Leve">Leve</option>
+                                <option value="Grave">Grave</option>
+                                <option value="Fatal">Fatal</option>
+                                <option value="Todos" selected>Todos</option>
+                            </select>
+                        </div>
+                        <div class="flex flex-col">
+                            <label for="filter-vehiculo" class="text-neon-pink mb-1">Tipo de Vehículo:</label>
+                            <select id="filter-vehiculo" onchange="updateFilterChart()" class="bg-gray-700 border border-gray-600 rounded-lg p-2 text-white">
+                                <option value="Auto">Auto</option>
+                                <option value="Moto">Moto</option>
+                                <option value="Camión">Camión</option>
+                                <option value="Bicicleta">Bicicleta</option>
+                                <option value="Todos" selected>Todos</option>
+                            </select>
+                        </div>
+                        <div class="flex flex-col">
+                            <label for="filter-horario" class="text-neon-pink mb-1">Horario (Simulado):</label>
+                            <select id="filter-horario" onchange="updateFilterChart()" class="bg-gray-700 border border-gray-600 rounded-lg p-2 text-white">
+                                <option value="Manana">06:00 - 12:00</option>
+                                <option value="Tarde">12:00 - 18:00</option>
+                                <option value="Noche" selected>18:00 - 06:00</option>
+                                <option value="Todos">Todos</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <h3 class="text-2xl font-semibold mt-8 mb-4 text-neon-blue">Demostración: Distribución por Vehículo</h3>
+                    <div class="bg-gray-800 p-6 rounded-lg">
+                        <canvas id="filterChart"></canvas>
+                    </div>
+                `
+            },
+            6: {
+                title: "Laboratorio AI: Upload y Análisis Avanzado",
+                content: `
+                    <h2 class="text-3xl font-bold mb-6 text-neon-blue">6. El Salto Cuántico: Integrando la Inteligencia Artificial</h2>
+                    <p class="mb-4 text-gray-300">La IA no reemplaza al analista, lo potencia. La integración de modelos multimodales y predictivos es la tendencia actual para un análisis 360 de la siniestralidad. <span onclick="showTip(6)" class="top-tip-btn">TOP TIP 6</span></p>
+
+                    <h3 class="text-2xl font-semibold mt-6 mb-4 text-neon-green">AI en Acción: Carga de Datos y Modelos</h3>
+                    <p class="text-gray-400 mb-3">Imagina que el archivo CSV es solo una de las fuentes. La IA procesaría esto, sumándole datos de cámaras (Visión), reportes de clima y redes sociales (NLP).</p>
+                    <button onclick="downloadCSV()" class="nav-btn bg-neon-green px-4 py-2 rounded-lg font-semibold text-white transition hover:bg-emerald-500">
+                        Descargar CSV de Ejemplo Argentino
+                    </button>
+
+                    <h3 class="text-2xl font-semibold mt-8 mb-4 text-neon-blue">Laboratorio de Carga (Práctica)</h3>
+                    <div id="drop-zone" class="flex flex-col items-center justify-center h-48 rounded-lg transition">
+                        <p id="drop-text" class="text-xl text-neon-blue mb-2">Arrastra y suelta tu archivo CSV aquí</p>
+                        <p class="text-gray-400">o haz clic para seleccionar (Simulamos la ingesta de datos)</p>
+                        <input type="file" id="csv-upload" accept=".csv" class="hidden">
+                        <button onclick="document.getElementById('csv-upload').click()" class="mt-4 bg-pink-500/70 hover:bg-pink-500 px-4 py-2 rounded-lg font-semibold text-white shadow-xl shadow-pink-900/40">
+                            Seleccionar Archivo
+                        </button>
+                    </div>
+
+                    <div id="upload-status" class="mt-4 text-lg font-bold text-center"></div>
+
+                    <div id="user-dashboard-container" class="mt-8 hidden">
+                        <h3 class="text-3xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-pink-400">
+                            Dashboard Generado (Análisis Potenciado)
+                        </h3>
+                        <div class="grid md:grid-cols-3 gap-6 mb-8">
+                            <div class="bg-gray-800 p-4 rounded-xl border-l-4 border-neon-blue">
+                                <p class="text-gray-400">Total de Incidentes</p>
+                                <p id="kpi-incidents" class="text-4xl font-bold text-neon-blue">0</p>
+                            </div>
+                            <div class="bg-gray-800 p-4 rounded-xl border-l-4 border-neon-pink">
+                                <p class="text-gray-400">Total de Fallecidos</p>
+                                <p id="kpi-fatalities" class="text-4xl font-bold text-neon-pink">0</p>
+                            </div>
+                            <div class="bg-gray-800 p-4 rounded-xl border-l-4 border-neon-green">
+                                <p class="text-gray-400">Riesgo Proyectado (IA)</p>
+                                <p id="kpi-severity" class="text-4xl font-bold text-neon-green">N/A</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-800 p-6 rounded-lg">
+                            <h4 class="text-xl font-semibold mb-3 text-neon-green">Distribución por Tipo de Vehículo</h4>
+                            <canvas id="userDashboardChart"></canvas>
+                        </div>
+                    </div>
+                `
+            },
+            7: {
+                title: "Curso Finalizado",
+                content: '<h2 class="text-3xl font-bold text-green-500">¡Misión Cumplida!</h2><p class="text-xl mt-4">Has completado con éxito el curso de Dashboards Viales con Savi AI. Ahora tienes el conocimiento técnico y la visión estratégica para construir herramientas que salvan vidas con datos e inteligencia artificial.</p>'
+            }
+        };
+
+        // --- FUNCIONES DE GRÁFICOS Y LAB (Se mantienen o ajustan levemente) ---
+
+        function renderHeatmapChart() {
+            // ... (Lógica de Chart.js para Heatmap)
+            const data = [];
+            const days = ['Dom', 'Sáb', 'Vie', 'Jue', 'Mié', 'Mar', 'Lun'];
+            const hours = Array.from({ length: 24 }, (_, i) => i);
+            SIMULATED_DATA.heatmap_scores.forEach((dayScores, dayIndex) => {
+                dayScores.forEach((score, hourIndex) => {
+                    data.push({ x: hourIndex, y: dayIndex, v: score });
+                });
+            });
+            const getColor = (value) => {
+                const max = 16; const ratio = value / max;
+                if (ratio < 0.25) return 'rgba(14, 165, 233, 0.4)';
+                if (ratio < 0.5) return 'rgba(52, 211, 153, 0.6)';
+                if (ratio < 0.75) return 'rgba(244, 114, 182, 0.8)';
+                return 'rgba(244, 63, 94, 1.0)';
+            };
+            if (charts.heatmap) charts.heatmap.destroy();
+            const ctx = document.getElementById('heatmapChart').getContext('2d');
+            charts.heatmap = new Chart(ctx, {
+                type: 'bubble', data: {
+                    datasets: [{
+                        label: 'Puntos de Riesgo (Severidad)', data: data,
+                        backgroundColor: data.map(d => getColor(d.v)),
+                        borderColor: 'transparent', pointRadius: data.map(d => 5 + d.v * 0.5),
+                    }]
+                },
+                options: {
+                    responsive: true, aspectRatio: 2.5, plugins: { legend: { display: false } },
+                    scales: {
+                        x: { title: { display: true, text: 'Hora del Día (24h)', color: '#94a3b8' }, type: 'linear', min: 0, max: 23, ticks: { stepSize: 1, color: '#94a3b8' }, grid: { color: '#334155' } },
+                        y: { title: { display: true, text: 'Día de la Semana', color: '#94a3b8' }, type: 'category', labels: days.reverse(), ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }
+                    }
+                }
+            });
+        }
+
+        function renderTemporalCharts() {
+            // ... (Lógica de Chart.js para Temporal y Radar)
+            const monthlyLabels = SIMULATED_DATA.monthly_data.map(d => d.month);
+            const incidentsData = SIMULATED_DATA.monthly_data.map(d => d.incidents);
+            const fatalitiesData = SIMULATED_DATA.monthly_data.map(d => d.fatalities);
+            if (charts.temporal) charts.temporal.destroy();
+            const ctxTemporal = document.getElementById('temporalChart').getContext('2d');
+            charts.temporal = new Chart(ctxTemporal, {
+                type: 'line', data: {
+                    labels: monthlyLabels, datasets: [
+                        { label: 'Incidentes Totales', data: incidentsData, borderColor: '#0ea5e9', backgroundColor: 'rgba(14, 165, 233, 0.1)', fill: true, tension: 0.3 },
+                        { label: 'Fatalidades', data: fatalitiesData, borderColor: '#34d399', backgroundColor: 'rgba(52, 211, 153, 0.1)', tension: 0.3 }
+                    ]
+                },
+                options: { responsive: true, aspectRatio: 2.5, plugins: { legend: { labels: { color: '#e0f2fe' } } }, scales: { x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }, y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } } } }
+            });
+
+            const weeklyTotals = SIMULATED_DATA.heatmap_scores.map(dayScores => dayScores.reduce((sum, score) => sum + score, 0));
+            const orderedWeeklyTotals = [weeklyTotals[0], weeklyTotals[1], weeklyTotals[2], weeklyTotals[3], weeklyTotals[4], weeklyTotals[5], weeklyTotals[6]];
+            const orderedDays = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+            if (charts.radar) charts.radar.destroy();
+            const ctxRadar = document.getElementById('radarChart').getContext('2d');
+            charts.radar = new Chart(ctxRadar, {
+                type: 'radar', data: {
+                    labels: orderedDays, datasets: [{
+                        label: 'Severidad Acumulada Semanal', data: orderedWeeklyTotals,
+                        backgroundColor: 'rgba(244, 114, 182, 0.4)', borderColor: '#f472b6',
+                        pointBackgroundColor: '#f472b6', pointBorderColor: '#0f0f23',
+                    }]
+                },
+                options: {
+                    responsive: true, aspectRatio: 1, plugins: { legend: { labels: { color: '#e0f2fe' } } },
+                    scales: { r: { angleLines: { color: '#334155' }, grid: { color: '#334155' }, pointLabels: { color: '#e0f2fe' }, ticks: { showLabelBackdrop: false, color: '#94a3b8' }, suggestedMin: 0 } }
+                }
+            });
+        }
+
+        function renderFilterChart() {
+            // ... (Lógica de Chart.js para Filtro)
+            const data = SIMULATED_DATA.initial_filter_data;
+            const labels = data.map(d => d.type);
+            const counts = data.map(d => d.count);
+            const colors = data.map(d => d.color);
+            if (charts.filter) charts.filter.destroy();
+            const ctx = document.getElementById('filterChart').getContext('2d');
+            charts.filter = new Chart(ctx, {
+                type: 'bar', data: {
+                    labels: labels, datasets: [{
+                        label: 'Incidentes Filtrados', data: counts,
+                        backgroundColor: colors.map(c => `${c}CC`),
+                        borderColor: colors, borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true, aspectRatio: 2.5, plugins: { legend: { display: false } },
+                    scales: { x: { ticks: { color: '#e0f2fe' }, grid: { color: '#334155' } }, y: { beginAtZero: true, ticks: { color: '#e0f2fe' }, grid: { color: '#334155' } } }
+                }
+            });
+        }
+
+        window.updateFilterChart = function() {
+            // ... (Lógica de simulación para Filtro)
+            const severity = document.getElementById('filter-severidad').value;
+            const vehicle = document.getElementById('filter-vehiculo').value;
+            let newData = SIMULATED_DATA.initial_filter_data.map(item => ({...item}));
+
+            if (severity === 'Fatal') {
+                newData = SIMULATED_DATA.initial_filter_data.map(d => ({
+                    ...d,
+                    count: d.fatal_count * (d.type === 'Moto' || d.type === 'Camión' ? 3 : 1) // Sobredimensionar motos/camiones en fatal
+                }));
+            } else if (severity === 'Grave') {
+                 newData = SIMULATED_DATA.initial_filter_data.map(d => ({...d, count: d.count * 0.4}));
+            } else if (severity === 'Leve') {
+                 newData = SIMULATED_DATA.initial_filter_data.map(d => ({...d, count: d.count * 1.5}));
+            } else {
+                newData = SIMULATED_DATA.initial_filter_data.map(d => ({...d, count: d.count}));
+            }
+
+            let filteredData = newData;
+            if (vehicle !== 'Todos') {
+                filteredData = newData.filter(d => d.type === vehicle);
+            }
+
+            charts.filter.data.labels = filteredData.map(d => d.type);
+            charts.filter.data.datasets[0].data = filteredData.map(d => d.count);
+            charts.filter.data.datasets[0].backgroundColor = filteredData.map(d => `${d.color}CC`);
+            charts.filter.data.datasets[0].borderColor = filteredData.map(d => d.color);
+            charts.filter.update();
+        }
+
+        window.downloadCSV = function() {
+            // ... (Lógica de Descarga CSV)
+            const blob = new Blob([SIMULATED_DATA.csv_sample], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            if (link.download !== undefined) {
+                const url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
+                link.setAttribute("download", "plantilla_datos_siniestros_arg.csv");
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                 document.getElementById('upload-status').innerHTML = '<span class="text-red-400">Error: Tu navegador no soporta la descarga.</span>';
+            }
+        }
+
+        function setupLab() {
+            // ... (Lógica de Drag & Drop y Carga CSV)
+            const dropZone = document.getElementById('drop-zone');
+            const fileInput = document.getElementById('csv-upload');
+            const statusDiv = document.getElementById('upload-status');
+
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => { dropZone.addEventListener(eventName, preventDefaults, false); });
+            ['dragenter', 'dragover'].forEach(eventName => { dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'), false); });
+            ['dragleave', 'drop'].forEach(eventName => { dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false); });
+
+            dropZone.addEventListener('drop', handleDrop, false);
+            fileInput.addEventListener('change', (e) => { handleFile(e.target.files[0]); });
+
+            function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const file = dt.files[0];
+                handleFile(file);
+            }
+
+            function handleFile(file) {
+                if (!file || !file.name.endsWith('.csv')) { statusDiv.innerHTML = '<span class="text-red-400">Error: Solo se aceptan archivos CSV.</span>'; return; }
+                statusDiv.innerHTML = '<span class="text-neon-blue animate-pulse">Cargando y procesando (Simulación AI)...</span>';
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        userDashboardData = processCSV(e.target.result);
+                        generateUserDashboard(userDashboardData);
+                        document.getElementById('user-dashboard-container').classList.remove('hidden');
+                        statusDiv.innerHTML = '<span class="text-neon-green">✅ Carga y Análisis AI simulado exitoso.</span>';
+                        document.getElementById('kpi-severity').textContent = (Math.random() * 0.5 + 2.5).toFixed(2); // Valor simulado AI
+                    } catch (error) {
+                        statusDiv.innerHTML = `<span class="text-red-400">❌ Error: ${error.message}</span>`;
+                        document.getElementById('user-dashboard-container').classList.add('hidden');
+                    }
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        function processCSV(csvText) {
+            // ... (Lógica de procesamiento CSV)
+            const lines = csvText.trim().split('\n');
+            if (lines.length < 2) throw new Error("El archivo está vacío o solo contiene el encabezado.");
+
+            const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+            const expectedHeaders = ['fecha', 'severidad', 'ubicacion', 'heridos', 'fallecidos', 'tipo_vehiculo'];
+
+            if (expectedHeaders.some(h => !headers.includes(h))) {
+                throw new Error(`Encabezados inválidos. Se esperan: ${expectedHeaders.join(', ')}`);
+            }
+
+            const data = [];
+            for (let i = 1; i < lines.length; i++) {
+                const values = lines[i].split(',');
+                if (values.length !== headers.length) continue;
+                const row = {};
+                headers.forEach((header, index) => {
+                    row[header] = values[index].trim();
+                });
+                data.push(row);
+            }
+
+            if (data.length === 0) throw new Error("No se encontraron registros de datos válidos.");
+
+            const stats = {
+                totalIncidents: data.length,
+                totalFatalities: data.reduce((sum, row) => sum + (parseInt(row.fallecidos) || 0), 0),
+                vehicleDistribution: data.reduce((dist, row) => {
+                    const vehicle = row.tipo_vehiculo || 'Otro';
+                    dist[vehicle] = (dist[vehicle] || 0) + 1;
+                    return dist;
+                }, {}),
+            };
+            return stats;
+        }
+
+        function generateUserDashboard(stats) {
+            // ... (Lógica de Generación Dashboard Usuario)
+            document.getElementById('kpi-incidents').textContent = stats.totalIncidents.toLocaleString('es-AR');
+            document.getElementById('kpi-fatalities').textContent = stats.totalFatalities.toLocaleString('es-AR');
+
+            const vehicleLabels = Object.keys(stats.vehicleDistribution);
+            const vehicleCounts = Object.values(stats.vehicleDistribution);
+            const vehicleColors = ['#0ea5e9', '#f472b6', '#34d399', '#fbbf24', '#f87171', '#a78bfa'];
+
+            if (charts.userDashboard) charts.userDashboard.destroy();
+
+            const ctx = document.getElementById('userDashboardChart').getContext('2d');
+            charts.userDashboard = new Chart(ctx, {
+                type: 'doughnut', data: {
+                    labels: vehicleLabels, datasets: [{
+                        label: 'Distribución', data: vehicleCounts,
+                        backgroundColor: vehicleLabels.map((_, i) => vehicleColors[i % vehicleColors.length]),
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true, aspectRatio: 1, plugins: {
+                        legend: { position: 'right', labels: { color: '#e0f2fe' } },
+                        tooltip: { callbacks: { label: function(context) {
+                            const total = vehicleCounts.reduce((a, b) => a + b, 0);
+                            const value = context.parsed;
+                            const percentage = ((value / total) * 100).toFixed(1) + '%';
+                            return `${context.label}: ${value} (${percentage})`;
+                        } } }
+                    }
+                }
+            });
+        }
+
+        function getStepContent(step) {
+            return STEPS[step] ? STEPS[step].content : STEPS[7].content;
+        }
+
+        function executeStepLogic(step) {
+            Object.values(charts).forEach(chart => {
+                if (chart && chart.canvas) chart.destroy();
+            });
+
+            switch (step) {
+                case 3: setTimeout(renderHeatmapChart, 100); break;
+                case 4: setTimeout(renderTemporalCharts, 100); break;
+                case 5: setTimeout(renderFilterChart, 100); break;
+                case 6: setupLab(); if (userDashboardData) {
+                    document.getElementById('user-dashboard-container').classList.remove('hidden');
+                    generateUserDashboard(userDashboardData);
+                } break;
+            }
+        }
+
+        window.onload = function() {
+            showStep(1);
+        };
+    </script>
+
+</body>
+</html>
