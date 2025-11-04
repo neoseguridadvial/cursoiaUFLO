@@ -1,0 +1,1993 @@
+<!doctype html>
+<html lang="es">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clase Magistral ETL</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(139, 92, 246, 0.8); }
+        }
+        
+        @keyframes slide-in {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .pulse-glow {
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+        
+        .slide-in {
+            animation: slide-in 0.5s ease-out forwards;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .card-3d {
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+        }
+        
+        .card-3d.flipped {
+            transform: rotateY(180deg);
+        }
+        
+        .card-front, .card-back {
+            backface-visibility: hidden;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .card-back {
+            transform: rotateY(180deg);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .tool-card {
+            transition: all 0.3s ease;
+        }
+        
+        .tool-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+            position: relative;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+        
+        @keyframes modalSlideIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .close-modal:hover {
+            color: #000;
+        }
+        
+        .info-btn {
+            background: none;
+            border: 2px solid;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-left: 10px;
+        }
+        
+        .info-btn:hover {
+            transform: scale(1.1);
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="min-h-full">
+  <div id="app" class="min-h-full"></div>
+  <script>
+        const defaultConfig = {
+            background_color: "#0f172a",
+            card_color: "#1e293b",
+            primary_color: "#8b5cf6",
+            accent_color: "#ec4899",
+            text_color: "#f1f5f9",
+            main_title: "🎓 Clase Magistral: ETL en Movilidad Segura",
+            subtitle: "Transformación de Datos GPS, Sensores y Reportes para Transporte Inteligente",
+            flashcard_question: "¿Qué significa ETL en datos?",
+            flashcard_answer: "ETL significa Extract, Transform, Load (Extraer, Transformar, Cargar). Es el proceso fundamental de integración de datos que permite extraer información de múltiples fuentes, transformarla según reglas de negocio y cargarla en un destino final para análisis.",
+            font_family: "Inter",
+            font_size: 16
+        };
+
+        let isFlipped = false;
+        let currentTab = 'savi';
+
+        async function onConfigChange(config) {
+            const app = document.getElementById('app');
+            const baseSize = config.font_size || defaultConfig.font_size;
+            const customFont = config.font_family || defaultConfig.font_family;
+            const fontStack = `${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`;
+            
+            app.style.backgroundColor = config.background_color || defaultConfig.background_color;
+            app.style.fontFamily = fontStack;
+            
+            app.innerHTML = `
+                <!-- Hero Section -->
+                <div class="relative overflow-hidden" style="background: linear-gradient(135deg, ${config.background_color || defaultConfig.background_color} 0%, ${config.card_color || defaultConfig.card_color} 100%); padding: 8% 6%;">
+                    <div class="max-w-6xl mx-auto relative z-10">
+                        <div class="text-center float-animation">
+                            <h1 class="font-bold mb-4" style="font-size: ${baseSize * 2.5}px; color: ${config.text_color || defaultConfig.text_color}; font-family: ${fontStack};">
+                                ${config.main_title || defaultConfig.main_title}
+                            </h1>
+                            <p class="mb-8" style="font-size: ${baseSize * 1.2}px; color: ${config.accent_color || defaultConfig.accent_color}; font-family: ${fontStack};">
+                                ${config.subtitle || defaultConfig.subtitle}
+                            </p>
+                        </div>
+
+
+                        
+
+                    </div>
+
+                    <!-- Práctica Content -->
+                    <div id="content-practica" class="tab-content">
+                        <div class="rounded-3xl p-8 mb-8" style="background: linear-gradient(135deg, ${config.primary_color || defaultConfig.primary_color}, ${config.accent_color || defaultConfig.accent_color});">
+                            <h3 class="font-bold mb-6 text-center" style="font-size: ${baseSize * 1.8}px; color: white; font-family: ${fontStack};">
+                                🧪 Práctica: Limpieza de Datos GPS
+                            </h3>
+                            <div class="bg-white bg-opacity-20 rounded-2xl p-6 mb-6">
+                                <h4 class="font-bold mb-4" style="font-size: ${baseSize * 1.3}px; color: white; font-family: ${fontStack};">
+                                    Datos GPS Simulados (Problemáticos)
+                                </h4>
+                                <div class="bg-black bg-opacity-30 rounded-xl p-4 font-mono text-sm overflow-x-auto" style="color: #00ff00;">
+                                    <div id="raw-data">
+                                        timestamp,lat,lng,speed,accuracy<br>
+                                        2024-01-15 08:00:00,40.7128,-74.0060,25,5<br>
+                                        2024-01-15 08:00:05,40.7129,-74.0061,28,8<br>
+                                        2024-01-15 08:00:10,40.7130,-74.0062,999,15 ❌<br>
+                                        2024-01-15 08:00:15,40.7131,-74.0063,30,200 ❌<br>
+                                        2024-01-15 08:00:20,41.8781,-87.6298,35,5 ❌<br>
+                                        2024-01-15 08:00:25,40.7133,-74.0065,32,7<br>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="grid md:grid-cols-3 gap-4 mb-6">
+                                <button onclick="cleanSpeed()" class="bg-white bg-opacity-20 rounded-xl p-4 font-semibold transition-all hover:bg-opacity-30" style="color: white; font-size: ${baseSize}px; font-family: ${fontStack};">
+                                    🚀 Limpiar Velocidades
+                                </button>
+                                <button onclick="cleanAccuracy()" class="bg-white bg-opacity-20 rounded-xl p-4 font-semibold transition-all hover:bg-opacity-30" style="color: white; font-size: ${baseSize}px; font-family: ${fontStack};">
+                                    🎯 Filtrar Precisión
+                                </button>
+                                <button onclick="cleanJumps()" class="bg-white bg-opacity-20 rounded-xl p-4 font-semibold transition-all hover:bg-opacity-30" style="color: white; font-size: ${baseSize}px; font-family: ${fontStack};">
+                                    📍 Detectar Saltos
+                                </button>
+                            </div>
+                            
+                            <div class="bg-white bg-opacity-20 rounded-2xl p-6">
+                                <h4 class="font-bold mb-4" style="font-size: ${baseSize * 1.3}px; color: white; font-family: ${fontStack};">
+                                    Datos Limpios
+                                </h4>
+                                <div class="bg-black bg-opacity-30 rounded-xl p-4 font-mono text-sm overflow-x-auto" style="color: #00ff00;">
+                                    <div id="clean-data">
+                                        Haz clic en los botones de limpieza para ver los resultados...
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mt-8">
+                                <p class="font-semibold mb-4" style="font-size: ${baseSize * 1.2}px; color: white; font-family: ${fontStack};">
+                                    🎉 ¡Felicidades! Has completado la clase magistral de ETL
+                                </p>
+                                <p style="font-size: ${baseSize}px; color: white; font-family: ${fontStack};">
+                                    Ahora dominas las técnicas fundamentales para limpiar y transformar datos de movilidad segura
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabs Navigation -->
+                <div class="max-w-6xl mx-auto px-6 py-8">
+                    <div class="flex flex-wrap gap-4 mb-8 justify-center">
+                        <button onclick="switchTab('savi')" id="tab-savi" class="tab-btn px-8 py-4 rounded-2xl font-bold transition-all" style="font-size: ${baseSize * 1.1}px; background: ${config.primary_color || defaultConfig.primary_color}; color: white; font-family: ${fontStack};">
+                            🤖 Introducción Savi
+                        </button>
+                        <button onclick="switchTab('gps')" id="tab-gps" class="tab-btn px-8 py-4 rounded-2xl font-bold transition-all" style="font-size: ${baseSize * 1.1}px; background: ${config.card_color || defaultConfig.card_color}; color: ${config.text_color || defaultConfig.text_color}; font-family: ${fontStack};">
+                            📍 Datos GPS
+                        </button>
+                        <button onclick="switchTab('sensores')" id="tab-sensores" class="tab-btn px-8 py-4 rounded-2xl font-bold transition-all" style="font-size: ${baseSize * 1.1}px; background: ${config.card_color || defaultConfig.card_color}; color: ${config.text_color || defaultConfig.text_color}; font-family: ${fontStack};">
+                            🔬 Sensores IoT
+                        </button>
+                        <button onclick="switchTab('reportes')" id="tab-reportes" class="tab-btn px-8 py-4 rounded-2xl font-bold transition-all" style="font-size: ${baseSize * 1.1}px; background: ${config.card_color || defaultConfig.card_color}; color: ${config.text_color || defaultConfig.text_color}; font-family: ${fontStack};">
+                            📊 Reportes
+                        </button>
+                        <button onclick="switchTab('etl')" id="tab-etl" class="tab-btn px-8 py-4 rounded-2xl font-bold transition-all" style="font-size: ${baseSize * 1.1}px; background: ${config.card_color || defaultConfig.card_color}; color: ${config.text_color || defaultConfig.text_color}; font-family: ${fontStack};">
+                            ⚙️ Proceso ETL
+                        </button>
+                        <button onclick="switchTab('herramientas')" id="tab-herramientas" class="tab-btn px-8 py-4 rounded-2xl font-bold transition-all" style="font-size: ${baseSize * 1.1}px; background: ${config.card_color || defaultConfig.card_color}; color: ${config.text_color || defaultConfig.text_color}; font-family: ${fontStack};">
+                            🤖 Herramientas IA
+                        </button>
+                        <button onclick="switchTab('practica')" id="tab-practica" class="tab-btn px-8 py-4 rounded-2xl font-bold transition-all" style="font-size: ${baseSize * 1.1}px; background: ${config.card_color || defaultConfig.card_color}; color: ${config.text_color || defaultConfig.text_color}; font-family: ${fontStack};">
+                            🧪 Práctica Interactiva
+                        </button>
+                    </div>
+
+                    <!-- Savi Content -->
+                    <div id="content-savi" class="tab-content active">
+                        <div class="max-w-4xl mx-auto">
+                            <div class="rounded-3xl p-8 relative overflow-hidden mb-8" style="background: linear-gradient(135deg, ${config.card_color || defaultConfig.card_color}, ${config.primary_color || defaultConfig.primary_color}20); border: 3px solid ${config.primary_color || defaultConfig.primary_color};">
+                                <div class="flex items-start gap-6">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-24 h-24 rounded-full flex items-center justify-center text-4xl pulse-glow" style="background: linear-gradient(135deg, ${config.primary_color || defaultConfig.primary_color}, ${config.accent_color || defaultConfig.accent_color});">
+                                            🤖
+                                        </div>
+                                        <p class="text-center mt-2 font-bold" style="font-size: ${baseSize * 0.9}px; color: ${config.primary_color || defaultConfig.primary_color}; font-family: ${fontStack};">
+                                            Savi
+                                        </p>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="mb-6">
+                                            <h3 class="font-bold mb-3" style="font-size: ${baseSize * 1.4}px; color: ${config.primary_color || defaultConfig.primary_color}; font-family: ${fontStack};">
+                                                👋 ¡Hola de nuevo! Soy Savi, tu mentor en IA
+                                            </h3>
+                                            <div class="leading-relaxed" style="font-size: ${baseSize * 1.1}px; color: ${config.text_color || defaultConfig.text_color}; font-family: ${fontStack};">
+                                                <p class="mb-4">
+                                                    <strong style="color: ${config.accent_color || defaultConfig.accent_color};">Todo comienza con los datos.</strong> Sin ellos, la IA sería como un vehículo sin combustible. 
+                                                </p>
+                                                <p class="mb-4">
+                                                    Hoy aprenderás de dónde vienen los datos de movilidad: sensores, GPS, cámaras, reportes y redes. Pero cuidado: los datos crudos están llenos de ruido, errores y vacíos.
+                                                </p>
+                                                <p class="mb-6">
+                                                    Antes de analizarlos, hay que limpiarlos. <strong style="color: ${config.accent_color || defaultConfig.accent_color};">¡Ahí entra la magia del ETL!</strong>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Flash Card -->
+                            <div class="max-w-2xl mx-auto mb-8">
+                                <div class="relative" style="height: 300px; perspective: 1000px;">
+                                    <div id="flashcard-savi" class="card-3d pulse-glow rounded-3xl cursor-pointer" style="height: 100%; position: relative; background: ${config.card_color || defaultConfig.card_color}; border: 3px solid ${config.primary_color || defaultConfig.primary_color};">
+                                        <div class="card-front flex items-center justify-center p-8">
+                                            <div class="text-center">
+                                                <div class="text-6xl mb-6">🤔</div>
+                                                <h3 class="font-bold mb-4" style="font-size: ${baseSize * 1.5}px; color: ${config.primary_color || defaultConfig.primary_color}; font-family: ${fontStack};">
+                                                    Flash Card
+                                                </h3>
+                                                <p class="font-semibold" style="font-size: ${baseSize * 1.3}px; color: ${config.text_color || defaultConfig.text_color}; font-family: ${fontStack};">
+                                                    ${config.flashcard_question || defaultConfig.flashcard_question}
+                                                </p>
+                                                <p class="mt-6" style="font-size: ${baseSize * 0.9}px; color: ${config.accent_color || defaultConfig.accent_color}; font-family: ${fontStack};">
+                                                    👆 Haz clic para ver la respuesta
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="card-back flex items-center justify-center p-8" style="background: linear-gradient(135deg, ${config.primary_color || defaultConfig.primary_color}, ${config.accent_color || defaultConfig.accent_color});">
+                                            <div class="text-center">
+                                                <div class="text-6xl mb-6">💡</div>
+                                                <h3 class="font-bold mb-4" style="font-size: ${baseSize * 1.5}px; color: white; font-family: ${fontStack};">
+                                                    Respuesta
+                                                </h3>
+                                                <p class="leading-relaxed" style="font-size: ${baseSize * 1.1}px; color: white; font-family: ${fontStack};">
+                                                    ${config.flashcard_answer || defaultConfig.flashcard_answer}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Video Real de YouTube -->
+                            <div class="rounded-3xl p-8 mb-8" style="background: ${config.card_color || defaultConfig.card_color}; border: 2px solid ${config.primary_color || defaultConfig.primary_color};">
+                                <div class="flex items-center justify-between mb-6">
+                                    <h4 class="font-bold" style="font-size: ${baseSize * 1.3}px; color: ${config.primary_color || defaultConfig.primary_color}; font-family: ${fontStack};">
+                                        🎥 Video Explicativo: "El Viaje de los Datos"
+                                    </h4>
+                                    <div class="flex gap-2">
+                                        <button onclick="showTip('tip-sources')" class="info-btn" style="color: ${config.accent_color || defaultConfig.accent_color}; border-color: ${config.accent_color || defaultConfig.accent_color}; font-size: 12px;">💡</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="relative rounded-xl overflow-hidden" style="aspect-ratio: 16/9;">
+                                    <iframe 
+                                        width="100%" 
+                                        height="100%" 
+                                        src="https://www.youtube.com/embed/FuzP4htWrW0" 
+                                        title="El Viaje de los Datos - ETL en Movilidad" 
+                                        frameborder="0" 
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                                        allowfullscreen
+                                        style="border-radius: 12px;">
+                                    </iframe>
+                                </div>
+                                
+                                <div class="mt-6 grid md:grid-cols-3 gap-4">
+                                    <div class="bg-blue-50 rounded-xl p-4 cursor-pointer" onclick="showTip('tip-sources')">
+                                        <div class="text-2xl mb-2">📊</div>
+                                        <p class="font-semibold mb-1" style="font-size: ${baseSize}px; color: #1e40af;">Fuentes de Datos</p>
+                                        <p style="font-size: ${baseSize * 0.85}px; color: #64748b;">Sensores, GPS, cámaras</p>
+                                    </div>
+                                    <div class="bg-purple-50 rounded-xl p-4 cursor-pointer" onclick="showTip('tip-cleaning')">
+                                        <div class="text-2xl mb-2">🧹</div>
+                                        <p class="font-semibold mb-1" style="font-size: ${baseSize}px; color: #7c3aed;">Limpieza GPS</p>
+                                        <p style="font-size: ${baseSize * 0.85}px; color: #64748b;">Filtros y validación</p>
+                                    </div>
+                                    <div class="bg-green-50 rounded-xl p-4 cursor-pointer" onclick="showTip('tip-pipeline')">
+                                        <div class="text-2xl mb-2">⚙️</div>
+                                        <p class="font-semibold mb-1" style="font-size: ${baseSize}px; color: #059669;">Pipeline ETL</p>
+                                        <p style="font-size: ${baseSize * 0.85}px; color: #64748b;">Streaming vs Batch</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Resumen de la Clase -->
+                            <div class="rounded-3xl p-8" style="background: linear-gradient(135deg, ${config.primary_color || defaultConfig.primary_color}, ${config.accent_color || defaultConfig.accent_color});">
+                                <h4 class="font-bold mb-6 text-center" style="font-size: ${baseSize * 1.5}px; color: white; font-family: ${fontStack};">
+                                    📚 Lo que Aprenderás en Esta Clase
+                                </h4>
+                                <div class="grid md:grid-cols-2 gap-6">
+                                    <div class="bg-white bg-opacity-20 rounded-2xl p-6">
+                                        <h5 class="font-bold mb-4" style="font-size: ${baseSize * 1.2}px; color: white; font-family: ${fontStack};">
+                                            🎯 Objetivos de Aprendizaje
+                                        </h5>
+                                        <ul class="space-y-3" style="font-size: ${baseSize}px; color: white; font-family: ${fontStack};">
+                                            <li>• Identificar fuentes de datos en movilidad</li>
+                                            <li>• Detectar problemas de calidad en datos GPS</li>
+                                            <li>• Aplicar técnicas de limpieza ETL</li>
+                                            <li>• Usar herramientas de IA para automatización</li>
+                                        </ul>
+                                    </div>
+                                    <div class="bg-white bg-opacity-20 rounded-2xl p-6">
+                                        <h5 class="font-bold mb-4" style="font-size: ${baseSize * 1.2}px; color: white; font-family: ${fontStack};">
+                                            🛠️ Herramientas que Dominarás
+                                        </h5>
+                                        <ul class="space-y-3" style="font-size: ${baseSize}px; color: white; font-family: ${fontStack};">
+                                            <li>• Python (Pandas, NumPy, Scikit-learn)</li>
+                                            <li>• Apache Kafka para streaming</li>
+                                            <li>• Filtros de Kalman para GPS</li>
+                                            <li>• Plataformas AutoML (DataRobot, H2O.ai)</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <div class="text-center mt-8">
+                                    <p class="font-semibold mb-4" style="font-size: ${baseSize * 1.2}px; color: white; font-family: ${fontStack};">
+                                        🚀 ¡Comencemos el viaje por las pestañas!
+                                    </p>
+                                    <div class="flex flex-wrap gap-3 justify-center">
+                                        <button onclick="switchTab('gps')" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-6 py-3 rounded-xl font-semibold transition-all" style="color: white; font-size: ${baseSize}px; font-family: ${fontStack};">
+                                            📍 Explorar Datos GPS
+                                        </button>
+                                        <button onclick="switchTab('sensores')" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-6 py-3 rounded-xl font-semibold transition-all" style="color: white; font-size: ${baseSize}px; font-family: ${fontStack};">
+                                            🔬 Ver Sensores IoT
+                                        </button>
+                                        <button onclick="switchTab('etl')" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-6 py-3 rounded-xl font-semibold transition-all" style="color: white; font-size: ${baseSize}px; font-family: ${fontStack};">
+                                            ⚙️ Proceso ETL
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mt-8">
+                                <button onclick="switchTab('gps')" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-8 py-4 rounded-xl font-semibold transition-all" style="color: white; font-size: ${baseSize * 1.1}px; font-family: ${fontStack};">
+                                    Siguiente: Datos GPS 📍
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GPS Content -->
+                    <div id="content-gps" class="tab-content">
+                        <div class="grid md:grid-cols-2 gap-6 mb-8">
+                            <div class="rounded-3xl p-8 slide-in" style="background: ${config.card_color || defaultConfig.card_color}; border: 2px solid ${config.primary_color || defaultConfig.primary_color};">
+                                <div class="flex items-center mb-4">
+                                    <div class="text-5xl mr-4">🚗</div>
+                                    <div>
+                                        <h3 class="font-bold" style="font-size: ${baseSize * 1.4}px; color: ${config.primary_color || defaultConfig.primary_color}; font-family: ${fontStack};">
+                                            Datos GPS en Transporte
+                                        </h3>
+                                        <button onclick="openModal('gps-transport')" class="info-btn" style="color: ${config.primary_color || defaultConfig.primary_color}; border-color: ${config.primary_color || defaultConfig.primary_color};">i</button>
+                                    </div>
+                                </div>
+                                <ul class="space-y-3" style="font-size: ${baseSize}px; color: ${config.text_color || defaultConfig.text_color}; font-family: ${fontStack};">
+                                    <li>🛣️ <strong>Rutas Optimizadas:</strong> Análisis de trayectorias eficientes</li>
+                                    <li>⚠️ <strong>Zonas de Riesgo:</strong> Identificación de puntos críticos</li>
+                                    <li>🚦 <strong>Patrones de Tráfico:</strong> Congestión y flujo vehicular</li>
+                                    <li>📊 <strong>Velocidad Promedio:</strong> Análisis de comportamiento</li>
+                                    <li>🔄 <strong>Frecuencia de Paradas:</strong> Eficiencia operativa</li>
+                                    <li>📍 <strong>Geofencing:</strong> Alertas por zonas restringidas</li>
+                                </ul>
+                            </div>
+
+                            <div class="rounded-3xl p-8 slide-in" style="background: ${config.card_color || defaultConfig.card_color}; border: 2px solid ${config.accent_color || defaultConfig.accent_color}; animation-delay: 0.2s;">
+                                <div class="flex items-center mb-4">
+                                    <div class="text-5xl mr-4">🧹</div>
+                                    <div>
+                                        <h3 class="font-bold" style="font-size: ${baseSize * 1.4}px; color: ${config.accent_color || defaultConfig.accent_color}; font-family: ${fontStack};">
+                                            Limpieza GPS Crítica
+                                        </h3>
+                                        <button onclick="openModal('gps-cleaning')" class="info-btn" style="color: ${config.accent_color || defaultConfig.accent_color}; border-color: ${config.accent_color || defaultConfig.accent_color};">i</button>
+                                    </div>
+                                </div>
+                                <ul class="space-y-3" style="font-size: ${baseSize}px; color: ${config.text_color || defaultConfig.text_color}; font-family: ${fontStack};">
+                                    <li>🎯 <strong>Precisión < 10m:</strong> Filtrar señales de baja calidad</li>
+                                    <li>🚫 <strong>Túneles/Puentes:</strong> Interpolar pérdidas de señal</li>
+                                    <li>⚡ <strong>Velocidades Imposibles:</strong> > 200 km/h en ciudad</li>
+                                    <li>🔄 <strong>Saltos Espaciales:</strong> > 1km entre puntos</li>
+                                    <li>⏱️ <strong>Timestamps Duplicados:</strong> Eliminar redundancia</li>
+                                    <li>🎚️ <strong>Filtro Kalman:</strong> Suavizado de trayectorias</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="rounded-3xl p-8 mb-6" style="background: ${config.card_color || defaultConfig.card_color}; border: 2px solid ${config.primary_color || defaultConfig.primary_color};">
+                            <div class="flex items-center mb-6">
+                                <h4 class="font-bold" style="font-size: ${baseSize * 1.3}px; color: ${config.primary_color || defaultConfig.primary_color}; font-family: ${fontStack};">
+                                    🛠️ Pipeline ETL para GPS de Transporte
+                                </h4>
+                                <button onclick="openModal('gps-pipeline')" class="info-btn" style="color: ${config.primary_color || defaultConfig.primary_color}; border-color: ${config.primary_color || defaultConfig.primary_color};">i</button>
+                            </div>
+                            <div class="grid md:grid-cols-4 gap-4">
+                                <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-center text-white">
+                                    <div class="text-4xl mb-3">📥</div>
+                                    <p class="font-bold mb-2" style="font-size: ${baseSize * 1.1}px;">EXTRACT</p>
+                                    <p style="font-size: ${baseSize * 0.85}px;">OBD-II, Telemática, Apps móviles</p>
+                                </div>
+                                <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl p-6 text-center text-white">
+                                    <div class="text-4xl mb-3">🔄</div>
+                                    <p class="font-bold mb-2" style="font-size: ${baseSize * 1.1}px;">TRANSFORM</p>
+                                    <p style="font-size: ${baseSize * 0.85}px;">Filtrado, validación, enriquecimiento</p>
+                                </div>
+                                <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-6 text-center text-white">
+                                    <div class="text-4xl mb-3">📤</div>
+                                    <p class="font-bold mb-2" style="font-size: ${baseSize * 1.1}px;">LOAD</p>
+                                    <p style="font-size: ${baseSize * 0.85}px;">Data Lake, Dashboards, APIs</p>
+                                </div>
+                                <div class="bg-gradient-to-br from-red-500 to-red-600 rounded-2xl p-6 text-center text-white">
+                                    <div class="text-4xl mb-3">📊</div>
+                                    <p class="font-bold mb-2" style="font-size: ${baseSize * 1.1}px;">ANALYZE</p>
+                                    <p style="font-size: ${baseSize * 0.85}px;">ML, Alertas, Reportes</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="rounded-3xl p-8" style="background: linear-gradient(135deg, ${config.primary_color || defaultConfig.primary_color}, ${config.accent_color || defaultConfig.accent_color});">
+                            <h4 class="font-bold mb-4" style="font-size: ${baseSize * 1.3}px; color: white; font-family: ${fontStack};">
+                                🚨 Casos Críticos en Movilidad Segura
+                            </h4>
+                            <div class="grid md:grid-cols-3 gap-4">
+                                <div class="bg-white bg-opacity-20 rounded-2xl p-6 cursor-pointer" onclick="openModal('emergency-response')">
+                                    <div class="text-3xl mb-2">🚑</div>
+                                    <p class="font-semibold mb-2" style="font-size: ${baseSize}px; color: white; font-family: ${fontStack};">Respuesta de Emergencia</p>
+                                    <p style="font-size: ${baseSize * 0.85}px; color: white; font-family: ${fontStack};">Optimización de rutas críticas</p>
+                                </div>
+                                <div class="bg-white bg-opacity-20 rounded-2xl p-6 cursor-pointer" onclick="openModal('fleet-monitoring')">
+                                    <div class="text-3xl mb-2">🚛</div>
+                                    <p class="font-semibold mb-2" style="font-size: ${baseSize}px; color: white; font-family: ${fontStack};">Monitoreo de Flotas</p>
+                                    <p style="font-size: ${baseSize * 0.85}px; color: white; font-family: ${fontStack};">Seguridad y eficiencia</p>
+                                </div>
+                                <div class="bg-white bg-opacity-20 rounded-2xl p-6 cursor-pointer" onclick="openModal('smart-traffic')">
+                                    <div class="text-3xl mb-2">🚦</div>
+                                    <p class="font-semibold mb-2" style="font-size: ${baseSize}px; color: white; font-family: ${fontStack};">Tráfico Inteligente</p>
+                                    <p style="font-size: ${baseSize * 0.85}px; color: white; font-family: ${fontStack};">Gestión predictiva</p>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mt-8">
+                                <button onclick="switchTab('sensores')" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-8 py-4 rounded-xl font-semibold transition-all" style="color: white; font-size: ${baseSize * 1.1}px; font-family: ${fontStack};">
+                                    Siguiente: Sensores IoT 🔬
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sensores Content -->
+                    <div id="content-sensores" class="tab-content">
+                        <div class="grid md:grid-cols-2 gap-6 mb-8">
+                            <div class="rounded-3xl p-8" style="background: ${config.card_color || defaultConfig.card_color}; border: 2px solid ${config.primary_color || defaultConfig.primary_color};">
+                                <div class="text-5xl mb-4">🔬</div>
+                                <h3 class="font-bold mb-4" style="font-size: ${baseSize * 1.4}px; color: ${config.primary_color || defaultConfig.primary_color}; font-family: ${fontStack};">
+                                    Tipos de Sensores IoT
+                                </h3>
+                                <ul class="space-y-3" style="font-size: ${baseSize}px; color: ${config.text_color || defaultConfig.text_color}; font-family: ${fontStack};">
+                                    <li>🌡️ <strong>Temperatura:</strong> Monitoreo térmico continuo</li>
+                                    <li>💧 <strong>Humedad:</strong> Niveles de humedad relativa</li>
+                                    <li>⚡ <strong>Acelerómetro:</strong> Movimiento y vibración</li>
+                                    <li>🎚️ <strong>Presión:</strong> Presión atmosférica/hidráulica</li>
+                                    <li>💡 <strong>Luminosidad:</strong> Intensidad de luz</li>
+                                    <li>🔊 <strong>Sonido:</strong> Niveles de ruido ambiental</li>
+                                </ul>
+                            </div>
+
+                            <div class="rounded-3xl p-8" style="background: ${config.card_color || defaultConfig.card_color}; border: 2px solid ${config.accent_color || defaultConfig.accent_color};">
+                                <div class="text-5xl mb-4">⚠️</div>
+                                <h3 class="font-bold mb-4" style="font-size: ${baseSize * 1.4}px; color: ${config.accent_color || defaultConfig.accent_color}; font-family: ${fontStack};">
+                                    Desafíos de Datos de Sensores
+                                </h3>
+                                <ul class="space-y-3" style="font-size: ${baseSize}px; color: ${config.text_color || defaultConfig.text_color}; font-family: ${fontStack};">
+                                    <li>⚡ <strong>Ruido:</strong> Interferencias electromagnéticas</li>
+                                    <li>📉 <strong>Deriva:</strong> Descalibración temporal</li>
+                                    <li>❌ <strong>Valores faltantes:</strong> Pérdida de conexión</li>
+                                    <li>🔄 <strong>Frecuencia variable:</strong> Muestreo irregular</li>
+                                    <li>📊 <strong>Outliers:</strong> Lecturas anómalas</li>
+                                    <li>🔋 <strong>Batería baja:</strong> Datos inconsistentes</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="rounded-3xl p-8 mb-6" style="background: ${config.card_color || defaultConfig.card_color}; border: 2px solid ${config.primary_color || defaultConfig.primary_color};">
+                            <h4 class="font-bold mb-6" style="font-size: ${baseSize * 1.3}px; color: ${config.primary_color || defaultConfig.primary_color}; font-family: ${fontStack};">
+                                🛠️ Técnicas de Limpieza para Sensores
+                            </h4>
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <h5 class="font-semibold mb-3" style="font-size: ${baseSize * 1.1}px; color: ${config.accent_color || defaultConfig.accent_color}; font-family: ${fontStack};">
+                                        Filtrado de Ruido
+                                    </h5>
+                                    <ul class="space-y-2" style="font-size: ${baseSize * 0.95}px; color: ${config.text_color || defaultConfig.text_color}; font-family: ${fontStack};">
+                                        <li>• Filtro de media móvil</li>
+                                        <li>• Filtro de mediana</li>
+                                        <li>• Filtro Butterworth</li>
+                                        <li>• Transformada de Fourier</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h5 class="font-semibold mb-3" style="font-size: ${baseSize * 1.1}px; color: ${config.accent_color || defaultConfig.accent_color}; font-family: ${fontStack};">
+                                        Detección de Anomalías
+                                    </h5>
+                                    <ul class="space-y-2" style="font-size: ${baseSize * 0.95}px; color: ${config.text_color || defaultConfig.text_color}; font-family: ${fontStack};">
+                                        <li>• Z-score (desviación estándar)</li>
+                                        <li>• IQR (rango intercuartílico)</li>
+                                        <li>• Isolation Forest</li>
+                                        <li>• DBSCAN clustering</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mt-8">
+                                <button onclick="switchTab('reportes')" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-8 py-4 rounded-xl font-semibold transition-all" style="color: white; font-size: ${baseSize * 1.1}px; font-family: ${fontStack};">
+                                    Siguiente: Reportes 📊
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reportes Content -->
+                    <div id="content-reportes" class="tab-content">
+                        <div class="grid md:grid-cols-2 gap-6 mb-8">
+                            <div class="rounded-3xl p-8" style="background: ${config.card_color || defaultConfig.card_color}; border: 2px solid ${config.primary_color || defaultConfig.primary_color};">
+                                <div class="text-5xl mb-4">📊</div>
+                                <h3 class="font-bold mb-4" style="font-size: ${baseSize * 1.4}px; color: ${config.primary_color || defaultConfig.primary_color}; font-family: ${fontStack};">
+                                    Tipos de Reportes
+                                </h3>
+                                <ul class="space-y-3" style="font-size: ${baseSize}px; color: ${config.text_color || defaultConfig.text_color}; font-family: ${fontStack};">
+                                    <li>📈 <strong>Operacionales:</strong> Métricas diarias/semanales</li>
+                                    <li>📉 <strong>Analíticos:</strong> Tendencias y patrones</li>
+                                    <li>🎯 <strong>Estratégicos:</strong> KPIs de alto nivel</li>
+                                    <li>⚡ <strong>Tiempo Real:</strong> Dashboards en vivo</li>
+                                    <li>📋 <strong>Ad-hoc:</strong> Consultas personalizadas</li>
+                                    <li>🔔 <strong>Alertas:</strong> Notificaciones automáticas</li>
+                                </ul>
+                            </div>
+
+                            <div class="rounded-3xl p-8" style="background: ${config.card_color || defaultConfig.card_color}; border: 2px solid ${config.accent_color || defaultConfig.accent_color};">
+                                <div class="text-5xl mb-4">🎨</div>
+                                <h3 class="font-bold mb-4" style="font-size: ${baseSize * 1.4}px; color: ${config.accent_color || defaultConfig.accent_color}; font-family: ${fontStack};">
+                                    Formatos de Datos
+                                </h3>
+                                <ul class="space-y-3" style="font-size: ${baseSize}px; color: ${config.text_color || defaultConfig.text_color}; font-family: ${fontStack};">
+                                    <li>📄 <strong>CSV/Excel:</strong> Datos tabulares estructurados</li>
+                                    <li>🔤 <strong>JSON:</strong> Datos jerárquicos anidados</li>
+                                    <li>📝 <strong>XML:</strong> Documentos estructurados</li>
+                                    <li>🗄️ <strong>SQL:</strong> Bases de datos relacionales</li>
+                                    <li>📊 <strong>Parquet:</strong> Columnar optimizado</li>
+                                    <li>📑 <strong>PDF:</strong> Reportes formateados</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="rounded-3xl p-8" style="background: linear-gradient(135deg, ${config.primary_color || defaultConfig.primary_color}, ${config.accent_color || defaultConfig.accent_color});">
+                            <h4 class="font-bold mb-6" style="font-size: ${baseSize * 1.3}px; color: white; font-family: ${fontStack};">
+                                🔧 Pipeline de Preparación de Reportes
+                            </h4>
+                            <div class="grid md:grid-cols-4 gap-4">
+                                <div class="bg-white bg-opacity-20 rounded-2xl p-6 text-center">
+                                    <div class="text-4xl mb-3">1️⃣</div>
+                                    <p class="font-bold mb-2" style="font-size: ${baseSize * 1.1}px; color: white; font-family: ${fontStack};">Extracción</p>
+                                    <p style="font-size: ${baseSize * 0.9}px; color: white; font-family: ${fontStack};">Obtener datos de fuentes</p>
+                                </div>
+                                <div class="bg-white bg-opacity-20 rounded-2xl p-6 text-center">
+                                    <div class="text-4xl mb-3">2️⃣</div>
+                                    <p class="font-bold mb-2" style="font-size: ${baseSize * 1.1}px; color: white; font-family: ${fontStack};">Validación</p>
+                                    <p style="font-size: ${baseSize * 0.9}px; color: white; font-family: ${fontStack};">Verificar calidad</p>
+                                </div>
+                                <div class="bg-white bg-opacity-20 rounded-2xl p-6 text-center">
+                                    <div class="text-4xl mb-3">3️⃣</div>
+                                    <p class="font-bold mb-2" style="font-size: ${baseSize * 1.1}px; color: white; font-family: ${fontStack};">Transformación</p>
+                                    <p style="font-size: ${baseSize * 0.9}px; color: white; font-family: ${fontStack};">Limpiar y formatear</p>
+                                </div>
+                                <div class="bg-white bg-opacity-20 rounded-2xl p-6 text-center">
+                                    <div class="text-4xl mb-3">4️⃣</div>
+                                    <p class="font-bold mb-2" style="font-size: ${baseSize * 1.1}px; color: white; font-family: ${fontStack};">Agregación</p>
+                                    <p style="font-size: ${baseSize * 0.9}px; color: white; font-family: ${fontStack};">Calcular métricas</p>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mt-8">
+                                <button onclick="switchTab('etl')" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-8 py-4 rounded-xl font-semibold transition-all" style="color: white; font-size: ${baseSize * 1.1}px; font-family: ${fontStack};">
+                                    Siguiente: Proceso ETL ⚙️
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ETL Content -->
+                    <div id="content-etl" class="tab-content">
+                        <div class="rounded-3xl p-8 mb-8" style="background: linear-gradient(135deg, ${config.primary_color || defaultConfig.primary_color}, ${config.accent_color || defaultConfig.accent_color});">
+                            <h3 class="font-bold mb-6 text-center" style="font-size: ${baseSize * 1.8}px; color: white; font-family: ${fontStack};">
+                                ⚙️ El Proceso ETL Completo
+                            </h3>
+                            <div class="grid md:grid-cols-3 gap-6">
+                                <div class="bg-white bg-opacity-20 rounded-3xl p-8">
+                                    <div class="text-6xl mb-4 text-center">📥</div>
+                                    <h4 class="font-bold mb-4 text-center" style="font-size: ${baseSize * 1.4}px; color: white; font-family: ${fontStack};">
+                                        EXTRACT
+                                    </h4>
+                                    <p class="mb-4" style="font-size: ${baseSize}px; color: white; font-family: ${fontStack};">
+                                        Extracción de datos desde múltiples fuentes heterogéneas
+                                    </p>
+                                    <ul class="space-y-2" style="font-size: ${baseSize * 0.9}px; color: white; font-family: ${fontStack};">
+                                        <li>• Bases de datos SQL/NoSQL</li>
+                                        <li>• APIs REST/GraphQL</li>
+                                        <li>• Archivos CSV/JSON/XML</li>
+                                        <li>• Streams en tiempo real</li>
+                                        <li>• Web scraping</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-white bg-opacity-20 rounded-3xl p-8">
+                                    <div class="text-6xl mb-4 text-center">🔄</div>
+                                    <h4 class="font-bold mb-4 text-center" style="font-size: ${baseSize * 1.4}px; color: white; font-family: ${fontStack};">
+                                        TRANSFORM
+                                    </h4>
+                                    <p class="mb-4" style="font-size: ${baseSize}px; color: white; font-family: ${fontStack};">
+                                        Transformación y limpieza según reglas de negocio
+                                    </p>
+                                    <ul class="space-y-2" style="font-size: ${baseSize * 0.9}px; color: white; font-family: ${fontStack};">
+                                        <li>• Limpieza de datos</li>
+                                        <li>• Normalización</li>
+                                        <li>• Agregaciones</li>
+                                        <li>• Enriquecimiento</li>
+                                        <li>• Validación de calidad</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-white bg-opacity-20 rounded-3xl p-8">
+                                    <div class="text-6xl mb-4 text-center">📤</div>
+                                    <h4 class="font-bold mb-4 text-center" style="font-size: ${baseSize * 1.4}px; color: white; font-family: ${fontStack};">
+                                        LOAD
+                                    </h4>
+                                    <p class="mb-4" style="font-size: ${baseSize}px; color: white; font-family: ${fontStack};">
+                                        Carga de datos procesados al destino final
+                                    </p>
+                                    <ul class="space-y-2" style="font-size: ${baseSize * 0.9}px; color: white; font-family: ${fontStack};">
+                                        <li>• Data Warehouse</li>
+                                        <li>• Data Lake</li>
+                                        <li>• Bases de datos OLAP</li>
+                                        <li>• Dashboards BI</li>
+                                        <li>• APIs de consumo</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="rounded-3xl p-8" style="background: ${config.card_color || defaultConfig.card_color}; border: 2px solid ${config.primary_color || defaultConfig.primary_color};">
+                                <h4 class="font-bold mb-4" style="font-size: ${baseSize * 1.3}px; color: ${config.primary_color || defaultConfig.primary_color}; font-family: ${fontStack};">
+                                    ✅ Mejores Prácticas ETL
+                                </h4>
+                                <ul class="space-y-3" style="font-size: ${baseSize}px; color: ${config.text_color || defaultConfig.text_color}; font-family: ${fontStack};">
+                                    <li>🔹 Implementar logging detallado</li>
+                                    <li>🔹 Manejo robusto de errores</li>
+                                    <li>🔹 Procesamiento incremental</li>
+                                    <li>🔹 Validación de datos en cada etapa</li>
+                                    <li>🔹 Monitoreo y alertas</li>
+                                    <li>🔹 Documentación completa</li>
+                                    <li>🔹 Testing automatizado</li>
+                                </ul>
+                            </div>
+
+                            <div class="rounded-3xl p-8" style="background: ${config.card_color || defaultConfig.card_color}; border: 2px solid ${config.accent_color || defaultConfig.accent_color};">
+                                <h4 class="font-bold mb-4" style="font-size: ${baseSize * 1.3}px; color: ${config.accent_color || defaultConfig.accent_color}; font-family: ${fontStack};">
+                                    ⚡ ETL vs ELT
+                                </h4>
+                                <div class="space-y-4" style="font-size: ${baseSize}px; color: ${config.text_color || defaultConfig.text_color}; font-family: ${fontStack};">
+                                    <div>
+                                        <p class="font-semibold mb-2" style="color: ${config.primary_color || defaultConfig.primary_color};">ETL (Tradicional):</p>
+                                        <p>Transforma antes de cargar. Ideal para datos estructurados y volúmenes moderados.</p>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold mb-2" style="color: ${config.accent_color || defaultConfig.accent_color};">ELT (Moderno):</p>
+                                        <p>Carga primero, transforma después. Aprovecha poder de cloud computing para Big Data.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mt-8">
+                                <button onclick="switchTab('herramientas')" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-8 py-4 rounded-xl font-semibold transition-all" style="color: white; font-size: ${baseSize * 1.1}px; font-family: ${fontStack};">
+                                    Siguiente: Herramientas IA 🤖
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Herramientas IA Content -->
+                    <div id="content-herramientas" class="tab-content">
+                        <h3 class="font-bold mb-8 text-center" style="font-size: ${baseSize * 1.8}px; color: ${config.primary_color || defaultConfig.primary_color}; font-family: ${fontStack};">
+                            🤖 Herramientas de IA para ETL y Limpieza de Datos
+                        </h3>
+
+                        <div class="grid md:grid-cols-2 gap-6 mb-8">
+                            <div class="tool-card rounded-3xl p-8" style="background: ${config.card_color || defaultConfig.card_color}; border: 2px solid ${config.primary_color || defaultConfig.primary_color};">
+                                <div class="flex items-center mb-4">
+                                    <div class="text-5xl mr-4">🔮</div>
+                                    <div>
+                                        <h4 class="font-bold" style="font-size: ${baseSize * 1.3}px; color: ${config.primary_color || defaultConfig.primary_color}; font-family: ${fontStack};">
+                                            OpenAI GPT-4
+                                        </h4>
+                                        <p style="font-size: ${baseSize * 0.9}px; color: ${config.accent_color || defaultConfig.accent_color}; font-family: ${fontStack};">
+                                            Análisis y transformación de datos
+                                        </p>
+                                    </div>
+                                </div>
+                                <p class="mb-4" style="font-size: ${baseSize}px; color: ${config.text_color || defaultConfig.text_color}; font-family: ${fontStack};">
+                                    Genera código Python para limpieza de datos, detecta patrones y sugiere transformaciones automáticas.
+                                </p>
+                                <a href="https://platform.openai.com/docs/guides/gpt" target="_blank" rel="noopener noreferrer" class="inline-block px-6 py-3 rounded-xl font-semibold transition-all" style="background: ${config.primary_color || defaultConfig.primary_color}; color: white; font-size: ${baseSize}px; font-family: ${fontStack};">
+                                    🔗 Visitar Documentación
+                                </a>
+                            </div>
+
+                            <div class="tool-card rounded-3xl p-8" style="background: ${config.card_color || defaultConfig.card_color}; border: 2px solid ${config.accent_color || defaultConfig.accent_color};">
+                                <div class="flex items-center mb-4">
+                                    <div class="text-5xl mr-4">🧠</div>
+                                    <div>
+                                        <h4 class="font-bold" style="font-size: ${baseSize * 1.3}px; color: ${config.accent_color || defaultConfig.accent_color}; font-family: ${fontStack};">
+                                            Google Cloud AutoML
+                                        </h4>
+                                        <p style="font-size: ${baseSize * 0.9}px; color: ${config.primary_color || defaultConfig.primary_color}; font-family: ${fontStack};">
+                                            ML automatizado para datos
+                                        </p>
+                                    </div>
+                                </div>
+                                <p class="mb-4" style="font-size: ${baseSize}px; color: ${config.text_color || defaultConfig.text_color}; font-family: ${fontStack};">
+                                    Preprocesamiento automático, detección de anomalías y feature engineering con IA.
+                                </p>
+                                <a href="https://cloud.google.com/automl" target="_blank" rel="noopener noreferrer" class="inline-block px-6 py-3 rounded-xl font-semibold transition-all" style="background: ${config.accent_color || defaultConfig.accent_color}; color: white; font-size: ${baseSize}px; font-family: ${fontStack};">
+                                    🔗 Explorar AutoML
+                                </a>
+                            </div>
+
+                            <div class="tool-card rounded-3xl p-8" style="background: ${config.card_color || defaultConfig.card_color}; border: 2px solid ${config.primary_color || defaultConfig.primary_color};">
+                                <div class="flex items-center mb-4">
+                                    <div class="text-5xl mr-4">🎯</div>
+                                    <div>
+                                        <h4 class="font-bold" style="font-size: ${baseSize * 1.3}px; color: ${config.primary_color || defaultConfig.primary_color}; font-family: ${fontStack};">
+                                            Trifacta Wrangler
+                                        </h4>
+                                        <p style="font-size: ${baseSize * 0.9}px; color: ${config.accent_color || defaultConfig.accent_color}; font-family: ${fontStack};">
+                                            Preparación inteligente de datos
+                                        </p>
+                                    </div>
+                                </div>
+                                <p class="mb-4" style="font-size: ${baseSize}px; color: ${config.text_color || defaultConfig.text_color}; font-family: ${fontStack};">
+                                    Sugiere transformaciones automáticas basadas en ML y detecta problemas de calidad de datos.
+                                </p>
+                                <a href="https://www.trifacta.com/" target="_blank" rel="noopener noreferrer" class="inline-block px-6 py-3 rounded-xl font-semibold transition-all" style="background: ${config.primary_color || defaultConfig.primary_color}; color: white; font-size: ${baseSize}px; font-family: ${fontStack};">
+                                    🔗 Conocer Trifacta
+                                </a>
+                            </div>
+
+                            <div class="tool-card rounded-3xl p-8" style="background: ${config.card_color || defaultConfig.card_color}; border: 2px solid ${config.accent_color || defaultConfig.accent_color};">
+                                <div class="flex items-center mb-4">
+                                    <div class="text-5xl mr-4">⚡</div>
+                                    <div>
+                                        <h4 class="font-bold" style="font-size: ${baseSize * 1.3}px; color: ${config.accent_color || defaultConfig.accent_color}; font-family: ${fontStack};">
+                                            DataRobot
+                                        </h4>
+                                        <p style="font-size: ${baseSize * 0.9}px; color: ${config.primary_color || defaultConfig.primary_color}; font-family: ${fontStack};">
+                                            Plataforma AutoML empresarial
+                                        </p>
+                                    </div>
+                                </div>
+                                <p class="mb-4" style="font-size: ${baseSize}px; color: ${config.text_color || defaultConfig.text_color}; font-family: ${fontStack};">
+                                    Automatiza limpieza, feature engineering y selección de modelos con IA avanzada.
+                                </p>
+                                <a href="https://www.datarobot.com/" target="_blank" rel="noopener noreferrer" class="inline-block px-6 py-3 rounded-xl font-semibold transition-all" style="background: ${config.accent_color || defaultConfig.accent_color}; color: white; font-size: ${baseSize}px; font-family: ${fontStack};">
+                                    🔗 Ver DataRobot
+                                </a>
+                            </div>
+
+                            <div class="tool-card rounded-3xl p-8" style="background: ${config.card_color || defaultConfig.card_color}; border: 2px solid ${config.primary_color || defaultConfig.primary_color};">
+                                <div class="flex items-center mb-4">
+                                    <div class="text-5xl mr-4">🐍</div>
+                                    <div>
+                                        <h4 class="font-bold" style="font-size: ${baseSize * 1.3}px; color: ${config.primary_color || defaultConfig.primary_color}; font-family: ${fontStack};">
+                                            Scikit-learn Outliers
+                                        </h4>
+                                        <p style="font-size: ${baseSize * 0.9}px; color: ${config.accent_color || defaultConfig.accent_color}; font-family: ${fontStack};">
+                                            Detección de anomalías GPS
+                                        </p>
+                                    </div>
+                                </div>
+                                <p class="mb-4" style="font-size: ${baseSize}px; color: ${config.text_color || defaultConfig.text_color}; font-family: ${fontStack};">
+                                    Isolation Forest y One-Class SVM para detectar trayectorias anómalas en transporte.
+                                </p>
+                                <a href="https://scikit-learn.org/stable/modules/outlier_detection.html" target="_blank" rel="noopener noreferrer" class="inline-block px-6 py-3 rounded-xl font-semibold transition-all" style="background: ${config.primary_color || defaultConfig.primary_color}; color: white; font-size: ${baseSize}px; font-family: ${fontStack};">
+                                    🔗 Scikit-learn Outliers
+                                </a>
+                            </div>
+
+                            <div class="tool-card rounded-3xl p-8" style="background: ${config.card_color || defaultConfig.card_color}; border: 2px solid ${config.accent_color || defaultConfig.accent_color};">
+                                <div class="flex items-center mb-4">
+                                    <div class="text-5xl mr-4">🔬</div>
+                                    <div>
+                                        <h4 class="font-bold" style="font-size: ${baseSize * 1.3}px; color: ${config.accent_color || defaultConfig.accent_color}; font-family: ${fontStack};">
+                                            Apache Kafka Streams
+                                        </h4>
+                                        <p style="font-size: ${baseSize * 0.9}px; color: ${config.primary_color || defaultConfig.primary_color}; font-family: ${fontStack};">
+                                            Procesamiento en tiempo real
+                                        </p>
+                                    </div>
+                                </div>
+                                <p class="mb-4" style="font-size: ${baseSize}px; color: ${config.text_color || defaultConfig.text_color}; font-family: ${fontStack};">
+                                    Stream processing para datos GPS en tiempo real con filtrado y agregaciones.
+                                </p>
+                                <a href="https://kafka.apache.org/documentation/streams/" target="_blank" rel="noopener noreferrer" class="inline-block px-6 py-3 rounded-xl font-semibold transition-all" style="background: ${config.accent_color || defaultConfig.accent_color}; color: white; font-size: ${baseSize}px; font-family: ${fontStack};">
+                                    🔗 Kafka Streams
+                                </a>
+                            </div>
+
+                            <div class="tool-card rounded-3xl p-8" style="background: ${config.card_color || defaultConfig.card_color}; border: 2px solid ${config.primary_color || defaultConfig.primary_color};">
+                                <div class="flex items-center mb-4">
+                                    <div class="text-5xl mr-4">🌊</div>
+                                    <div>
+                                        <h4 class="font-bold" style="font-size: ${baseSize * 1.3}px; color: ${config.primary_color || defaultConfig.primary_color}; font-family: ${fontStack};">
+                                            Alteryx Intelligence Suite
+                                        </h4>
+                                        <p style="font-size: ${baseSize * 0.9}px; color: ${config.accent_color || defaultConfig.accent_color}; font-family: ${fontStack};">
+                                            IA para preparación de datos
+                                        </p>
+                                    </div>
+                                </div>
+                                <p class="mb-4" style="font-size: ${baseSize}px; color: ${config.text_color || defaultConfig.text_color}; font-family: ${fontStack};">
+                                    Suite completa con ML para limpieza, clasificación y análisis predictivo de datos.
+                                </p>
+                                <a href="https://www.alteryx.com/products/alteryx-platform/intelligence-suite" target="_blank" rel="noopener noreferrer" class="inline-block px-6 py-3 rounded-xl font-semibold transition-all" style="background: ${config.primary_color || defaultConfig.primary_color}; color: white; font-size: ${baseSize}px; font-family: ${fontStack};">
+                                    🔗 Alteryx Suite
+                                </a>
+                            </div>
+
+                            <div class="tool-card rounded-3xl p-8" style="background: ${config.card_color || defaultConfig.card_color}; border: 2px solid ${config.accent_color || defaultConfig.accent_color};">
+                                <div class="flex items-center mb-4">
+                                    <div class="text-5xl mr-4">📊</div>
+                                    <div>
+                                        <h4 class="font-bold" style="font-size: ${baseSize * 1.3}px; color: ${config.accent_color || defaultConfig.accent_color}; font-family: ${fontStack};">
+                                            H2O.ai Driverless AI
+                                        </h4>
+                                        <p style="font-size: ${baseSize * 0.9}px; color: ${config.primary_color || defaultConfig.primary_color}; font-family: ${fontStack};">
+                                            AutoML de código abierto
+                                        </p>
+                                    </div>
+                                </div>
+                                <p class="mb-4" style="font-size: ${baseSize}px; color: ${config.text_color || defaultConfig.text_color}; font-family: ${fontStack};">
+                                    Automatiza feature engineering, selección de modelos y optimización de hiperparámetros.
+                                </p>
+                                <a href="https://h2o.ai/platform/ai-cloud/make/h2o-driverless-ai/" target="_blank" rel="noopener noreferrer" class="inline-block px-6 py-3 rounded-xl font-semibold transition-all" style="background: ${config.accent_color || defaultConfig.accent_color}; color: white; font-size: ${baseSize}px; font-family: ${fontStack};">
+                                    🔗 H2O.ai Platform
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="rounded-3xl p-8" style="background: linear-gradient(135deg, ${config.primary_color || defaultConfig.primary_color}, ${config.accent_color || defaultConfig.accent_color});">
+                            <h4 class="font-bold mb-6 text-center" style="font-size: ${baseSize * 1.5}px; color: white; font-family: ${fontStack};">
+                                💡 Bibliotecas Python Esenciales
+                            </h4>
+                            <div class="grid md:grid-cols-4 gap-4">
+                                <div class="bg-white bg-opacity-20 rounded-2xl p-6 text-center">
+                                    <div class="text-4xl mb-3">🐼</div>
+                                    <p class="font-bold mb-2" style="font-size: ${baseSize * 1.1}px; color: white; font-family: ${fontStack};">Pandas</p>
+                                    <p style="font-size: ${baseSize * 0.85}px; color: white; font-family: ${fontStack};">Manipulación de datos</p>
+                                </div>
+                                <div class="bg-white bg-opacity-20 rounded-2xl p-6 text-center">
+                                    <div class="text-4xl mb-3">🔢</div>
+                                    <p class="font-bold mb-2" style="font-size: ${baseSize * 1.1}px; color: white; font-family: ${fontStack};">NumPy</p>
+                                    <p style="font-size: ${baseSize * 0.85}px; color: white; font-family: ${fontStack};">Computación numérica</p>
+                                </div>
+                                <div class="bg-white bg-opacity-20 rounded-2xl p-6 text-center">
+                                    <div class="text-4xl mb-3">🤖</div>
+                                    <p class="font-bold mb-2" style="font-size: ${baseSize * 1.1}px; color: white; font-family: ${fontStack};">Scikit-learn</p>
+                                    <p style="font-size: ${baseSize * 0.85}px; color: white; font-family: ${fontStack};">Machine Learning</p>
+                                </div>
+                                <div class="bg-white bg-opacity-20 rounded-2xl p-6 text-center">
+                                    <div class="text-4xl mb-3">📈</div>
+                                    <p class="font-bold mb-2" style="font-size: ${baseSize * 1.1}px; color: white; font-family: ${fontStack};">Great Expectations</p>
+                                    <p style="font-size: ${baseSize * 0.85}px; color: white; font-family: ${fontStack};">Validación de datos</p>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mt-8">
+                                <button onclick="switchTab('practica')" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-8 py-4 rounded-xl font-semibold transition-all" style="color: white; font-size: ${baseSize * 1.1}px; font-family: ${fontStack};">
+                                    Siguiente: Práctica Interactiva 🧪
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Práctica Content -->
+                    <div id="content-practica" class="tab-content">
+                        <div class="rounded-3xl p-8 mb-8" style="background: linear-gradient(135deg, ${config.primary_color || defaultConfig.primary_color}, ${config.accent_color || defaultConfig.accent_color});">
+                            <h3 class="font-bold mb-6 text-center" style="font-size: ${baseSize * 1.8}px; color: white; font-family: ${fontStack};">
+                                🧪 Práctica: Limpieza de Datos GPS
+                            </h3>
+                            <div class="bg-white bg-opacity-20 rounded-2xl p-6 mb-6">
+                                <h4 class="font-bold mb-4" style="font-size: ${baseSize * 1.3}px; color: white; font-family: ${fontStack};">
+                                    Datos GPS Simulados (Problemáticos)
+                                </h4>
+                                <div class="bg-black bg-opacity-30 rounded-xl p-4 font-mono text-sm overflow-x-auto" style="color: #00ff00;">
+                                    <div id="raw-data">
+                                        timestamp,lat,lng,speed,accuracy<br>
+                                        2024-01-15 08:00:00,40.7128,-74.0060,25,5<br>
+                                        2024-01-15 08:00:05,40.7129,-74.0061,28,8<br>
+                                        2024-01-15 08:00:10,40.7130,-74.0062,999,15 ❌<br>
+                                        2024-01-15 08:00:15,40.7131,-74.0063,30,200 ❌<br>
+                                        2024-01-15 08:00:20,41.8781,-87.6298,35,5 ❌<br>
+                                        2024-01-15 08:00:25,40.7133,-74.0065,32,7<br>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="grid md:grid-cols-3 gap-4 mb-6">
+                                <button onclick="cleanSpeed()" class="bg-white bg-opacity-20 rounded-xl p-4 font-semibold transition-all hover:bg-opacity-30" style="color: white; font-size: ${baseSize}px; font-family: ${fontStack};">
+                                    🚀 Limpiar Velocidades
+                                </button>
+                                <button onclick="cleanAccuracy()" class="bg-white bg-opacity-20 rounded-xl p-4 font-semibold transition-all hover:bg-opacity-30" style="color: white; font-size: ${baseSize}px; font-family: ${fontStack};">
+                                    🎯 Filtrar Precisión
+                                </button>
+                                <button onclick="cleanJumps()" class="bg-white bg-opacity-20 rounded-xl p-4 font-semibold transition-all hover:bg-opacity-30" style="color: white; font-size: ${baseSize}px; font-family: ${fontStack};">
+                                    📍 Detectar Saltos
+                                </button>
+                            </div>
+                            
+                            <div class="bg-white bg-opacity-20 rounded-2xl p-6">
+                                <h4 class="font-bold mb-4" style="font-size: ${baseSize * 1.3}px; color: white; font-family: ${fontStack};">
+                                    Datos Limpios
+                                </h4>
+                                <div class="bg-black bg-opacity-30 rounded-xl p-4 font-mono text-sm overflow-x-auto" style="color: #00ff00;">
+                                    <div id="clean-data">
+                                        Haz clic en los botones de limpieza para ver los resultados...
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mt-8">
+                                <p class="font-semibold mb-4" style="font-size: ${baseSize * 1.2}px; color: white; font-family: ${fontStack};">
+                                    🎉 ¡Felicidades! Has completado la clase magistral de ETL
+                                </p>
+                                <p style="font-size: ${baseSize}px; color: white; font-family: ${fontStack};">
+                                    Ahora dominas las técnicas fundamentales para limpiar y transformar datos de movilidad segura
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <!-- Modales de Tips -->
+                <div id="modal-tip-sources" class="modal">
+                    <div class="modal-content" style="max-width: 600px;">
+                        <button class="close-modal" onclick="closeModal('tip-sources')">&times;</button>
+                        <h2 class="text-2xl font-bold mb-6 text-gray-800">💡 Tip: Fuentes de Datos en Movilidad</h2>
+                        
+                        <div class="space-y-4">
+                            <div class="bg-blue-50 rounded-xl p-4">
+                                <h3 class="font-bold text-blue-800 mb-2">🚗 Datos del Vehículo</h3>
+                                <p class="text-gray-700">Los sensores OBD-II generan más de 200 parámetros por segundo: velocidad, RPM, temperatura del motor, consumo de combustible.</p>
+                            </div>
+                            
+                            <div class="bg-green-50 rounded-xl p-4">
+                                <h3 class="font-bold text-green-800 mb-2">📱 Smartphones</h3>
+                                <p class="text-gray-700">GPS, acelerómetro, giroscopio y magnetómetro proporcionan datos de ubicación y comportamiento de conducción en tiempo real.</p>
+                            </div>
+                            
+                            <div class="bg-purple-50 rounded-xl p-4">
+                                <h3 class="font-bold text-purple-800 mb-2">🚦 Infraestructura Inteligente</h3>
+                                <p class="text-gray-700">Semáforos conectados, cámaras de tráfico y sensores de carretera generan datos sobre flujo vehicular y condiciones viales.</p>
+                            </div>
+                            
+                            <div class="text-center mt-8">
+                                <button onclick="switchTab('practica')" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-8 py-4 rounded-xl font-semibold transition-all" style="color: white; font-size: ${baseSize * 1.1}px; font-family: ${fontStack};">
+                                    Siguiente: Práctica Interactiva 🧪
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Práctica Content -->
+                    <div id="content-practica" class="tab-content">
+                        <div class="rounded-3xl p-8 mb-8" style="background: linear-gradient(135deg, ${config.primary_color || defaultConfig.primary_color}, ${config.accent_color || defaultConfig.accent_color});">
+                            <h3 class="font-bold mb-6 text-center" style="font-size: ${baseSize * 1.8}px; color: white; font-family: ${fontStack};">
+                                🧪 Práctica: Limpieza de Datos GPS
+                            </h3>
+                            <div class="bg-white bg-opacity-20 rounded-2xl p-6 mb-6">
+                                <h4 class="font-bold mb-4" style="font-size: ${baseSize * 1.3}px; color: white; font-family: ${fontStack};">
+                                    Datos GPS Simulados (Problemáticos)
+                                </h4>
+                                <div class="bg-black bg-opacity-30 rounded-xl p-4 font-mono text-sm overflow-x-auto" style="color: #00ff00;">
+                                    <div id="raw-data">
+                                        timestamp,lat,lng,speed,accuracy<br>
+                                        2024-01-15 08:00:00,40.7128,-74.0060,25,5<br>
+                                        2024-01-15 08:00:05,40.7129,-74.0061,28,8<br>
+                                        2024-01-15 08:00:10,40.7130,-74.0062,999,15 ❌<br>
+                                        2024-01-15 08:00:15,40.7131,-74.0063,30,200 ❌<br>
+                                        2024-01-15 08:00:20,41.8781,-87.6298,35,5 ❌<br>
+                                        2024-01-15 08:00:25,40.7133,-74.0065,32,7<br>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="grid md:grid-cols-3 gap-4 mb-6">
+                                <button onclick="cleanSpeed()" class="bg-white bg-opacity-20 rounded-xl p-4 font-semibold transition-all hover:bg-opacity-30" style="color: white; font-size: ${baseSize}px; font-family: ${fontStack};">
+                                    🚀 Limpiar Velocidades
+                                </button>
+                                <button onclick="cleanAccuracy()" class="bg-white bg-opacity-20 rounded-xl p-4 font-semibold transition-all hover:bg-opacity-30" style="color: white; font-size: ${baseSize}px; font-family: ${fontStack};">
+                                    🎯 Filtrar Precisión
+                                </button>
+                                <button onclick="cleanJumps()" class="bg-white bg-opacity-20 rounded-xl p-4 font-semibold transition-all hover:bg-opacity-30" style="color: white; font-size: ${baseSize}px; font-family: ${fontStack};">
+                                    📍 Detectar Saltos
+                                </button>
+                            </div>
+                            
+                            <div class="bg-white bg-opacity-20 rounded-2xl p-6">
+                                <h4 class="font-bold mb-4" style="font-size: ${baseSize * 1.3}px; color: white; font-family: ${fontStack};">
+                                    Datos Limpios
+                                </h4>
+                                <div class="bg-black bg-opacity-30 rounded-xl p-4 font-mono text-sm overflow-x-auto" style="color: #00ff00;">
+                                    <div id="clean-data">
+                                        Haz clic en los botones de limpieza para ver los resultados...
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mt-8">
+                                <p class="font-semibold mb-4" style="font-size: ${baseSize * 1.2}px; color: white; font-family: ${fontStack};">
+                                    🎉 ¡Felicidades! Has completado la clase magistral de ETL
+                                </p>
+                                <p style="font-size: ${baseSize}px; color: white; font-family: ${fontStack};">
+                                    Ahora dominas las técnicas fundamentales para limpiar y transformar datos de movilidad segura
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="modal-tip-cleaning" class="modal">
+                    <div class="modal-content" style="max-width: 600px;">
+                        <button class="close-modal" onclick="closeModal('tip-cleaning')">&times;</button>
+                        <h2 class="text-2xl font-bold mb-6 text-gray-800">💡 Tip: Limpieza de Datos GPS</h2>
+                        
+                        <div class="space-y-4">
+                            <div class="bg-red-50 rounded-xl p-4">
+                                <h3 class="font-bold text-red-800 mb-2">⚠️ Problemas Comunes</h3>
+                                <ul class="text-gray-700 space-y-1">
+                                    <li>• <strong>Efecto túnel:</strong> Pérdida de señal GPS</li>
+                                    <li>• <strong>Multipath:</strong> Reflexión de señales en edificios</li>
+                                    <li>• <strong>Deriva del reloj:</strong> Timestamps incorrectos</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-green-50 rounded-xl p-4">
+                                <h3 class="font-bold text-green-800 mb-2">✅ Soluciones ETL</h3>
+                                <ul class="text-gray-700 space-y-1">
+                                    <li>• <strong>Interpolación:</strong> Rellenar gaps temporales</li>
+                                    <li>• <strong>Filtro Kalman:</strong> Suavizar trayectorias</li>
+                                    <li>• <strong>Map Matching:</strong> Ajustar a red vial</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="text-center mt-8">
+                                <button onclick="switchTab('practica')" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-8 py-4 rounded-xl font-semibold transition-all" style="color: white; font-size: ${baseSize * 1.1}px; font-family: ${fontStack};">
+                                    Siguiente: Práctica Interactiva 🧪
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Práctica Content -->
+                    <div id="content-practica" class="tab-content">
+                        <div class="rounded-3xl p-8 mb-8" style="background: linear-gradient(135deg, ${config.primary_color || defaultConfig.primary_color}, ${config.accent_color || defaultConfig.accent_color});">
+                            <h3 class="font-bold mb-6 text-center" style="font-size: ${baseSize * 1.8}px; color: white; font-family: ${fontStack};">
+                                🧪 Práctica: Limpieza de Datos GPS
+                            </h3>
+                            <div class="bg-white bg-opacity-20 rounded-2xl p-6 mb-6">
+                                <h4 class="font-bold mb-4" style="font-size: ${baseSize * 1.3}px; color: white; font-family: ${fontStack};">
+                                    Datos GPS Simulados (Problemáticos)
+                                </h4>
+                                <div class="bg-black bg-opacity-30 rounded-xl p-4 font-mono text-sm overflow-x-auto" style="color: #00ff00;">
+                                    <div id="raw-data">
+                                        timestamp,lat,lng,speed,accuracy<br>
+                                        2024-01-15 08:00:00,40.7128,-74.0060,25,5<br>
+                                        2024-01-15 08:00:05,40.7129,-74.0061,28,8<br>
+                                        2024-01-15 08:00:10,40.7130,-74.0062,999,15 ❌<br>
+                                        2024-01-15 08:00:15,40.7131,-74.0063,30,200 ❌<br>
+                                        2024-01-15 08:00:20,41.8781,-87.6298,35,5 ❌<br>
+                                        2024-01-15 08:00:25,40.7133,-74.0065,32,7<br>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="grid md:grid-cols-3 gap-4 mb-6">
+                                <button onclick="cleanSpeed()" class="bg-white bg-opacity-20 rounded-xl p-4 font-semibold transition-all hover:bg-opacity-30" style="color: white; font-size: ${baseSize}px; font-family: ${fontStack};">
+                                    🚀 Limpiar Velocidades
+                                </button>
+                                <button onclick="cleanAccuracy()" class="bg-white bg-opacity-20 rounded-xl p-4 font-semibold transition-all hover:bg-opacity-30" style="color: white; font-size: ${baseSize}px; font-family: ${fontStack};">
+                                    🎯 Filtrar Precisión
+                                </button>
+                                <button onclick="cleanJumps()" class="bg-white bg-opacity-20 rounded-xl p-4 font-semibold transition-all hover:bg-opacity-30" style="color: white; font-size: ${baseSize}px; font-family: ${fontStack};">
+                                    📍 Detectar Saltos
+                                </button>
+                            </div>
+                            
+                            <div class="bg-white bg-opacity-20 rounded-2xl p-6">
+                                <h4 class="font-bold mb-4" style="font-size: ${baseSize * 1.3}px; color: white; font-family: ${fontStack};">
+                                    Datos Limpios
+                                </h4>
+                                <div class="bg-black bg-opacity-30 rounded-xl p-4 font-mono text-sm overflow-x-auto" style="color: #00ff00;">
+                                    <div id="clean-data">
+                                        Haz clic en los botones de limpieza para ver los resultados...
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mt-8">
+                                <p class="font-semibold mb-4" style="font-size: ${baseSize * 1.2}px; color: white; font-family: ${fontStack};">
+                                    🎉 ¡Felicidades! Has completado la clase magistral de ETL
+                                </p>
+                                <p style="font-size: ${baseSize}px; color: white; font-family: ${fontStack};">
+                                    Ahora dominas las técnicas fundamentales para limpiar y transformar datos de movilidad segura
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="modal-tip-pipeline" class="modal">
+                    <div class="modal-content" style="max-width: 600px;">
+                        <button class="close-modal" onclick="closeModal('tip-pipeline')">&times;</button>
+                        <h2 class="text-2xl font-bold mb-6 text-gray-800">💡 Tip: Pipeline ETL en Tiempo Real</h2>
+                        
+                        <div class="space-y-4">
+                            <div class="bg-blue-50 rounded-xl p-4">
+                                <h3 class="font-bold text-blue-800 mb-2">⚡ Streaming vs Batch</h3>
+                                <p class="text-gray-700 mb-2"><strong>Streaming:</strong> Procesa datos GPS cada 1-5 segundos para navegación en tiempo real.</p>
+                                <p class="text-gray-700"><strong>Batch:</strong> Procesa datos históricos cada hora/día para análisis de patrones.</p>
+                            </div>
+                            
+                            <div class="bg-yellow-50 rounded-xl p-4">
+                                <h3 class="font-bold text-yellow-800 mb-2">🔧 Herramientas Clave</h3>
+                                <ul class="text-gray-700 space-y-1">
+                                    <li>• <strong>Apache Kafka:</strong> Streaming de datos GPS</li>
+                                    <li>• <strong>Apache Spark:</strong> Procesamiento distribuido</li>
+                                    <li>• <strong>Redis:</strong> Cache de rutas frecuentes</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="text-center mt-8">
+                                <button onclick="switchTab('practica')" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-8 py-4 rounded-xl font-semibold transition-all" style="color: white; font-size: ${baseSize * 1.1}px; font-family: ${fontStack};">
+                                    Siguiente: Práctica Interactiva 🧪
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Práctica Content -->
+                    <div id="content-practica" class="tab-content">
+                        <div class="rounded-3xl p-8 mb-8" style="background: linear-gradient(135deg, ${config.primary_color || defaultConfig.primary_color}, ${config.accent_color || defaultConfig.accent_color});">
+                            <h3 class="font-bold mb-6 text-center" style="font-size: ${baseSize * 1.8}px; color: white; font-family: ${fontStack};">
+                                🧪 Práctica: Limpieza de Datos GPS
+                            </h3>
+                            <div class="bg-white bg-opacity-20 rounded-2xl p-6 mb-6">
+                                <h4 class="font-bold mb-4" style="font-size: ${baseSize * 1.3}px; color: white; font-family: ${fontStack};">
+                                    Datos GPS Simulados (Problemáticos)
+                                </h4>
+                                <div class="bg-black bg-opacity-30 rounded-xl p-4 font-mono text-sm overflow-x-auto" style="color: #00ff00;">
+                                    <div id="raw-data">
+                                        timestamp,lat,lng,speed,accuracy<br>
+                                        2024-01-15 08:00:00,40.7128,-74.0060,25,5<br>
+                                        2024-01-15 08:00:05,40.7129,-74.0061,28,8<br>
+                                        2024-01-15 08:00:10,40.7130,-74.0062,999,15 ❌<br>
+                                        2024-01-15 08:00:15,40.7131,-74.0063,30,200 ❌<br>
+                                        2024-01-15 08:00:20,41.8781,-87.6298,35,5 ❌<br>
+                                        2024-01-15 08:00:25,40.7133,-74.0065,32,7<br>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="grid md:grid-cols-3 gap-4 mb-6">
+                                <button onclick="cleanSpeed()" class="bg-white bg-opacity-20 rounded-xl p-4 font-semibold transition-all hover:bg-opacity-30" style="color: white; font-size: ${baseSize}px; font-family: ${fontStack};">
+                                    🚀 Limpiar Velocidades
+                                </button>
+                                <button onclick="cleanAccuracy()" class="bg-white bg-opacity-20 rounded-xl p-4 font-semibold transition-all hover:bg-opacity-30" style="color: white; font-size: ${baseSize}px; font-family: ${fontStack};">
+                                    🎯 Filtrar Precisión
+                                </button>
+                                <button onclick="cleanJumps()" class="bg-white bg-opacity-20 rounded-xl p-4 font-semibold transition-all hover:bg-opacity-30" style="color: white; font-size: ${baseSize}px; font-family: ${fontStack};">
+                                    📍 Detectar Saltos
+                                </button>
+                            </div>
+                            
+                            <div class="bg-white bg-opacity-20 rounded-2xl p-6">
+                                <h4 class="font-bold mb-4" style="font-size: ${baseSize * 1.3}px; color: white; font-family: ${fontStack};">
+                                    Datos Limpios
+                                </h4>
+                                <div class="bg-black bg-opacity-30 rounded-xl p-4 font-mono text-sm overflow-x-auto" style="color: #00ff00;">
+                                    <div id="clean-data">
+                                        Haz clic en los botones de limpieza para ver los resultados...
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mt-8">
+                                <p class="font-semibold mb-4" style="font-size: ${baseSize * 1.2}px; color: white; font-family: ${fontStack};">
+                                    🎉 ¡Felicidades! Has completado la clase magistral de ETL
+                                </p>
+                                <p style="font-size: ${baseSize}px; color: white; font-family: ${fontStack};">
+                                    Ahora dominas las técnicas fundamentales para limpiar y transformar datos de movilidad segura
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modales -->
+                <div id="modal-gps-transport" class="modal">
+                    <div class="modal-content" style="max-width: 800px;">
+                        <button class="close-modal" onclick="closeModal('gps-transport')">&times;</button>
+                        <h2 class="text-2xl font-bold mb-6 text-gray-800">🚗 Datos GPS en Transporte Seguro</h2>
+                        
+                        <div class="space-y-6">
+                            <div class="bg-blue-50 rounded-xl p-6">
+                                <h3 class="text-xl font-bold mb-4 text-blue-800">🛣️ Optimización de Rutas</h3>
+                                <p class="text-gray-700 mb-4">Los datos GPS permiten analizar patrones de tráfico y optimizar rutas en tiempo real:</p>
+                                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                                    <li><strong>Algoritmos de Dijkstra:</strong> Encuentra la ruta más corta considerando tráfico actual</li>
+                                    <li><strong>Machine Learning:</strong> Predice congestiones basado en datos históricos</li>
+                                    <li><strong>Geofencing dinámico:</strong> Evita zonas de construcción o accidentes</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-red-50 rounded-xl p-6">
+                                <h3 class="text-xl font-bold mb-4 text-red-800">⚠️ Detección de Zonas de Riesgo</h3>
+                                <p class="text-gray-700 mb-4">Identificación automática de puntos críticos:</p>
+                                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                                    <li><strong>Clustering de accidentes:</strong> DBSCAN para agrupar incidentes</li>
+                                    <li><strong>Análisis de velocidad:</strong> Detecta frenadas bruscas frecuentes</li>
+                                    <li><strong>Patrones temporales:</strong> Horarios de mayor riesgo por zona</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-green-50 rounded-xl p-6">
+                                <h3 class="text-xl font-bold mb-4 text-green-800">📊 Métricas de Seguridad</h3>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="bg-white rounded-lg p-4">
+                                        <div class="text-2xl font-bold text-green-600">85%</div>
+                                        <div class="text-sm text-gray-600">Reducción de accidentes</div>
+                                    </div>
+                                    <div class="bg-white rounded-lg p-4">
+                                        <div class="text-2xl font-bold text-blue-600">23%</div>
+                                        <div class="text-sm text-gray-600">Ahorro en combustible</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mt-8">
+                                <button onclick="switchTab('practica')" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-8 py-4 rounded-xl font-semibold transition-all" style="color: white; font-size: ${baseSize * 1.1}px; font-family: ${fontStack};">
+                                    Siguiente: Práctica Interactiva 🧪
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Práctica Content -->
+                    <div id="content-practica" class="tab-content">
+                        <div class="rounded-3xl p-8 mb-8" style="background: linear-gradient(135deg, ${config.primary_color || defaultConfig.primary_color}, ${config.accent_color || defaultConfig.accent_color});">
+                            <h3 class="font-bold mb-6 text-center" style="font-size: ${baseSize * 1.8}px; color: white; font-family: ${fontStack};">
+                                🧪 Práctica: Limpieza de Datos GPS
+                            </h3>
+                            <div class="bg-white bg-opacity-20 rounded-2xl p-6 mb-6">
+                                <h4 class="font-bold mb-4" style="font-size: ${baseSize * 1.3}px; color: white; font-family: ${fontStack};">
+                                    Datos GPS Simulados (Problemáticos)
+                                </h4>
+                                <div class="bg-black bg-opacity-30 rounded-xl p-4 font-mono text-sm overflow-x-auto" style="color: #00ff00;">
+                                    <div id="raw-data">
+                                        timestamp,lat,lng,speed,accuracy<br>
+                                        2024-01-15 08:00:00,40.7128,-74.0060,25,5<br>
+                                        2024-01-15 08:00:05,40.7129,-74.0061,28,8<br>
+                                        2024-01-15 08:00:10,40.7130,-74.0062,999,15 ❌<br>
+                                        2024-01-15 08:00:15,40.7131,-74.0063,30,200 ❌<br>
+                                        2024-01-15 08:00:20,41.8781,-87.6298,35,5 ❌<br>
+                                        2024-01-15 08:00:25,40.7133,-74.0065,32,7<br>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="grid md:grid-cols-3 gap-4 mb-6">
+                                <button onclick="cleanSpeed()" class="bg-white bg-opacity-20 rounded-xl p-4 font-semibold transition-all hover:bg-opacity-30" style="color: white; font-size: ${baseSize}px; font-family: ${fontStack};">
+                                    🚀 Limpiar Velocidades
+                                </button>
+                                <button onclick="cleanAccuracy()" class="bg-white bg-opacity-20 rounded-xl p-4 font-semibold transition-all hover:bg-opacity-30" style="color: white; font-size: ${baseSize}px; font-family: ${fontStack};">
+                                    🎯 Filtrar Precisión
+                                </button>
+                                <button onclick="cleanJumps()" class="bg-white bg-opacity-20 rounded-xl p-4 font-semibold transition-all hover:bg-opacity-30" style="color: white; font-size: ${baseSize}px; font-family: ${fontStack};">
+                                    📍 Detectar Saltos
+                                </button>
+                            </div>
+                            
+                            <div class="bg-white bg-opacity-20 rounded-2xl p-6">
+                                <h4 class="font-bold mb-4" style="font-size: ${baseSize * 1.3}px; color: white; font-family: ${fontStack};">
+                                    Datos Limpios
+                                </h4>
+                                <div class="bg-black bg-opacity-30 rounded-xl p-4 font-mono text-sm overflow-x-auto" style="color: #00ff00;">
+                                    <div id="clean-data">
+                                        Haz clic en los botones de limpieza para ver los resultados...
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mt-8">
+                                <p class="font-semibold mb-4" style="font-size: ${baseSize * 1.2}px; color: white; font-family: ${fontStack};">
+                                    🎉 ¡Felicidades! Has completado la clase magistral de ETL
+                                </p>
+                                <p style="font-size: ${baseSize}px; color: white; font-family: ${fontStack};">
+                                    Ahora dominas las técnicas fundamentales para limpiar y transformar datos de movilidad segura
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="modal-gps-cleaning" class="modal">
+                    <div class="modal-content" style="max-width: 800px;">
+                        <button class="close-modal" onclick="closeModal('gps-cleaning')">&times;</button>
+                        <h2 class="text-2xl font-bold mb-6 text-gray-800">🧹 Limpieza Crítica de Datos GPS</h2>
+                        
+                        <div class="space-y-6">
+                            <div class="bg-yellow-50 rounded-xl p-6">
+                                <h3 class="text-xl font-bold mb-4 text-yellow-800">🎯 Filtros de Precisión</h3>
+                                <div class="bg-gray-800 rounded-lg p-4 font-mono text-sm text-green-400 mb-4">
+                                    <div># Filtro de precisión GPS</div>
+                                    <div>df_clean = df[df['accuracy'] &lt; 10]</div>
+                                    <div># Elimina puntos con error > 10 metros</div>
+                                </div>
+                                <p class="text-gray-700">En transporte urbano, precisión > 10m puede causar errores de navegación críticos.</p>
+                            </div>
+                            
+                            <div class="bg-red-50 rounded-xl p-6">
+                                <h3 class="text-xl font-bold mb-4 text-red-800">⚡ Detección de Velocidades Imposibles</h3>
+                                <div class="bg-gray-800 rounded-lg p-4 font-mono text-sm text-green-400 mb-4">
+                                    <div># Filtro de velocidades anómalas</div>
+                                    <div>max_speed = 200  # km/h en autopista</div>
+                                    <div>df_clean = df[df['speed'] &lt;= max_speed]</div>
+                                </div>
+                                <p class="text-gray-700">Velocidades > 200 km/h en ciudad indican errores de GPS o problemas de hardware.</p>
+                            </div>
+                            
+                            <div class="bg-blue-50 rounded-xl p-6">
+                                <h3 class="text-xl font-bold mb-4 text-blue-800">🎚️ Filtro de Kalman</h3>
+                                <div class="bg-gray-800 rounded-lg p-4 font-mono text-sm text-green-400 mb-4">
+                                    <div>from filterpy.kalman import KalmanFilter</div>
+                                    <div>kf = KalmanFilter(dim_x=4, dim_z=2)</div>
+                                    <div># Suaviza trayectorias GPS</div>
+                                </div>
+                                <p class="text-gray-700">Esencial para vehículos autónomos y sistemas de navegación críticos.</p>
+                            </div>
+                            
+                            <div class="text-center mt-8">
+                                <button onclick="switchTab('practica')" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-8 py-4 rounded-xl font-semibold transition-all" style="color: white; font-size: ${baseSize * 1.1}px; font-family: ${fontStack};">
+                                    Siguiente: Práctica Interactiva 🧪
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Práctica Content -->
+                    <div id="content-practica" class="tab-content">
+                        <div class="rounded-3xl p-8 mb-8" style="background: linear-gradient(135deg, ${config.primary_color || defaultConfig.primary_color}, ${config.accent_color || defaultConfig.accent_color});">
+                            <h3 class="font-bold mb-6 text-center" style="font-size: ${baseSize * 1.8}px; color: white; font-family: ${fontStack};">
+                                🧪 Práctica: Limpieza de Datos GPS
+                            </h3>
+                            <div class="bg-white bg-opacity-20 rounded-2xl p-6 mb-6">
+                                <h4 class="font-bold mb-4" style="font-size: ${baseSize * 1.3}px; color: white; font-family: ${fontStack};">
+                                    Datos GPS Simulados (Problemáticos)
+                                </h4>
+                                <div class="bg-black bg-opacity-30 rounded-xl p-4 font-mono text-sm overflow-x-auto" style="color: #00ff00;">
+                                    <div id="raw-data">
+                                        timestamp,lat,lng,speed,accuracy<br>
+                                        2024-01-15 08:00:00,40.7128,-74.0060,25,5<br>
+                                        2024-01-15 08:00:05,40.7129,-74.0061,28,8<br>
+                                        2024-01-15 08:00:10,40.7130,-74.0062,999,15 ❌<br>
+                                        2024-01-15 08:00:15,40.7131,-74.0063,30,200 ❌<br>
+                                        2024-01-15 08:00:20,41.8781,-87.6298,35,5 ❌<br>
+                                        2024-01-15 08:00:25,40.7133,-74.0065,32,7<br>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="grid md:grid-cols-3 gap-4 mb-6">
+                                <button onclick="cleanSpeed()" class="bg-white bg-opacity-20 rounded-xl p-4 font-semibold transition-all hover:bg-opacity-30" style="color: white; font-size: ${baseSize}px; font-family: ${fontStack};">
+                                    🚀 Limpiar Velocidades
+                                </button>
+                                <button onclick="cleanAccuracy()" class="bg-white bg-opacity-20 rounded-xl p-4 font-semibold transition-all hover:bg-opacity-30" style="color: white; font-size: ${baseSize}px; font-family: ${fontStack};">
+                                    🎯 Filtrar Precisión
+                                </button>
+                                <button onclick="cleanJumps()" class="bg-white bg-opacity-20 rounded-xl p-4 font-semibold transition-all hover:bg-opacity-30" style="color: white; font-size: ${baseSize}px; font-family: ${fontStack};">
+                                    📍 Detectar Saltos
+                                </button>
+                            </div>
+                            
+                            <div class="bg-white bg-opacity-20 rounded-2xl p-6">
+                                <h4 class="font-bold mb-4" style="font-size: ${baseSize * 1.3}px; color: white; font-family: ${fontStack};">
+                                    Datos Limpios
+                                </h4>
+                                <div class="bg-black bg-opacity-30 rounded-xl p-4 font-mono text-sm overflow-x-auto" style="color: #00ff00;">
+                                    <div id="clean-data">
+                                        Haz clic en los botones de limpieza para ver los resultados...
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mt-8">
+                                <p class="font-semibold mb-4" style="font-size: ${baseSize * 1.2}px; color: white; font-family: ${fontStack};">
+                                    🎉 ¡Felicidades! Has completado la clase magistral de ETL
+                                </p>
+                                <p style="font-size: ${baseSize}px; color: white; font-family: ${fontStack};">
+                                    Ahora dominas las técnicas fundamentales para limpiar y transformar datos de movilidad segura
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="modal-gps-pipeline" class="modal">
+                    <div class="modal-content" style="max-width: 900px;">
+                        <button class="close-modal" onclick="closeModal('gps-pipeline')">&times;</button>
+                        <h2 class="text-2xl font-bold mb-6 text-gray-800">🛠️ Pipeline ETL Completo para GPS</h2>
+                        
+                        <div class="space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="bg-blue-50 rounded-xl p-6">
+                                    <h3 class="text-xl font-bold mb-4 text-blue-800">📥 EXTRACT - Fuentes</h3>
+                                    <ul class="space-y-3 text-gray-700">
+                                        <li><strong>🚗 OBD-II:</strong> Datos directos del vehículo</li>
+                                        <li><strong>📱 Apps móviles:</strong> GPS de smartphones</li>
+                                        <li><strong>🛰️ Telemática:</strong> Sistemas embarcados</li>
+                                        <li><strong>🚦 Infraestructura:</strong> Sensores de tráfico</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="bg-purple-50 rounded-xl p-6">
+                                    <h3 class="text-xl font-bold mb-4 text-purple-800">🔄 TRANSFORM - Procesos</h3>
+                                    <ul class="space-y-3 text-gray-700">
+                                        <li><strong>🧹 Limpieza:</strong> Filtros de calidad</li>
+                                        <li><strong>📍 Geocodificación:</strong> Direcciones a coordenadas</li>
+                                        <li><strong>🗺️ Map Matching:</strong> Ajuste a red vial</li>
+                                        <li><strong>📊 Agregación:</strong> Métricas por ruta/zona</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-gray-50 rounded-xl p-6">
+                                <h3 class="text-xl font-bold mb-4 text-gray-800">⚙️ Código de Pipeline</h3>
+                                <div class="bg-gray-800 rounded-lg p-4 font-mono text-sm text-green-400 overflow-x-auto">
+                                    <div>import pandas as pd</div>
+                                    <div>from kafka import KafkaConsumer</div>
+                                    <div>import geopandas as gpd</div><br>
+                                    <div># 1. EXTRACT - Kafka Stream</div>
+                                    <div>consumer = KafkaConsumer('gps-topic')</div><br>
+                                    <div># 2. TRANSFORM - Limpieza</div>
+                                    <div>def clean_gps(df):</div>
+                                    <div>&nbsp;&nbsp;&nbsp;&nbsp;df = df[df['accuracy'] &lt; 10]</div>
+                                    <div>&nbsp;&nbsp;&nbsp;&nbsp;df = df[df['speed'] &lt; 200]</div>
+                                    <div>&nbsp;&nbsp;&nbsp;&nbsp;return df</div><br>
+                                    <div># 3. LOAD - Data Lake</div>
+                                    <div>df.to_parquet('s3://transport-data/')</div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mt-8">
+                                <button onclick="switchTab('practica')" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-8 py-4 rounded-xl font-semibold transition-all" style="color: white; font-size: ${baseSize * 1.1}px; font-family: ${fontStack};">
+                                    Siguiente: Práctica Interactiva 🧪
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Práctica Content -->
+                    <div id="content-practica" class="tab-content">
+                        <div class="rounded-3xl p-8 mb-8" style="background: linear-gradient(135deg, ${config.primary_color || defaultConfig.primary_color}, ${config.accent_color || defaultConfig.accent_color});">
+                            <h3 class="font-bold mb-6 text-center" style="font-size: ${baseSize * 1.8}px; color: white; font-family: ${fontStack};">
+                                🧪 Práctica: Limpieza de Datos GPS
+                            </h3>
+                            <div class="bg-white bg-opacity-20 rounded-2xl p-6 mb-6">
+                                <h4 class="font-bold mb-4" style="font-size: ${baseSize * 1.3}px; color: white; font-family: ${fontStack};">
+                                    Datos GPS Simulados (Problemáticos)
+                                </h4>
+                                <div class="bg-black bg-opacity-30 rounded-xl p-4 font-mono text-sm overflow-x-auto" style="color: #00ff00;">
+                                    <div id="raw-data">
+                                        timestamp,lat,lng,speed,accuracy<br>
+                                        2024-01-15 08:00:00,40.7128,-74.0060,25,5<br>
+                                        2024-01-15 08:00:05,40.7129,-74.0061,28,8<br>
+                                        2024-01-15 08:00:10,40.7130,-74.0062,999,15 ❌<br>
+                                        2024-01-15 08:00:15,40.7131,-74.0063,30,200 ❌<br>
+                                        2024-01-15 08:00:20,41.8781,-87.6298,35,5 ❌<br>
+                                        2024-01-15 08:00:25,40.7133,-74.0065,32,7<br>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="grid md:grid-cols-3 gap-4 mb-6">
+                                <button onclick="cleanSpeed()" class="bg-white bg-opacity-20 rounded-xl p-4 font-semibold transition-all hover:bg-opacity-30" style="color: white; font-size: ${baseSize}px; font-family: ${fontStack};">
+                                    🚀 Limpiar Velocidades
+                                </button>
+                                <button onclick="cleanAccuracy()" class="bg-white bg-opacity-20 rounded-xl p-4 font-semibold transition-all hover:bg-opacity-30" style="color: white; font-size: ${baseSize}px; font-family: ${fontStack};">
+                                    🎯 Filtrar Precisión
+                                </button>
+                                <button onclick="cleanJumps()" class="bg-white bg-opacity-20 rounded-xl p-4 font-semibold transition-all hover:bg-opacity-30" style="color: white; font-size: ${baseSize}px; font-family: ${fontStack};">
+                                    📍 Detectar Saltos
+                                </button>
+                            </div>
+                            
+                            <div class="bg-white bg-opacity-20 rounded-2xl p-6">
+                                <h4 class="font-bold mb-4" style="font-size: ${baseSize * 1.3}px; color: white; font-family: ${fontStack};">
+                                    Datos Limpios
+                                </h4>
+                                <div class="bg-black bg-opacity-30 rounded-xl p-4 font-mono text-sm overflow-x-auto" style="color: #00ff00;">
+                                    <div id="clean-data">
+                                        Haz clic en los botones de limpieza para ver los resultados...
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mt-8">
+                                <p class="font-semibold mb-4" style="font-size: ${baseSize * 1.2}px; color: white; font-family: ${fontStack};">
+                                    🎉 ¡Felicidades! Has completado la clase magistral de ETL
+                                </p>
+                                <p style="font-size: ${baseSize}px; color: white; font-family: ${fontStack};">
+                                    Ahora dominas las técnicas fundamentales para limpiar y transformar datos de movilidad segura
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="text-center py-8" style="background: ${config.card_color || defaultConfig.card_color};">
+                    <p class="font-semibold" style="font-size: ${baseSize * 1.1}px; color: ${config.primary_color || defaultConfig.primary_color}; font-family: ${fontStack};">
+                        🚀 ¡Domina el ETL y transforma datos en movilidad segura!
+                    </p>
+                    <p class="mt-2" style="font-size: ${baseSize * 0.9}px; color: ${config.text_color || defaultConfig.text_color}; font-family: ${fontStack};">
+                        Explora cada sección, practica con datos reales y descubre el poder de la preparación de datos
+                    </p>
+                </div>
+            `;
+
+            setupEventListeners();
+        }
+
+        function setupEventListeners() {
+            const flashcardSavi = document.getElementById('flashcard-savi');
+            if (flashcardSavi) {
+                flashcardSavi.addEventListener('click', () => {
+                    isFlipped = !isFlipped;
+                    flashcardSavi.classList.toggle('flipped');
+                });
+            }
+        }
+
+        function switchTab(tabName) {
+            currentTab = tabName;
+            
+            const allContents = document.querySelectorAll('.tab-content');
+            allContents.forEach(content => content.classList.remove('active'));
+            
+            const allButtons = document.querySelectorAll('.tab-btn');
+            allButtons.forEach(btn => {
+                btn.style.background = window.elementSdk.config.card_color || defaultConfig.card_color;
+                btn.style.color = window.elementSdk.config.text_color || defaultConfig.text_color;
+            });
+            
+            const activeContent = document.getElementById(`content-${tabName}`);
+            if (activeContent) {
+                activeContent.classList.add('active');
+            }
+            
+            const activeButton = document.getElementById(`tab-${tabName}`);
+            if (activeButton) {
+                activeButton.style.background = window.elementSdk.config.primary_color || defaultConfig.primary_color;
+                activeButton.style.color = 'white';
+            }
+            
+            // Scroll automático hacia arriba
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        function openModal(modalId) {
+            const modal = document.getElementById(`modal-${modalId}`);
+            if (modal) {
+                modal.classList.add('active');
+            }
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(`modal-${modalId}`);
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        }
+
+        let cleaningSteps = [];
+        let videoPlaying = false;
+        let videoProgress = 0;
+        let videoInterval;
+        let currentVideoScene = 0;
+
+        const videoScenes = [
+            {
+                time: 0,
+                duration: 45,
+                title: "🚗 Fuentes de Datos",
+                content: "Los vehículos modernos generan datos constantemente...",
+                tip: "tip-sources"
+            },
+            {
+                time: 45,
+                duration: 60,
+                title: "🧹 Problemas de Calidad",
+                content: "Los datos crudos contienen errores y ruido...",
+                tip: "tip-cleaning"
+            },
+            {
+                time: 105,
+                duration: 50,
+                title: "⚙️ Proceso ETL",
+                content: "Extract, Transform, Load: la magia de la limpieza...",
+                tip: "tip-pipeline"
+            },
+            {
+                time: 155,
+                duration: 70,
+                title: "🎯 Aplicaciones Reales",
+                content: "Casos de uso en movilidad segura y transporte inteligente...",
+                tip: null
+            }
+        ];
+
+        function playVideo() {
+            const placeholder = document.getElementById('video-placeholder');
+            const player = document.getElementById('video-player');
+            
+            placeholder.classList.add('hidden');
+            player.classList.remove('hidden');
+            
+            videoPlaying = true;
+            videoProgress = 0;
+            currentVideoScene = 0;
+            
+            updateVideoContent();
+            startVideoProgress();
+        }
+
+        function pauseVideo() {
+            videoPlaying = !videoPlaying;
+            const btn = document.getElementById('play-pause-btn');
+            
+            if (videoPlaying) {
+                btn.textContent = '⏸️';
+                startVideoProgress();
+            } else {
+                btn.textContent = '▶️';
+                if (videoInterval) {
+                    clearInterval(videoInterval);
+                }
+            }
+        }
+
+        function startVideoProgress() {
+            if (videoInterval) {
+                clearInterval(videoInterval);
+            }
+            
+            videoInterval = setInterval(() => {
+                if (videoPlaying) {
+                    videoProgress += 1;
+                    updateProgressBar();
+                    updateVideoContent();
+                    
+                    if (videoProgress >= 225) { // 3:45 total
+                        videoPlaying = false;
+                        clearInterval(videoInterval);
+                        document.getElementById('play-pause-btn').textContent = '🔄';
+                    }
+                }
+            }, 1000);
+        }
+
+        function updateProgressBar() {
+            const progressBar = document.getElementById('progress-bar');
+            const timeDisplay = document.getElementById('time-display');
+            
+            const percentage = (videoProgress / 225) * 100;
+            progressBar.style.width = percentage + '%';
+            
+            const minutes = Math.floor(videoProgress / 60);
+            const seconds = videoProgress % 60;
+            timeDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')} / 3:45`;
+        }
+
+        function updateVideoContent() {
+            const content = document.getElementById('video-content');
+            
+            // Encontrar la escena actual
+            for (let i = 0; i < videoScenes.length; i++) {
+                const scene = videoScenes[i];
+                if (videoProgress >= scene.time && videoProgress < scene.time + scene.duration) {
+                    if (currentVideoScene !== i) {
+                        currentVideoScene = i;
+                        
+                        content.innerHTML = `
+                            <div class="text-4xl mb-4">${getSceneEmoji(i)}</div>
+                            <h3 class="text-2xl font-bold text-white mb-4">${scene.title}</h3>
+                            <p class="text-lg text-gray-300 mb-6">${scene.content}</p>
+                            ${scene.tip ? `<button onclick="showTip('${scene.tip}')" class="bg-yellow-500 hover:bg-yellow-600 text-black px-6 py-3 rounded-xl font-semibold transition-all">💡 Ver Tip Relacionado</button>` : ''}
+                        `;
+                    }
+                    break;
+                }
+            }
+        }
+
+        function getSceneEmoji(sceneIndex) {
+            const emojis = ['🚗💨', '⚠️🧹', '⚙️✨', '🎯🚀'];
+            return emojis[sceneIndex] || '📊';
+        }
+
+        function showTips() {
+            const scene = videoScenes[currentVideoScene];
+            if (scene && scene.tip) {
+                showTip(scene.tip);
+            }
+        }
+
+        function showTip(tipId) {
+            openModal(tipId);
+        }
+
+        function cleanSpeed() {
+            if (!cleaningSteps.includes('speed')) {
+                cleaningSteps.push('speed');
+                updateCleanData();
+            }
+        }
+
+        function cleanAccuracy() {
+            if (!cleaningSteps.includes('accuracy')) {
+                cleaningSteps.push('accuracy');
+                updateCleanData();
+            }
+        }
+
+        function cleanJumps() {
+            if (!cleaningSteps.includes('jumps')) {
+                cleaningSteps.push('jumps');
+                updateCleanData();
+            }
+        }
+
+        function updateCleanData() {
+            const cleanDataDiv = document.getElementById('clean-data');
+            let result = 'timestamp,lat,lng,speed,accuracy<br>';
+            
+            const rawData = [
+                { timestamp: '2024-01-15 08:00:00', lat: 40.7128, lng: -74.0060, speed: 25, accuracy: 5, valid: true },
+                { timestamp: '2024-01-15 08:00:05', lat: 40.7129, lng: -74.0061, speed: 28, accuracy: 8, valid: true },
+                { timestamp: '2024-01-15 08:00:10', lat: 40.7130, lng: -74.0062, speed: 999, accuracy: 15, valid: false, issue: 'speed' },
+                { timestamp: '2024-01-15 08:00:15', lat: 40.7131, lng: -74.0063, speed: 30, accuracy: 200, valid: false, issue: 'accuracy' },
+                { timestamp: '2024-01-15 08:00:20', lat: 41.8781, lng: -87.6298, speed: 35, accuracy: 5, valid: false, issue: 'jumps' },
+                { timestamp: '2024-01-15 08:00:25', lat: 40.7133, lng: -74.0065, speed: 32, accuracy: 7, valid: true }
+            ];
+
+            const filteredData = rawData.filter(row => {
+                if (!row.valid) {
+                    return cleaningSteps.includes(row.issue);
+                }
+                return true;
+            });
+
+            filteredData.forEach(row => {
+                const speedDisplay = row.issue === 'speed' && !cleaningSteps.includes('speed') ? 999 : 
+                                   row.speed > 200 ? 35 : row.speed; // Corregir velocidad anómala
+                const accuracyDisplay = row.issue === 'accuracy' && !cleaningSteps.includes('accuracy') ? 200 : 
+                                      row.accuracy > 50 ? 8 : row.accuracy; // Corregir precisión
+                const latDisplay = row.issue === 'jumps' && !cleaningSteps.includes('jumps') ? 41.8781 : 
+                                 row.lat > 41 ? 40.7132 : row.lat; // Corregir salto geográfico
+                const lngDisplay = row.issue === 'jumps' && !cleaningSteps.includes('jumps') ? -87.6298 : 
+                                 row.lng < -80 ? -74.0064 : row.lng;
+
+                result += `${row.timestamp},${latDisplay},${lngDisplay},${speedDisplay},${accuracyDisplay}<br>`;
+            });
+
+            result += '<br><span style="color: #00ff88;">✅ Datos limpios aplicando filtros:</span><br>';
+            if (cleaningSteps.includes('speed')) result += '• Velocidades > 200 km/h eliminadas<br>';
+            if (cleaningSteps.includes('accuracy')) result += '• Precisión > 50m filtrada<br>';
+            if (cleaningSteps.includes('jumps')) result += '• Saltos geográficos > 1000km corregidos<br>';
+
+            cleanDataDiv.innerHTML = result;
+        }
+
+        window.switchTab = switchTab;
+        window.openModal = openModal;
+        window.closeModal = closeModal;
+        window.cleanSpeed = cleanSpeed;
+        window.cleanAccuracy = cleanAccuracy;
+        window.cleanJumps = cleanJumps;
+        window.playVideo = playVideo;
+        window.pauseVideo = pauseVideo;
+        window.showTip = showTip;
+        window.showTips = showTips;
+
+        if (window.elementSdk) {
+            window.elementSdk.init({
+                defaultConfig,
+                onConfigChange,
+                mapToCapabilities: (config) => ({
+                    recolorables: [
+                        {
+                            get: () => config.background_color || defaultConfig.background_color,
+                            set: (value) => {
+                                config.background_color = value;
+                                window.elementSdk.setConfig({ background_color: value });
+                            }
+                        },
+                        {
+                            get: () => config.card_color || defaultConfig.card_color,
+                            set: (value) => {
+                                config.card_color = value;
+                                window.elementSdk.setConfig({ card_color: value });
+                            }
+                        },
+                        {
+                            get: () => config.primary_color || defaultConfig.primary_color,
+                            set: (value) => {
+                                config.primary_color = value;
+                                window.elementSdk.setConfig({ primary_color: value });
+                            }
+                        },
+                        {
+                            get: () => config.accent_color || defaultConfig.accent_color,
+                            set: (value) => {
+                                config.accent_color = value;
+                                window.elementSdk.setConfig({ accent_color: value });
+                            }
+                        },
+                        {
+                            get: () => config.text_color || defaultConfig.text_color,
+                            set: (value) => {
+                                config.text_color = value;
+                                window.elementSdk.setConfig({ text_color: value });
+                            }
+                        }
+                    ],
+                    borderables: [],
+                    fontEditable: {
+                        get: () => config.font_family || defaultConfig.font_family,
+                        set: (value) => {
+                            config.font_family = value;
+                            window.elementSdk.setConfig({ font_family: value });
+                        }
+                    },
+                    fontSizeable: {
+                        get: () => config.font_size || defaultConfig.font_size,
+                        set: (value) => {
+                            config.font_size = value;
+                            window.elementSdk.setConfig({ font_size: value });
+                        }
+                    }
+                }),
+                mapToEditPanelValues: (config) => new Map([
+                    ["main_title", config.main_title || defaultConfig.main_title],
+                    ["subtitle", config.subtitle || defaultConfig.subtitle],
+                    ["flashcard_question", config.flashcard_question || defaultConfig.flashcard_question],
+                    ["flashcard_answer", config.flashcard_answer || defaultConfig.flashcard_answer]
+                ])
+            });
+
+            onConfigChange(window.elementSdk.config);
+        }
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99901a4b05c8b6ec',t:'MTc2MjIxNzI3Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
