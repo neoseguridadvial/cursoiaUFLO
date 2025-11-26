@@ -1,0 +1,868 @@
+<!doctype html>
+<html lang="es">
+ <head>
+  <meta charset="UTF-8">
+  <title>Taller de Auditoría de Seguridad Vial ISO 39001</title><!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script><!-- Element SDK (obligatorio) -->
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+
+    /* Colores base: 
+       1) bg: #0f172a (azul oscuro)
+       2) surface: #1e293b (azul-gris medio)
+       3) text: #e5e7eb (gris muy claro)
+       4) primary: #f97316 (naranja)
+       5) secondary: #22c55e (verde) 
+    */
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    .app-wrapper {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Scrollbar sutil */
+    .scroll-area {
+      scrollbar-width: thin;
+      scrollbar-color: #f97316 #0f172a;
+    }
+    .scroll-area::-webkit-scrollbar {
+      width: 6px;
+    }
+    .scroll-area::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    .scroll-area::-webkit-scrollbar-thumb {
+      background-color: #f97316;
+      border-radius: 9999px;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      background-color: rgba(15, 23, 42, 0.75);
+    }
+
+    /* Focus visible para accesibilidad */
+    :focus-visible {
+      outline: 2px solid #f97316;
+      outline-offset: 2px;
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="app-wrapper bg-slate-900 text-slate-200 font-sans">
+  <div id="root" class="w-full h-full flex flex-col">
+   <header class="w-full border-b border-slate-700 bg-slate-900/90 backdrop-blur-sm">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+     <div>
+      <h1 id="main-title" class="text-2xl font-semibold text-orange-400">Taller de Auditoría de Seguridad Vial</h1>
+      <p id="subtitle-text" class="text-sm text-slate-300">ISO 39001 basado en ISO 19011</p>
+     </div>
+     <div class="flex flex-wrap gap-2 mt-2 md:mt-0"><button id="btn-teoria" type="button" class="tab-btn px-3 py-1.5 rounded-full text-xs font-medium bg-orange-500 text-slate-900 shadow hover:bg-orange-400 transition"> Parte teórica </button> <button id="btn-practica" type="button" class="tab-btn px-3 py-1.5 rounded-full text-xs font-medium bg-slate-800 text-slate-100 hover:bg-slate-700 border border-slate-600 transition"> Parte práctica </button> <button id="btn-simulacion" type="button" class="tab-btn px-3 py-1.5 rounded-full text-xs font-medium bg-slate-800 text-slate-100 hover:bg-slate-700 border border-slate-600 transition"> Simulación reunión </button> <button id="btn-checklist" type="button" class="tab-btn px-3 py-1.5 rounded-full text-xs font-medium bg-slate-800 text-slate-100 hover:bg-slate-700 border border-slate-600 transition"> Lista de chequeo </button> <button id="btn-hallazgos" type="button" class="tab-btn px-3 py-1.5 rounded-full text-xs font-medium bg-slate-800 text-slate-100 hover:bg-slate-700 border border-slate-600 transition"> Asistente hallazgos </button>
+     </div>
+    </div>
+   </header>
+   <main class="flex-1 w-full">
+    <div class="max-w-6xl mx-auto px-4 py-4 h-full flex flex-col gap-4"><!-- Intro breve -->
+     <section aria-labelledby="intro-title" class="bg-slate-800/80 border border-slate-700 rounded-xl p-4 flex flex-col gap-2">
+      <h2 id="intro-title" class="text-lg font-semibold text-orange-300">Introducción al taller</h2>
+      <p class="text-sm text-slate-200">Esta experiencia interactiva te guía paso a paso en la auditoría de seguridad vial según ISO 39001, utilizando las directrices de auditoría de la ISO 19011. Incluye una parte teórica, una parte práctica con ejercicios, una simulación grupal de reunión de auditoría, una lista de chequeo y un asistente para redactar hallazgos.</p>
+     </section>
+     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 h-full"><!-- Columna izquierda: contenido principal por pestañas -->
+      <section aria-label="Contenido principal" class="lg:col-span-2 bg-slate-900/70 border border-slate-700 rounded-xl p-4 flex flex-col gap-4 min-h-[50%] scroll-area overflow-y-auto"><!-- TEORÍA -->
+       <div id="panel-teoria" class="panel">
+        <h2 id="theory-title" class="text-xl font-semibold text-orange-300 mb-2">Parte teórica: Auditoría de Seguridad Vial ISO 39001</h2>
+        <article class="space-y-4 text-sm text-slate-100">
+         <section>
+          <h3 class="text-base font-semibold text-orange-300">1. ¿Qué es una auditoría según ISO 19011?</h3>
+          <p class="mt-1">La ISO 19011 define la auditoría como un <strong>proceso sistemático, independiente y documentado</strong> para obtener evidencias de auditoría y evaluarlas de manera objetiva con el fin de determinar el grado en que se cumplen los <strong>criterios de auditoría</strong>.</p>
+          <ul class="list-disc list-inside mt-2 space-y-1">
+           <li><strong>Evidencia de auditoría:</strong> Registros, declaraciones de hechos u otra información pertinente y verificable.</li>
+           <li><strong>Criterios de auditoría:</strong> Conjunto de políticas, procedimientos o requisitos utilizados como referencia (en este caso, ISO 39001, requisitos legales, procedimientos internos, etc.).</li>
+          </ul>
+         </section>
+         <section>
+          <h3 class="text-base font-semibold text-orange-300">2. ¿Qué es ISO 39001?</h3>
+          <p class="mt-1">La ISO 39001 es la norma para <strong>Sistemas de Gestión de la Seguridad Vial (SV)</strong>. Su objetivo es ayudar a las organizaciones a reducir de forma sistemática las muertes y lesiones graves derivadas de los siniestros viales en los que participan.</p>
+          <p class="mt-1">La auditoría verifica que el sistema de gestión de seguridad vial está:</p>
+          <ul class="list-disc list-inside mt-2 space-y-1">
+           <li><strong>Planificado (P):</strong> Contexto, liderazgo, planificación y objetivos (enfoque a riesgos y oportunidades).</li>
+           <li><strong>Implementado (Hacer - D):</strong> Soporte, operación, controles relacionados con seguridad vial.</li>
+           <li><strong>Verificado (Check - C):</strong> Seguimiento, medición, análisis y evaluación del desempeño de seguridad vial.</li>
+           <li><strong>Mejorado (Actuar - A):</strong> Acciones de mejora continua, tratamiento de no conformidades.</li>
+          </ul>
+         </section>
+         <section>
+          <h3 class="text-base font-semibold text-orange-300">3. ¿Qué se audita en ISO 39001?</h3>
+          <p class="mt-1">Algunos ejemplos de elementos típicos a auditar:</p>
+          <ul class="list-disc list-inside mt-2 space-y-1">
+           <li><strong>Contexto de la organización y partes interesadas</strong> (análisis de entorno vial, usuarios, proveedores, autoridades, etc.).</li>
+           <li><strong>Política de seguridad vial</strong> y su alineación con los objetivos estratégicos.</li>
+           <li><strong>Objetivos de seguridad vial</strong> y planes para lograrlos (indicadores, metas, plazos).</li>
+           <li><strong>Gestión de riesgos de seguridad vial</strong>: identificación de riesgos críticos (conducción distraída, fatiga, velocidad, mantenimiento deficiente, etc.).</li>
+           <li><strong>Controles operacionales</strong> (formación de conductores, mantenimiento de flota, gestión de rutas, requisitos para proveedores de transporte).</li>
+           <li><strong>Seguimiento y medición</strong> de desempeño (tasa de siniestros, incidentes, casi-accidentes, acciones correctivas, etc.).</li>
+           <li><strong>Investigación de incidentes de tránsito</strong> y tratamiento de no conformidades.</li>
+           <li><strong>Revisión por la dirección</strong> y mejora continua del sistema.</li>
+          </ul>
+         </section>
+         <section>
+          <h3 class="text-base font-semibold text-orange-300">4. Principios de auditoría según ISO 19011 aplicados a ISO 39001</h3>
+          <ul class="list-disc list-inside mt-2 space-y-1">
+           <li><strong>Integridad:</strong> Comportamiento ético del equipo auditor.</li>
+           <li><strong>Presentación imparcial:</strong> Hallazgos, conclusiones y reportes justos y precisos.</li>
+           <li><strong>Debida diligencia profesional:</strong> Competencia técnica y cuidado apropiado.</li>
+           <li><strong>Confidencialidad:</strong> Protección de la información sensible.</li>
+           <li><strong>Basado en evidencias:</strong> Muestreo suficiente y representativo de procesos, registros y entrevistas.</li>
+           <li><strong>Enfoque basado en riesgos:</strong> Priorización de áreas críticas para la seguridad vial.</li>
+          </ul>
+         </section>
+        </article>
+       </div><!-- PRÁCTICA (FLASHCARDS + TALLER) -->
+       <div id="panel-practica" class="panel hidden">
+        <h2 id="practice-title" class="text-xl font-semibold text-orange-300 mb-2">Parte práctica: Taller de Mejora Continua</h2><!-- Flashcards -->
+        <section aria-labelledby="flashcards-title" class="mb-4">
+         <h3 id="flashcards-title" class="text-base font-semibold text-orange-300 mb-2">Flash Cards: Conceptos clave</h3>
+         <p class="text-sm text-slate-100 mb-3">Haz clic en cada tarjeta para ver la definición. Estos conceptos son la base para clasificar los hallazgos de auditoría de seguridad vial.</p>
+         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3"><!-- No Conformidad --> <button type="button" data-card="nc" aria-expanded="false" class="flashcard group bg-slate-800 border border-slate-700 rounded-lg p-3 text-left flex flex-col justify-between hover:border-orange-400 transition">
+           <div>
+            <p class="text-sm font-semibold text-orange-300">No Conformidad (NC)</p>
+            <p class="text-xs text-slate-300 mt-1 card-front">Haz clic para ver la definición</p>
+            <p class="text-xs text-slate-100 mt-2 hidden card-back">Incumplimiento de un requisito establecido en la norma, en la legislación o en los procedimientos internos. Implica que el sistema de gestión no se ajusta a lo previsto y requiere acción correctiva.</p>
+           </div><span class="mt-2 text-[11px] text-slate-400"> Clasificación base de hallazgos en auditoría </span> </button> <!-- Conformidad --> <button type="button" data-card="c" aria-expanded="false" class="flashcard group bg-slate-800 border border-slate-700 rounded-lg p-3 text-left flex flex-col justify-between hover:border-orange-400 transition">
+           <div>
+            <p class="text-sm font-semibold text-orange-300">Conformidad</p>
+            <p class="text-xs text-slate-300 mt-1 card-front">Haz clic para ver la definición</p>
+            <p class="text-xs text-slate-100 mt-2 hidden card-back">Cumplimiento del requisito definido. La evidencia demuestra que el proceso o el resultado observados están alineados con lo exigido por la ISO 39001, la legislación o los procedimientos internos.</p>
+           </div><span class="mt-2 text-[11px] text-slate-400"> Se registra como evidencia positiva del sistema </span> </button> <!-- Oportunidad de Mejora --> <button type="button" data-card="om" aria-expanded="false" class="flashcard group bg-slate-800 border border-slate-700 rounded-lg p-3 text-left flex flex-col justify-between hover:border-orange-400 transition">
+           <div>
+            <p class="text-sm font-semibold text-orange-300">Oportunidad de Mejora (OM)</p>
+            <p class="text-xs text-slate-300 mt-1 card-front">Haz clic para ver la definición</p>
+            <p class="text-xs text-slate-100 mt-2 hidden card-back">Situación en la que no existe incumplimiento de requisitos, pero se identifica la posibilidad de mejorar la eficacia, eficiencia o robustez del sistema de gestión de seguridad vial.</p>
+           </div><span class="mt-2 text-[11px] text-slate-400"> Alimenta el ciclo de mejora continua (PDCA) </span> </button> <!-- No Conformidad Mayor --> <button type="button" data-card="ncm" aria-expanded="false" class="flashcard group bg-slate-800 border border-slate-700 rounded-lg p-3 text-left flex flex-col justify-between hover:border-orange-400 transition">
+           <div>
+            <p class="text-sm font-semibold text-orange-300">No Conformidad Mayor</p>
+            <p class="text-xs text-slate-300 mt-1 card-front">Haz clic para ver la definición</p>
+            <p class="text-xs text-slate-100 mt-2 hidden card-back">Incumplimiento significativo que afecta de forma grave la capacidad del sistema para conseguir sus resultados previstos en seguridad vial. Puede implicar: ausencia total de un requisito, fallo sistemático o reiterado, o riesgo inaceptable para la seguridad vial.</p>
+           </div><span class="mt-2 text-[11px] text-slate-400"> Requiere acción inmediata y puede impedir la certificación </span> </button> <!-- No Conformidad Menor --> <button type="button" data-card="ncmn" aria-expanded="false" class="flashcard group bg-slate-800 border border-slate-700 rounded-lg p-3 text-left flex flex-col justify-between hover:border-orange-400 transition">
+           <div>
+            <p class="text-sm font-semibold text-orange-300">No Conformidad Menor</p>
+            <p class="text-xs text-slate-300 mt-1 card-front">Haz clic para ver la definición</p>
+            <p class="text-xs text-slate-100 mt-2 hidden card-back">Incumplimiento puntual que no compromete de forma significativa la eficacia global del sistema, pero que debe ser corregido para asegurar la conformidad plena y prevenir recurrencias.</p>
+           </div><span class="mt-2 text-[11px] text-slate-400"> Se gestiona con acciones correctivas planificadas </span> </button>
+         </div>
+        </section><!-- Taller de mejora continua / ejercicio -->
+        <section aria-labelledby="taller-title" class="mt-4">
+         <h3 id="taller-title" class="text-base font-semibold text-orange-300 mb-2">Mini Taller: Ciclo PDCA aplicado a seguridad vial</h3>
+         <p class="text-sm text-slate-100 mb-3">Completa los pasos del ciclo PDCA (Planificar, Hacer, Verificar, Actuar) para un escenario sencillo de seguridad vial en tu organización. Esto te ayudará a estructurar las acciones derivadas de los hallazgos.</p>
+         <form id="form-pdca" class="space-y-3 text-sm" aria-describedby="pdca-help">
+          <p id="pdca-help" class="text-xs text-slate-300">Nota: este ejercicio es local a la página; no se guarda en ningún sitio externo.</p>
+          <div><label for="pdca-plan" class="block text-xs font-medium text-slate-200 mb-1"> PLANIFICAR (P): ¿Qué problema de seguridad vial quieres abordar? </label> <textarea id="pdca-plan" name="pdca-plan" rows="2" class="w-full rounded-md border border-slate-600 bg-slate-900 text-slate-100 text-xs px-2 py-1" placeholder="Ejemplo: Alta siniestralidad en la ruta de reparto nocturno..."></textarea>
+          </div>
+          <div><label for="pdca-do" class="block text-xs font-medium text-slate-200 mb-1"> HACER (D): ¿Qué acciones implementarás? </label> <textarea id="pdca-do" name="pdca-do" rows="2" class="w-full rounded-md border border-slate-600 bg-slate-900 text-slate-100 text-xs px-2 py-1" placeholder="Ejemplo: Implementar formación específica, control de horas de conducción, revisión de rutas..."></textarea>
+          </div>
+          <div><label for="pdca-check" class="block text-xs font-medium text-slate-200 mb-1"> VERIFICAR (C): ¿Cómo medirás la eficacia? </label> <textarea id="pdca-check" name="pdca-check" rows="2" class="w-full rounded-md border border-slate-600 bg-slate-900 text-slate-100 text-xs px-2 py-1" placeholder="Ejemplo: Seguir indicadores de incidentes, casi-accidentes, retroalimentación de conductores..."></textarea>
+          </div>
+          <div><label for="pdca-act" class="block text-xs font-medium text-slate-200 mb-1"> ACTUAR (A): ¿Qué harás con los resultados? </label> <textarea id="pdca-act" name="pdca-act" rows="2" class="w-full rounded-md border border-slate-600 bg-slate-900 text-slate-100 text-xs px-2 py-1" placeholder="Ejemplo: Ajustar el plan, reforzar acciones exitosas, corregir debilidades, actualizar el SGSV..."></textarea>
+          </div><button id="btn-resumen-pdca" type="submit" class="mt-2 inline-flex items-center gap-1 px-3 py-1.5 rounded-md bg-emerald-500 text-slate-900 text-xs font-semibold hover:bg-emerald-400 transition"> Generar resumen de mejora continua </button>
+         </form>
+         <div id="pdca-resumen" class="mt-3 hidden bg-slate-800 border border-emerald-500/60 rounded-lg p-3">
+          <h4 class="text-sm font-semibold text-emerald-400 mb-1">Resumen estructurado de tu plan de mejora</h4>
+          <p id="pdca-resumen-texto" class="text-xs text-slate-100 whitespace-pre-line"></p>
+         </div>
+        </section>
+       </div><!-- SIMULACIÓN DE REUNIÓN (Modal abre narración) -->
+       <div id="panel-simulacion" class="panel hidden">
+        <h2 id="simulation-title" class="text-xl font-semibold text-orange-300 mb-2">Simulación grupal de reunión de auditoría de seguridad vial</h2>
+        <p class="text-sm text-slate-100 mb-3">Vivirás una simulación guiada de una reunión de auditoría según ISO 19011, con criterios de ISO 39001. Utiliza esta herramienta para entender el rol del líder de auditoría, del auditado y la forma adecuada de presentar hallazgos.</p><button id="btn-abrir-simulacion" type="button" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md bg-orange-500 text-slate-900 text-xs font-semibold hover:bg-orange-400 transition"> Iniciar simulación de reunión </button>
+        <p class="text-xs text-slate-300 mt-2">Consejo: después de la simulación, utiliza la lista de chequeo y el asistente de hallazgos para practicar.</p>
+       </div><!-- LISTA DE CHEQUEO -->
+       <div id="panel-checklist" class="panel hidden">
+        <h2 id="checklist-title" class="text-xl font-semibold text-orange-300 mb-2">Lista de chequeo ISO 39001</h2>
+        <p class="text-sm text-slate-100 mb-3">Usa esta lista de chequeo para simular la evaluación del sistema de gestión de seguridad vial. Marca “Cumple”, “No cumple” o “No aplica” para cada requisito, e identifica potenciales hallazgos.</p>
+        <div class="overflow-x-auto scroll-area border border-slate-700 rounded-lg">
+         <table class="min-w-full text-xs text-left text-slate-100">
+          <thead class="bg-slate-800 text-[11px] uppercase tracking-wide">
+           <tr>
+            <th scope="col" class="px-3 py-2">#</th>
+            <th scope="col" class="px-3 py-2">Requisito / Criterio</th>
+            <th scope="col" class="px-3 py-2 text-center">Cumple</th>
+            <th scope="col" class="px-3 py-2 text-center">No cumple</th>
+            <th scope="col" class="px-3 py-2 text-center">No aplica</th>
+            <th scope="col" class="px-3 py-2">Notas breves</th>
+           </tr>
+          </thead>
+          <tbody id="checklist-body" class="bg-slate-900/60 divide-y divide-slate-800"><!-- Filas generadas por JS -->
+          </tbody>
+         </table>
+        </div>
+       </div><!-- ASISTENTE DE HALLAZGOS -->
+       <div id="panel-hallazgos" class="panel hidden">
+        <h2 id="findings-title" class="text-xl font-semibold text-orange-300 mb-2">Asistente para redactar hallazgos de auditoría</h2>
+        <p class="text-sm text-slate-100 mb-3">Completa los campos y genera un texto de hallazgo estructurado según buenas prácticas de auditoría (ISO 19011), aplicadas a la seguridad vial (ISO 39001).</p>
+        <form id="form-hallazgos" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+         <div class="md:col-span-1 space-y-2">
+          <div><label for="hallazgo-tipo" class="block text-xs font-medium text-slate-200 mb-1"> Tipo de hallazgo </label> <select id="hallazgo-tipo" name="hallazgo-tipo" class="w-full rounded-md border border-slate-600 bg-slate-900 text-slate-100 px-2 py-1"> <option value="Conformidad">Conformidad</option> <option value="Oportunidad de Mejora">Oportunidad de Mejora</option> <option value="No Conformidad Menor">No Conformidad Menor</option> <option value="No Conformidad Mayor">No Conformidad Mayor</option> </select>
+          </div>
+          <div><label for="hallazgo-requisito" class="block text-xs font-medium text-slate-200 mb-1"> Requisito/criterio de referencia (ISO 39001, legal, interno) </label> <input id="hallazgo-requisito" name="hallazgo-requisito" type="text" class="w-full rounded-md border border-slate-600 bg-slate-900 text-slate-100 px-2 py-1" placeholder="Ej: ISO 39001, cláusula 6.1; Procedimiento SGSV-OP-01...">
+          </div>
+          <div><label for="hallazgo-evidencia" class="block text-xs font-medium text-slate-200 mb-1"> Evidencia objetiva observada </label> <textarea id="hallazgo-evidencia" name="hallazgo-evidencia" rows="3" class="w-full rounded-md border border-slate-600 bg-slate-900 text-slate-100 px-2 py-1" placeholder="Describe lo que viste, escuchaste o revisaste, con datos verificables..."></textarea>
+          </div>
+          <div><label for="hallazgo-efecto" class="block text-xs font-medium text-slate-200 mb-1"> Efecto / riesgo en la seguridad vial </label> <textarea id="hallazgo-efecto" name="hallazgo-efecto" rows="3" class="w-full rounded-md border border-slate-600 bg-slate-900 text-slate-100 px-2 py-1" placeholder="Ej: Esto puede incrementar el riesgo de siniestros por fatiga del conductor..."></textarea>
+          </div>
+          <div><label for="hallazgo-recomendacion" class="block text-xs font-medium text-slate-200 mb-1"> Recomendación (opcional) </label> <textarea id="hallazgo-recomendacion" name="hallazgo-recomendacion" rows="2" class="w-full rounded-md border border-slate-600 bg-slate-900 text-slate-100 px-2 py-1" placeholder="Ej: Se recomienda revisar el procedimiento..., implementar..., reforzar..."></textarea>
+          </div><button id="btn-generar-hallazgo" type="submit" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md bg-emerald-500 text-slate-900 text-xs font-semibold hover:bg-emerald-400 transition mt-1"> Generar redacción del hallazgo </button>
+         </div>
+         <div class="md:col-span-1 flex flex-col"><label for="hallazgo-resultado" class="block text-xs font-medium text-slate-200 mb-1"> Redacción sugerida del hallazgo </label> <textarea id="hallazgo-resultado" name="hallazgo-resultado" rows="13" readonly class="flex-1 rounded-md border border-emerald-500/70 bg-slate-900 text-slate-100 px-2 py-1 text-xs" placeholder="Aquí aparecerá la redacción sugerida del hallazgo, lista para que la adaptes a tu informe."></textarea>
+          <p class="text-[11px] text-slate-400 mt-1">Consejo: Ajusta el lenguaje a la cultura de tu organización y al formato oficial de informes.</p>
+         </div>
+        </form>
+       </div>
+      </section><!-- Columna derecha: resumen y ayuda rápida -->
+      <aside aria-label="Resumen rápido" class="bg-slate-900/80 border border-slate-700 rounded-xl p-4 flex flex-col gap-3">
+       <section>
+        <h3 id="right-theory-title" class="text-sm font-semibold text-orange-300">Guía rápida de auditoría ISO 39001</h3>
+        <ul class="mt-2 text-xs text-slate-100 space-y-1.5">
+         <li><span class="font-semibold text-emerald-400">Antes:</span> Planifica la auditoría según ISO 19011 (alcance, criterios, equipo, programa).</li>
+         <li><span class="font-semibold text-emerald-400">Durante:</span> Recoge evidencias mediante entrevistas, revisión documental y observación en campo.</li>
+         <li><span class="font-semibold text-emerald-400">Después:</span> Clasifica hallazgos (Conformidad, OM, NC menor, NC mayor) y elabora el informe.</li>
+        </ul>
+       </section>
+       <section class="border border-slate-700 rounded-lg p-3">
+        <h4 class="text-xs font-semibold text-orange-300">Tips para identificar no conformidades (NC)</h4>
+        <ul class="mt-2 text-[11px] text-slate-100 space-y-1">
+         <li>• Compara <strong>evidencia</strong> vs. <strong>criterio</strong> (ISO 39001, legal, interno).</li>
+         <li>• Verifica si el incumplimiento es puntual o sistemático.</li>
+         <li>• Evalúa el impacto potencial en la seguridad vial.</li>
+         <li>• Documenta siempre el <strong>hecho observado</strong> y el <strong>requisito incumplido</strong>.</li>
+        </ul>
+       </section>
+       <section class="border border-slate-700 rounded-lg p-3 space-y-2">
+        <h4 class="text-xs font-semibold text-orange-300">Ruta sugerida de uso del taller</h4>
+        <ol class="list-decimal list-inside text-[11px] text-slate-100 space-y-1">
+         <li>Lee la <strong>Parte teórica</strong> para entender el marco ISO 19011 e ISO 39001.</li>
+         <li>Practica definiciones en <strong>Flash Cards</strong> y completa el <strong>Taller PDCA</strong>.</li>
+         <li>Vive la <strong>Simulación de reunión</strong> para interiorizar el rol del auditor.</li>
+         <li>Usa la <strong>Lista de chequeo</strong> para simular tu propia auditoría.</li>
+         <li>Redacta tus hallazgos con el <strong>Asistente de hallazgos</strong>.</li>
+        </ol>
+       </section>
+      </aside>
+     </div>
+    </div>
+   </main>
+   <footer class="w-full border-t border-slate-800 bg-slate-900/90">
+    <div class="max-w-6xl mx-auto px-4 py-2 flex items-center justify-between text-[11px] text-slate-400">
+     <p id="footer-text">Taller de Auditoría de Seguridad Vial ISO 39001 · Basado en ISO 19011 · Uso formativo</p><span class="text-slate-500"> PDCA · Evidencia · Criterios · Hallazgos </span>
+    </div>
+   </footer>
+  </div><!-- MODAL SIMULACIÓN REUNIÓN -->
+  <div id="modal-simulacion" class="fixed inset-0 hidden items-center justify-center z-50" role="dialog" aria-modal="true" aria-labelledby="modal-simulacion-titulo">
+   <div class="modal-overlay absolute inset-0"></div>
+   <div class="relative bg-slate-900 border border-slate-700 rounded-xl max-w-2xl w-[90%] max-h-[80%] flex flex-col shadow-2xl">
+    <header class="px-4 py-3 border-b border-slate-700 flex items-center justify-between">
+     <div class="flex items-center gap-2">
+      <div class="w-7 h-7 rounded-full bg-orange-500 flex items-center justify-center text-slate-900 text-xs font-bold">
+       SR
+      </div>
+      <h3 id="modal-simulacion-titulo" class="text-sm font-semibold text-orange-300">Simulación de reunión de auditoría de seguridad vial</h3>
+     </div><button id="btn-cerrar-simulacion" type="button" class="px-2 py-1 rounded-md bg-slate-800 text-slate-200 text-xs hover:bg-slate-700"> Cerrar </button>
+    </header>
+    <main class="flex-1 overflow-y-auto scroll-area px-4 py-3 text-xs text-slate-100 space-y-3">
+     <p class="text-[11px] text-slate-300">Esta simulación presenta una narración guiada de una reunión de auditoría interna de seguridad vial en una empresa de transporte, siguiendo las fases recomendadas por la ISO 19011 y evaluando el cumplimiento de la ISO 39001.</p>
+     <div class="space-y-2">
+      <h4 class="text-xs font-semibold text-emerald-400">1. Apertura de la reunión (Líder de auditoría)</h4>
+      <p><strong>Líder de auditoría:</strong> “Gracias por asistir. El objetivo de esta auditoría interna es evaluar la eficacia del Sistema de Gestión de la Seguridad Vial según ISO 39001, identificar fortalezas, no conformidades y oportunidades de mejora. El alcance incluye las operaciones de transporte de carga nacional y subcontratistas.”</p>
+      <p><strong>Propósito:</strong> Comunicar <em>objetivo</em>, <em>alcance</em>, <em>criterios de auditoría</em> (ISO 39001, requisitos legales, procedimientos internos) y logística de la auditoría.</p>
+     </div>
+     <div class="space-y-2">
+      <h4 class="text-xs font-semibold text-emerald-400">2. Presentación de la organización (Representante del SG)</h4>
+      <p><strong>Representante del SGSV:</strong> “Nuestro sistema está certificado desde 2022. Nuestros principales riesgos se centran en la fatiga de conductores y las rutas de alta siniestralidad. Tenemos objetivos de reducción de incidentes en un 20% a tres años.”</p>
+      <p><strong>Propósito:</strong> Brindar contexto a los auditores sobre actividades, riesgos críticos, estructura y objetivos de seguridad vial.</p>
+     </div>
+     <div class="space-y-2">
+      <h4 class="text-xs font-semibold text-emerald-400">3. Desarrollo de la auditoría: entrevista y revisión documental</h4>
+      <p><strong>Auditor 1:</strong> “Según ISO 39001, cláusula de planificación, ¿cómo identifican y priorizan los factores de riesgo de seguridad vial en las rutas operadas y subcontratadas?”</p>
+      <p><strong>Auditado:</strong> “Contamos con un procedimiento de análisis de riesgos. Sin embargo, el último análisis de ciertas rutas subcontratadas está en actualización.”</p>
+      <p><strong>Evidencia:</strong> El registro de análisis de riesgos de 3 rutas subcontratadas no está actualizado en el último año, a pesar de cambios significativos en el flujo de tráfico.</p>
+      <p><strong>Evaluación:</strong> El auditor compara esta evidencia con el requisito de planificación de riesgos de la ISO 39001. Se identifica una posible <strong>No Conformidad Menor</strong> si el incumplimiento es limitado pero real, o <strong>Mayor</strong> si impacta de forma crítica la seguridad vial.</p>
+     </div>
+     <div class="space-y-2">
+      <h4 class="text-xs font-semibold text-emerald-400">4. Observación en campo</h4>
+      <p><strong>Auditor 2:</strong> “Durante la inspección de vehículos, se observaron dos unidades con luces auxiliares en mal estado y registros de mantenimiento vencidos.”</p>
+      <p><strong>Evaluación del auditor:</strong> Se analiza si hay un patrón de incumplimiento del programa de mantenimiento preventivo (lo que podría ser una <strong>No Conformidad Mayor</strong>) o casos aislados gestionados adecuadamente (posible <strong>No Conformidad Menor</strong> u <strong>Oportunidad de Mejora</strong>).</p>
+     </div>
+     <div class="space-y-2">
+      <h4 class="text-xs font-semibold text-emerald-400">5. Preparación de hallazgos (reunión interna de auditores)</h4>
+      <p><strong>Equipo auditor (interno):</strong> “Clasifiquemos los hallazgos:”</p>
+      <ul class="list-disc list-inside space-y-1">
+       <li>Actualización incompleta de análisis de riesgos en rutas subcontratadas: <strong>Posible No Conformidad Menor</strong>, alineada con requisitos de planificación de riesgos.</li>
+       <li>Registros de mantenimiento vencidos en pocas unidades: <strong>Dependerá del alcance y recurrencia</strong>, pudiendo ser No Conformidad Menor o Mayor.</li>
+       <li>Buenas prácticas en formación de conductores y seguimiento de incidentes: <strong>Conformidades</strong> a resaltar en el informe.</li>
+      </ul>
+     </div>
+     <div class="space-y-2">
+      <h4 class="text-xs font-semibold text-emerald-400">6. Reunión de cierre</h4>
+      <p><strong>Líder de auditoría:</strong> “Agradecemos la colaboración. El sistema demuestra un compromiso claro con la seguridad vial. Identificamos <strong>conformidades</strong> relevantes en la gestión de indicadores y formación. También se han identificado <strong>No Conformidades</strong> relacionadas con la actualización de análisis de riesgos y mantenimiento, así como varias <strong>Oportunidades de Mejora</strong> que se detallarán en el informe.”</p>
+      <p><strong>Buena práctica:</strong> Presentar hallazgos de forma clara, objetiva y equilibrada (fortalezas y debilidades), sin proponer soluciones prescriptivas, pero sí recomendaciones.</p>
+     </div>
+     <div class="space-y-2">
+      <h4 class="text-xs font-semibold text-emerald-400">7. Conexión con tu práctica</h4>
+      <p>Después de esta simulación, pasa a la <strong>Lista de chequeo</strong> para simular tu propia auditoría y usa el <strong>Asistente de hallazgos</strong> para transformar tus observaciones en hallazgos bien redactados.</p>
+     </div>
+    </main>
+   </div>
+  </div>
+  <script>
+    // ==============================
+    // CONFIGURACIÓN EDITABLE (Element SDK)
+    // ==============================
+    (function () {
+      const defaultConfig = {
+        main_title: "Taller de Auditoría de Seguridad Vial",
+        subtitle: "ISO 39001 basado en ISO 19011",
+        section_intro_title: "Introducción al taller",
+        section_theory_title: "Parte teórica: Auditoría de Seguridad Vial ISO 39001",
+        section_practice_title: "Parte práctica: Taller de Mejora Continua",
+        simulation_title: "Simulación grupal de reunión de auditoría de seguridad vial",
+        checklist_title: "Lista de chequeo ISO 39001",
+        findings_assistant_title: "Asistente para redactar hallazgos de auditoría",
+        footer_text: "Taller de Auditoría de Seguridad Vial ISO 39001 · Basado en ISO 19011 · Uso formativo",
+        background_color: "#0f172a",
+        surface_color: "#1e293b",
+        text_color: "#e5e7eb",
+        primary_color: "#f97316",
+        secondary_color: "#22c55e",
+        font_family: "system-ui",
+        font_size: 14
+      };
+
+      async function onConfigChange(config) {
+        const cfg = Object.assign({}, defaultConfig, config || {});
+
+        // Colores y fuentes base
+        const root = document.getElementById("root");
+        const bodyEl = document.body;
+        const baseFontStack = "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+        const fontFamilyValue = `${cfg.font_family}, ${baseFontStack}`;
+
+        bodyEl.style.backgroundColor = cfg.background_color;
+        bodyEl.style.color = cfg.text_color;
+        bodyEl.style.fontFamily = fontFamilyValue;
+        root.style.backgroundColor = cfg.background_color;
+
+        const baseSize = Number(cfg.font_size) || 14;
+        bodyEl.style.fontSize = baseSize + "px";
+
+        // Títulos y textos
+        const mainTitle = document.getElementById("main-title");
+        const subtitle = document.getElementById("subtitle-text");
+        const introTitle = document.getElementById("intro-title");
+        const theoryTitle = document.getElementById("theory-title");
+        const practiceTitle = document.getElementById("practice-title");
+        const simTitle = document.getElementById("simulation-title");
+        const checklistTitle = document.getElementById("checklist-title");
+        const findingsTitle = document.getElementById("findings-title");
+        const rightTheoryTitle = document.getElementById("right-theory-title");
+        const footerText = document.getElementById("footer-text");
+
+        if (mainTitle) {
+          mainTitle.textContent = cfg.main_title;
+          mainTitle.style.fontFamily = fontFamilyValue;
+          mainTitle.style.fontSize = (baseSize * 1.6) + "px";
+          mainTitle.style.color = cfg.primary_color;
+        }
+        if (subtitle) {
+          subtitle.textContent = cfg.subtitle;
+          subtitle.style.fontFamily = fontFamilyValue;
+          subtitle.style.fontSize = (baseSize * 0.9) + "px";
+          subtitle.style.color = cfg.text_color;
+        }
+        if (introTitle) {
+          introTitle.textContent = cfg.section_intro_title || defaultConfig.section_intro_title;
+          introTitle.style.fontFamily = fontFamilyValue;
+          introTitle.style.fontSize = (baseSize * 1.1) + "px";
+          introTitle.style.color = cfg.primary_color;
+        }
+        if (theoryTitle) {
+          theoryTitle.textContent = cfg.section_theory_title || defaultConfig.section_theory_title;
+          theoryTitle.style.fontFamily = fontFamilyValue;
+          theoryTitle.style.fontSize = (baseSize * 1.2) + "px";
+          theoryTitle.style.color = cfg.primary_color;
+        }
+        if (practiceTitle) {
+          practiceTitle.textContent = cfg.section_practice_title || defaultConfig.section_practice_title;
+          practiceTitle.style.fontFamily = fontFamilyValue;
+          practiceTitle.style.fontSize = (baseSize * 1.2) + "px";
+          practiceTitle.style.color = cfg.primary_color;
+        }
+        if (simTitle) {
+          simTitle.textContent = cfg.simulation_title || defaultConfig.simulation_title;
+          simTitle.style.fontFamily = fontFamilyValue;
+          simTitle.style.fontSize = (baseSize * 1.2) + "px";
+          simTitle.style.color = cfg.primary_color;
+        }
+        if (checklistTitle) {
+          checklistTitle.textContent = cfg.checklist_title || defaultConfig.checklist_title;
+          checklistTitle.style.fontFamily = fontFamilyValue;
+          checklistTitle.style.fontSize = (baseSize * 1.2) + "px";
+          checklistTitle.style.color = cfg.primary_color;
+        }
+        if (findingsTitle) {
+          findingsTitle.textContent = cfg.findings_assistant_title || defaultConfig.findings_assistant_title;
+          findingsTitle.style.fontFamily = fontFamilyValue;
+          findingsTitle.style.fontSize = (baseSize * 1.2) + "px";
+          findingsTitle.style.color = cfg.primary_color;
+        }
+        if (rightTheoryTitle) {
+          rightTheoryTitle.style.fontFamily = fontFamilyValue;
+          rightTheoryTitle.style.fontSize = (baseSize * 1.0) + "px";
+          rightTheoryTitle.style.color = cfg.primary_color;
+        }
+        if (footerText) {
+          footerText.textContent = cfg.footer_text || defaultConfig.footer_text;
+          footerText.style.fontFamily = fontFamilyValue;
+          footerText.style.fontSize = (baseSize * 0.9) + "px";
+          footerText.style.color = cfg.text_color;
+        }
+
+        // Colores en elementos clave
+        const header = document.querySelector("header");
+        if (header) {
+          header.style.backgroundColor = cfg.background_color;
+          header.style.borderBottomColor = cfg.surface_color;
+        }
+        const footer = document.querySelector("footer");
+        if (footer) {
+          footer.style.backgroundColor = cfg.background_color;
+          footer.style.borderTopColor = cfg.surface_color;
+        }
+
+        // Superficies principales
+        const surfaces = document.querySelectorAll(
+          "section.bg-slate-800, section.bg-slate-900, .bg-slate-800\\/80, .bg-slate-900\\/70, .bg-slate-900\\/80, aside, table, .modal-overlay"
+        );
+        surfaces.forEach((el) => {
+          if (el.classList.contains("modal-overlay")) {
+            el.style.backgroundColor = "rgba(15,23,42,0.75)";
+          } else {
+            el.style.backgroundColor = cfg.surface_color;
+          }
+        });
+
+        // Botones primarios y secundarios
+        const primaryButtons = document.querySelectorAll(
+          "button.bg-orange-500, .tab-btn.bg-orange-500"
+        );
+        primaryButtons.forEach((btn) => {
+          btn.style.backgroundColor = cfg.primary_color;
+          btn.style.color = "#020617";
+        });
+        const secondaryButtons = document.querySelectorAll(
+          "button.bg-emerald-500"
+        );
+        secondaryButtons.forEach((btn) => {
+          btn.style.backgroundColor = cfg.secondary_color;
+          btn.style.color = "#020617";
+        });
+
+        // Texto general
+        const textElems = document.querySelectorAll("p, li, label, textarea, input, select, th, td");
+        textElems.forEach((el) => {
+          el.style.fontFamily = fontFamilyValue;
+          el.style.color = cfg.text_color;
+          el.style.fontSize = (baseSize * 0.9) + "px";
+        });
+
+        // Títulos h2/h3/h4 ajustados
+        const h2s = document.querySelectorAll("h2");
+        h2s.forEach((el) => {
+          el.style.fontFamily = fontFamilyValue;
+          el.style.color = cfg.primary_color;
+        });
+        const h3s = document.querySelectorAll("h3");
+        h3s.forEach((el) => {
+          el.style.fontFamily = fontFamilyValue;
+          el.style.color = cfg.primary_color;
+        });
+        const h4s = document.querySelectorAll("h4");
+        h4s.forEach((el) => {
+          el.style.fontFamily = fontFamilyValue;
+        });
+      }
+
+      function mapToCapabilities(config) {
+        const cfg = Object.assign({}, defaultConfig, config || {});
+        return {
+          recolorables: [
+            {
+              get: () => cfg.background_color || defaultConfig.background_color,
+              set: (value) => {
+                if (!window.elementSdk) return;
+                window.elementSdk.setConfig({ background_color: value });
+              }
+            },
+            {
+              get: () => cfg.surface_color || defaultConfig.surface_color,
+              set: (value) => {
+                if (!window.elementSdk) return;
+                window.elementSdk.setConfig({ surface_color: value });
+              }
+            },
+            {
+              get: () => cfg.text_color || defaultConfig.text_color,
+              set: (value) => {
+                if (!window.elementSdk) return;
+                window.elementSdk.setConfig({ text_color: value });
+              }
+            },
+            {
+              get: () => cfg.primary_color || defaultConfig.primary_color,
+              set: (value) => {
+                if (!window.elementSdk) return;
+                window.elementSdk.setConfig({ primary_color: value });
+              }
+            },
+            {
+              get: () => cfg.secondary_color || defaultConfig.secondary_color,
+              set: (value) => {
+                if (!window.elementSdk) return;
+                window.elementSdk.setConfig({ secondary_color: value });
+              }
+            }
+          ],
+          borderables: [],
+          fontEditable: {
+            get: () => cfg.font_family || defaultConfig.font_family,
+            set: (value) => {
+              if (!window.elementSdk) return;
+              window.elementSdk.setConfig({ font_family: value });
+            }
+          },
+          fontSizeable: {
+            get: () => cfg.font_size || defaultConfig.font_size,
+            set: (value) => {
+              if (!window.elementSdk) return;
+              const numeric = Number(value) || defaultConfig.font_size;
+              window.elementSdk.setConfig({ font_size: numeric });
+            }
+          }
+        };
+      }
+
+      function mapToEditPanelValues(config) {
+        const cfg = Object.assign({}, defaultConfig, config || {});
+        return new Map([
+          ["main_title", cfg.main_title],
+          ["subtitle", cfg.subtitle],
+          ["section_intro_title", cfg.section_intro_title],
+          ["section_theory_title", cfg.section_theory_title],
+          ["section_practice_title", cfg.section_practice_title],
+          ["simulation_title", cfg.simulation_title],
+          ["checklist_title", cfg.checklist_title],
+          ["findings_assistant_title", cfg.findings_assistant_title],
+          ["footer_text", cfg.footer_text]
+        ]);
+      }
+
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange,
+          mapToCapabilities,
+          mapToEditPanelValues
+        });
+      } else {
+        // Si el SDK no está disponible (vista previa simple), aplicamos config por defecto
+        onConfigChange(defaultConfig);
+      }
+    })();
+
+    // ==============================
+    // LÓGICA INTERACTIVA GENERAL
+    // ==============================
+
+    // Tabs/pestañas
+    const panels = {
+      teoria: document.getElementById("panel-teoria"),
+      practica: document.getElementById("panel-practica"),
+      simulacion: document.getElementById("panel-simulacion"),
+      checklist: document.getElementById("panel-checklist"),
+      hallazgos: document.getElementById("panel-hallazgos")
+    };
+
+    function activarPanel(key) {
+      Object.keys(panels).forEach((k) => {
+        if (k === key) {
+          panels[k].classList.remove("hidden");
+        } else {
+          panels[k].classList.add("hidden");
+        }
+      });
+
+      const tabButtons = document.querySelectorAll(".tab-btn");
+      tabButtons.forEach((btn) => {
+        btn.classList.remove("bg-orange-500", "text-slate-900");
+        btn.classList.add("bg-slate-800", "text-slate-100", "border", "border-slate-600");
+      });
+      let activeBtn = null;
+      if (key === "teoria") activeBtn = document.getElementById("btn-teoria");
+      if (key === "practica") activeBtn = document.getElementById("btn-practica");
+      if (key === "simulacion") activeBtn = document.getElementById("btn-simulacion");
+      if (key === "checklist") activeBtn = document.getElementById("btn-checklist");
+      if (key === "hallazgos") activeBtn = document.getElementById("btn-hallazgos");
+
+      if (activeBtn) {
+        activeBtn.classList.remove("bg-slate-800", "text-slate-100", "border", "border-slate-600");
+        activeBtn.classList.add("bg-orange-500", "text-slate-900");
+      }
+    }
+
+    document.getElementById("btn-teoria").addEventListener("click", () => activarPanel("teoria"));
+    document.getElementById("btn-practica").addEventListener("click", () => activarPanel("practica"));
+    document.getElementById("btn-simulacion").addEventListener("click", () => activarPanel("simulacion"));
+    document.getElementById("btn-checklist").addEventListener("click", () => activarPanel("checklist"));
+    document.getElementById("btn-hallazgos").addEventListener("click", () => activarPanel("hallazgos"));
+
+    // Activar teoría por defecto
+    activarPanel("teoria");
+
+    // Flashcards
+    const flashcards = document.querySelectorAll(".flashcard");
+    flashcards.forEach((card) => {
+      card.addEventListener("click", () => {
+        const front = card.querySelector(".card-front");
+        const back = card.querySelector(".card-back");
+        const expanded = card.getAttribute("aria-expanded") === "true";
+        if (front && back) {
+          if (expanded) {
+            front.classList.remove("hidden");
+            back.classList.add("hidden");
+            card.setAttribute("aria-expanded", "false");
+          } else {
+            front.classList.add("hidden");
+            back.classList.remove("hidden");
+            card.setAttribute("aria-expanded", "true");
+          }
+        }
+      });
+    });
+
+    // Taller PDCA
+    const formPdca = document.getElementById("form-pdca");
+    const resumenPdca = document.getElementById("pdca-resumen");
+    const resumenPdcaTexto = document.getElementById("pdca-resumen-texto");
+
+    formPdca.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const plan = document.getElementById("pdca-plan").value.trim();
+      const doVal = document.getElementById("pdca-do").value.trim();
+      const check = document.getElementById("pdca-check").value.trim();
+      const act = document.getElementById("pdca-act").value.trim();
+
+      let texto = "Ciclo PDCA propuesto para la mejora de la seguridad vial:\n\n";
+      texto += "PLANIFICAR (P):\n" + (plan || "No se ha descrito el problema a abordar.") + "\n\n";
+      texto += "HACER (D):\n" + (doVal || "No se han descrito acciones a implementar.") + "\n\n";
+      texto += "VERIFICAR (C):\n" + (check || "No se ha descrito cómo se medirá la eficacia.") + "\n\n";
+      texto += "ACTUAR (A):\n" + (act || "No se ha descrito cómo se actuará según los resultados.") + "\n\n";
+      texto += "Este resumen puede servir como base para tu plan de acciones de mejora continua asociado a los hallazgos de la auditoría.";
+
+      resumenPdcaTexto.textContent = texto;
+      resumenPdca.classList.remove("hidden");
+    });
+
+    // Modal simulación
+    const modalSim = document.getElementById("modal-simulacion");
+    const btnAbrirSim = document.getElementById("btn-abrir-simulacion");
+    const btnCerrarSim = document.getElementById("btn-cerrar-simulacion");
+
+    function abrirModalSim() {
+      modalSim.classList.remove("hidden");
+      modalSim.classList.add("flex");
+    }
+
+    function cerrarModalSim() {
+      modalSim.classList.add("hidden");
+      modalSim.classList.remove("flex");
+    }
+
+    btnAbrirSim.addEventListener("click", abrirModalSim);
+    btnCerrarSim.addEventListener("click", cerrarModalSim);
+    modalSim.addEventListener("click", (e) => {
+      if (e.target === modalSim) {
+        cerrarModalSim();
+      }
+    });
+
+    // Lista de chequeo
+    const checklistData = [
+      {
+        id: 1,
+        texto: "Contexto de la organización y partes interesadas relevante para la seguridad vial definido y actualizado."
+      },
+      {
+        id: 2,
+        texto: "Política de seguridad vial aprobada, comunicada y alineada con la estrategia de la organización."
+      },
+      {
+        id: 3,
+        texto: "Objetivos de seguridad vial medibles, con indicadores y metas claramente definidos."
+      },
+      {
+        id: 4,
+        texto: "Identificación y evaluación de riesgos de seguridad vial (incluidas rutas, conductores, vehículos y entorno)."
+      },
+      {
+        id: 5,
+        texto: "Controles operacionales para conductores (formación, tiempos de conducción y descanso, normas de velocidad)."
+      },
+      {
+        id: 6,
+        texto: "Programa de mantenimiento preventivo de vehículos implementado y registros al día."
+      },
+      {
+        id: 7,
+        texto: "Gestión de proveedores y subcontratistas con criterios de seguridad vial establecidos."
+      },
+      {
+        id: 8,
+        texto: "Seguimiento, medición y análisis de indicadores de desempeño en seguridad vial."
+      },
+      {
+        id: 9,
+        texto: "Investigación de incidentes de tráfico y tratamiento de no conformidades."
+      },
+      {
+        id: 10,
+        texto: "Revisión por la dirección del sistema de gestión de seguridad vial y decisiones de mejora continua."
+      }
+    ];
+
+    const checklistBody = document.getElementById("checklist-body");
+
+    function renderChecklist() {
+      checklistBody.innerHTML = "";
+      checklistData.forEach((item, index) => {
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-slate-800/80";
+
+        const tdIndex = document.createElement("td");
+        tdIndex.className = "px-3 py-2 align-top text-slate-300";
+        tdIndex.textContent = index + 1;
+
+        const tdText = document.createElement("td");
+        tdText.className = "px-3 py-2 align-top text-slate-100";
+        tdText.textContent = item.texto;
+
+        const tdCumple = document.createElement("td");
+        tdCumple.className = "px-3 py-2 align-top text-center";
+        const radioC = document.createElement("input");
+        radioC.type = "radio";
+        radioC.name = "req-" + item.id;
+        radioC.id = "req-" + item.id + "-c";
+        radioC.className = "accent-orange-500";
+        const labelC = document.createElement("label");
+        labelC.htmlFor = radioC.id;
+        labelC.className = "sr-only";
+        labelC.textContent = "Cumple requisito " + (index + 1);
+        tdCumple.appendChild(radioC);
+        tdCumple.appendChild(labelC);
+
+        const tdNoCumple = document.createElement("td");
+        tdNoCumple.className = "px-3 py-2 align-top text-center";
+        const radioNC = document.createElement("input");
+        radioNC.type = "radio";
+        radioNC.name = "req-" + item.id;
+        radioNC.id = "req-" + item.id + "-nc";
+        radioNC.className = "accent-orange-500";
+        const labelNC = document.createElement("label");
+        labelNC.htmlFor = radioNC.id;
+        labelNC.className = "sr-only";
+        labelNC.textContent = "No cumple requisito " + (index + 1);
+        tdNoCumple.appendChild(radioNC);
+        tdNoCumple.appendChild(labelNC);
+
+        const tdNA = document.createElement("td");
+        tdNA.className = "px-3 py-2 align-top text-center";
+        const radioNA = document.createElement("input");
+        radioNA.type = "radio";
+        radioNA.name = "req-" + item.id;
+        radioNA.id = "req-" + item.id + "-na";
+        radioNA.className = "accent-orange-500";
+        const labelNA = document.createElement("label");
+        labelNA.htmlFor = radioNA.id;
+        labelNA.className = "sr-only";
+        labelNA.textContent = "No aplica requisito " + (index + 1);
+        tdNA.appendChild(radioNA);
+        tdNA.appendChild(labelNA);
+
+        const tdNotas = document.createElement("td");
+        tdNotas.className = "px-3 py-2 align-top";
+        const inputNotas = document.createElement("input");
+        inputNotas.type = "text";
+        inputNotas.id = "nota-" + item.id;
+        inputNotas.className = "w-full rounded-md border border-slate-600 bg-slate-900 text-slate-100 px-2 py-1";
+        inputNotas.placeholder = "Notas breves / observaciones";
+        tdNotas.appendChild(inputNotas);
+
+        tr.appendChild(tdIndex);
+        tr.appendChild(tdText);
+        tr.appendChild(tdCumple);
+        tr.appendChild(tdNoCumple);
+        tr.appendChild(tdNA);
+        tr.appendChild(tdNotas);
+
+        checklistBody.appendChild(tr);
+      });
+    }
+
+    renderChecklist();
+
+    // Asistente de hallazgos
+    const formHallazgos = document.getElementById("form-hallazgos");
+    const resultadoHallazgo = document.getElementById("hallazgo-resultado");
+
+    formHallazgos.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const tipo = document.getElementById("hallazgo-tipo").value;
+      const requisito = document.getElementById("hallazgo-requisito").value.trim() || "[indicar requisito/criterio]";
+      const evidencia = document.getElementById("hallazgo-evidencia").value.trim() || "[describir evidencia objetiva]";
+      const efecto = document.getElementById("hallazgo-efecto").value.trim() || "[explicar efecto/riesgo para la seguridad vial]";
+      const recomendacion = document.getElementById("hallazgo-recomendacion").value.trim();
+
+      let texto = "";
+      texto += "Tipo de hallazgo: " + tipo + "\n\n";
+      texto += "Requisito / criterio de referencia:\n" + requisito + "\n\n";
+      texto += "Evidencia objetiva observada:\n" + evidencia + "\n\n";
+      texto += "Evaluación del auditor y efecto en la seguridad vial:\n" + efecto + "\n\n";
+
+      if (tipo.includes("No Conformidad")) {
+        texto += "Conclusión:\nSe determina una " + tipo +
+          " respecto al requisito indicado, ya que la evidencia demuestra un incumplimiento que puede afectar la eficacia del Sistema de Gestión de la Seguridad Vial.\n\n";
+      } else if (tipo === "Oportunidad de Mejora") {
+        texto += "Conclusión:\nNo se evidencia incumplimiento del requisito; sin embargo, se identifica una oportunidad para fortalecer la eficacia del sistema en materia de seguridad vial.\n\n";
+      } else {
+        texto += "Conclusión:\nLa evidencia demuestra el cumplimiento del requisito, constituyendo una conformidad relevante del sistema de gestión de seguridad vial.\n\n";
+      }
+
+      if (recomendacion) {
+        texto += "Recomendación del auditor (no prescriptiva):\n" + recomendacion + "\n\n";
+      }
+
+      texto += "Nota: Esta redacción es una guía. Ajusta el texto al formato oficial de informes de tu organización y a las directrices de tu programa de auditoría.";
+
+      resultadoHallazgo.value = texto;
+    });
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a4be293203cf7b4',t:'MTc2NDE4NjMxNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
